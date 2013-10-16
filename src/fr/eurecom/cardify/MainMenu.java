@@ -21,5 +21,8 @@ public class MainMenu extends Activity {
     }
     
     //SKLoeTTE
+    public void flae() {
+    	return;
+    }
     
 }
