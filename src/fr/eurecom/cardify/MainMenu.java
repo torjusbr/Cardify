@@ -10,6 +10,7 @@ public class MainMenu extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        
     }
 
 
@@ -20,9 +21,6 @@ public class MainMenu extends Activity {
         return true;
     }
     
-    //SKLoeTTE
-    public void flae() {
-    	return;
-    }
     
+    //PETTERERGAY
 }
