@@ -1,8 +1,11 @@
 package fr.eurecom.cardify;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class Lobby extends Activity {
 
@@ -10,6 +13,14 @@ public class Lobby extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lobby);
+		
+		RelativeLayout rl = (RelativeLayout) findViewById(R.id.lobbyView);
+		
+		Button myButton = new Button(this);
+		myButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.FILL_PARENT));
+
+		rl.addView(myButton);
+		
 	}
 
 	@Override

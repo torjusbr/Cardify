@@ -31,5 +31,19 @@
             
         
     </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/lobbyView_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lobbyView" 
+		android:layout_below="@+id/lobbyView" >
+        
+        <TextView 
+            android:id="@+id/textView3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/lobby_chat" />
+        
+	</RelativeLayout>
     
 </RelativeLayout>

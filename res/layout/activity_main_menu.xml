@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/hostGameButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView1"
@@ -29,13 +29,25 @@
         android:onClick="hostGame" />
 
     <Button
+        android:id="@+id/joinGameButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_alignRight="@+id/button1"
-        android:layout_below="@+id/button1"
+        android:layout_alignLeft="@+id/hostGameButton"
+        android:layout_alignRight="@+id/hostGameButton"
+        android:layout_below="@+id/hostGameButton"
         android:layout_marginTop="28dp"
         android:text="@string/join_game"  
         android:onClick="joinGame" />
+
+    <Button
+        android:id="@+id/lobbyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/joinGameButton"
+        android:layout_alignRight="@+id/joinGameButton"
+        android:layout_below="@+id/joinGameButton"
+        android:layout_marginTop="28dp"
+        android:text="@string/title_activity_lobby"  
+        android:onClick="lobby" />
 
 </RelativeLayout>

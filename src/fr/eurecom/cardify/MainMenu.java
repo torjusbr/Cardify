@@ -30,4 +30,9 @@ public class MainMenu extends Activity {
     public void joinGame(View view) {
     	
     }
+    
+    public void lobby(View view) {
+    	Intent intent = new Intent(this,Lobby.class);
+    	startActivity(intent);
+    }
 }
