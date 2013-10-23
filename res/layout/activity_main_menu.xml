@@ -35,7 +35,7 @@
         android:layout_alignRight="@+id/button1"
         android:layout_below="@+id/button1"
         android:layout_marginTop="28dp"
-        android:text="Join game" 
+        android:text="Join game"  
         android:onClick="joinGame" />
 
 </RelativeLayout>
