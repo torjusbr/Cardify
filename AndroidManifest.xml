@@ -31,6 +31,10 @@
             android:name="fr.eurecom.cardify.Game"
             android:label="@string/title_activity_game" >
         </activity>
+        <activity
+            android:name="fr.eurecom.cardify.Lobby"
+            android:label="@string/title_activity_lobby" >
+        </activity>
     </application>
 
 </manifest>
