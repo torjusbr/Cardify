@@ -22,5 +22,4 @@ public class MainMenu extends Activity {
     }
     
     
-    //PETTERERGAY
 }
