@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="Cardify"
+        android:text="@string/app_name"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
@@ -25,7 +25,7 @@
         android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:text="Host game" 
+        android:text="@string/title_activity_host_game" 
         android:onClick="hostGame" />
 
     <Button
@@ -35,7 +35,7 @@
         android:layout_alignRight="@+id/button1"
         android:layout_below="@+id/button1"
         android:layout_marginTop="28dp"
-        android:text="Join game"  
+        android:text="@string/join_game"  
         android:onClick="joinGame" />
 
 </RelativeLayout>

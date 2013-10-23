@@ -8,5 +8,6 @@
     <string name="title_activity_game">Game</string>
     <string name="title_activity_lobby">Lobby</string>
     <string name="lobby_game">Game</string>
+    <string name="join_game">Join Game</string>
 
 </resources>
