@@ -4,5 +4,7 @@
     <string name="app_name">Cardify</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_host_game">HostGame</string>
+    <string name="title_activity_game">Game</string>
 
 </resources>
