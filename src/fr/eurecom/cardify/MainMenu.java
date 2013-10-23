@@ -21,6 +21,7 @@ public class MainMenu extends Activity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
+    //dsfsdf
     
     public void hostGame(View view) {
     	Intent intent = new Intent(this,HostGame.class);
@@ -30,5 +31,4 @@ public class MainMenu extends Activity {
     public void joinGame(View view) {
     	
     }
-    
 }
