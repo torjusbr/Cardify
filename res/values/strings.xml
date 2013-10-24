@@ -7,7 +7,7 @@
     <string name="title_activity_host_game">HostGame</string>
     <string name="title_activity_game">Game</string>
     <string name="title_activity_lobby">Lobby</string>
-    <string name="lobby_game">Game</string>
+    <string name="lobby_playersOnline">Players online:</string>
     <string name="lobby_chat">Game</string>
     <string name="join_game">Join Game</string>
 
