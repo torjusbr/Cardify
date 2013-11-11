@@ -49,7 +49,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 	        } else {
 	            // Wi-Fi P2P is not enabled
 	        	Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi p2p is not enabled");
-	        	Toast.makeText(context, "Turn on WiFi Direct bitch!", Toast.LENGTH_LONG).show();
+	        	Toast.makeText(context, "WiFi direct is not enabled. Turn on WiFi Direct!", Toast.LENGTH_LONG).show();
 	        }
 		} else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
 			// Call WifiP2pManager.requestPeers() to get a list of current peers
@@ -102,11 +102,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 				Log.d("WifiDirectBroadcastReciever.onRecieve()", "Peer Name: " + peer.deviceName);
 			}
 			lobby.printPeers(peers);
-		}
-		
-		public WifiP2pDeviceList getPeersList() {
-			return peers;
-		}
+		}		
 	}
 	
 }

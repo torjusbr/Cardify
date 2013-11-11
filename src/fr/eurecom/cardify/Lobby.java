@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.TextView;
 import fr.eurecom.util.WiFiDirectBroadcastReceiver;
 
@@ -28,7 +29,7 @@ public class Lobby extends Activity {
 		setContentView(R.layout.activity_lobby);
 		handler = new Handler();
 		setUpWiFiDirect();
-		handler.postDelayed(runnable, 100);
+		handler.postDelayed(runnable, 60000);
 	}
 
 	private void setUpWiFiDirect() {
@@ -48,17 +49,25 @@ public class Lobby extends Activity {
 		@Override
 		public void run() {
 			/* do what you need to do */
+			resetPeerList();
 			findPeers(mManager);
+			
 			/* and here comes the "trick" */
 			handler.postDelayed(this, 10000);
 		}
 	};
 	
+	//TODO: Dum måte å gjøre det på
+	private void resetPeerList() {
+		TextView tv = (TextView)findViewById(R.id.peerText);
+		tv.setText("Players online: ");
+	}
+	
 	public void printPeers(WifiP2pDeviceList peerList) {
 		Log.d(getLocalClassName(), "printPeers()");
 		Log.d(getLocalClassName(), "printPeers(): " + peerList.getDeviceList().size());
 		TextView tv = (TextView)findViewById(R.id.peerText);
-		StringBuilder text = new StringBuilder("\nPlayers online: \n");
+		StringBuilder text = new StringBuilder("Players online: ");
 		
 		for (WifiP2pDevice peer : peerList.getDeviceList()) {
 			Log.d(getLocalClassName(), "Peer from printPeers(): " + peer.deviceName);
@@ -73,7 +82,6 @@ public class Lobby extends Activity {
 			@Override
 			public void onSuccess() {
 				Log.d(getLocalClassName(), "Done searching for peers :)");
-
 			}
 
 			@Override
@@ -103,6 +111,11 @@ public class Lobby extends Activity {
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(mReceiver);
+	}
+	
+	public void refreshPeers(View view) {
+		resetPeerList();
+		findPeers(mManager);
 	}
 
 }

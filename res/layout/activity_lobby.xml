@@ -19,31 +19,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1" >
-
+        >
         
-        <TextView 
+        <Button
+            android:id="@+id/refreshPeersButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:onClick="refreshPeers"
+            android:text="@string/lobby_refresh_peers" />
+
+        <TextView
             android:id="@+id/peerText"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/lobby_playersOnline" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:text="@string/lobby_playersOnline" />
 
-            
         
+
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/lobbyView_chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lobbyView" 
-		android:layout_below="@+id/lobbyView" >
-        
-        <TextView 
+        android:layout_alignLeft="@+id/lobbyView"
+        android:layout_below="@+id/lobbyView"
+        android:layout_marginTop="50dp" >
+
+        <TextView
             android:id="@+id/textView3"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/lobby_chat" />
-        
-	</RelativeLayout>
-    
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lobby_chat" />
+    </RelativeLayout>
+
 </RelativeLayout>
