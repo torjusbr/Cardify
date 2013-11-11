@@ -30,6 +30,8 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 		peerList = new WifiP2pDeviceList();
 	}
 
+	
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		CardPeerListListener myPeerListListener = new CardPeerListListener();
