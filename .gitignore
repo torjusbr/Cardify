@@ -1,5 +1,3 @@
 /bin
-
 *.apk
-
-*.apk
+*.DS_Store
