@@ -9,15 +9,12 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 public class Card extends ImageView implements OnTouchListener {
 
-	public static int cardHeight = 208;
-	public static int cardWidth = 150;
+	public static int height = 208;
+	public static int width = 150;
 	
 	
 	private char suit;
@@ -25,6 +22,7 @@ public class Card extends ImageView implements OnTouchListener {
 	private int imageResource;
 	private Point anchorPoint = new Point();
 	private Point screenSize;
+	private CardPlayerHand playerHand;
 	
 	public Card(Context context) {
 		super(context);
@@ -34,12 +32,13 @@ public class Card extends ImageView implements OnTouchListener {
 		super(context);
 		this.suit = suit;
 		this.face = face;
+		this.playerHand = null;
 		
 		String resourceString = "drawable/"+suit+face;
 		imageResource = getImageResource(context, resourceString);
 		
 		this.setImageResource(imageResource);
-		this.setLayoutParams(new LayoutParams(cardWidth, cardHeight));
+		this.setLayoutParams(new LayoutParams(width, height));
 		
 		this.setOnTouchListener(this);
 		
@@ -47,6 +46,10 @@ public class Card extends ImageView implements OnTouchListener {
 		Display display = wm.getDefaultDisplay();
 		screenSize = new Point();
 		display.getSize(screenSize);
+	}
+	
+	public void setOwner(CardPlayerHand owner){
+		this.playerHand = owner;
 	}
 	
 	private static int getImageResource(Context context, String string) {		
@@ -86,14 +89,16 @@ public class Card extends ImageView implements OnTouchListener {
 			case MotionEvent.ACTION_UP:
 				Log.e("TOUCH","ACTION_UP");
 				Log.e("DROP_POSITION","("+v.getX()+","+v.getY()+")");
-				
+				/*
+				 * 
+				 * CHRISTIAN, SE PÅ DETTE!
 				//ScaleAnimation animation = new ScaleAnimation(v.getX(), v.getX()+50, v.getY(), v.getY()+50);
 				//TranslateAnimation animation = new TranslateAnimation(0, 100, 0, 100);
 				//animation.setDuration(1000);
 				//startAnimation(animation);
 				
-				if(v.getX() < Card.cardWidth/2) {
-					if(v.getY() < Card.cardHeight/2) {
+				if(v.getX() < Card.width/2) {
+					if(v.getY() < Card.height/2) {
 						TranslateAnimation animation = new TranslateAnimation(0, Math.abs(v.getX()), 0, Math.abs(v.getY()));
 						animation.setDuration(500);
 						startAnimation(animation);
@@ -101,8 +106,12 @@ public class Card extends ImageView implements OnTouchListener {
 						v.setY(0);
 					}
 				}
+				*/
+				
 				
 				v.setAlpha(1);
+				this.playerHand.moveCard((Card) v);
+				
 				break;
 
 			default:

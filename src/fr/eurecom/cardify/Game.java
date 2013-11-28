@@ -8,28 +8,35 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
+import android.view.View;
 import android.widget.RelativeLayout;
 import fr.eurecom.util.Card;
 import fr.eurecom.util.CardComparator;
 import fr.eurecom.util.CardDeck;
+import fr.eurecom.util.CardPlayerHand;
 import fr.eurecom.util.CardSortingRule;
 
 public class Game extends Activity {
 
 	private List<Card> playerCards;
-	private Point screenSize;
+	private Point displaySize;
+	private CardDeck deck;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
-		Display display = getWindowManager().getDefaultDisplay();
-		screenSize = new Point();
-		display.getSize(screenSize);
-
+		this.displaySize = getDisplaySize();
 		
 		testCards();
+	}
+	
+	public Point getDisplaySize(){
+		Display display = getWindowManager().getDefaultDisplay();
+		Point displaySize = new Point();
+		display.getSize(displaySize);
+		return displaySize;
 	}
 
 	@Override
@@ -44,22 +51,16 @@ public class Game extends Activity {
 		deck.shuffle();
 		playerCards = deck.draw(13);
 		Collections.sort(playerCards, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
-		drawCards();
-	}
+		//drawCards();
+		
+		CardPlayerHand cards = new CardPlayerHand(this);
+		cards.dealInitialCards(playerCards);
+		
+	}	
 	
-	private void drawCards() {
+	public void addView(View v){
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.rootGameLayout);
-		
-		final int cardSpace = screenSize.x/playerCards.size() - (Card.cardWidth-screenSize.x/playerCards.size())/playerCards.size();
-		
-		int yPos = screenSize.y-Card.cardHeight;
-		for(int i = 0; i < playerCards.size(); i++) {
-			int xPos = i*cardSpace;
-			Card c = playerCards.get(i);
-			c.setX(xPos);
-			c.setY(yPos);
-			layout.addView(c);
-		}
+		layout.addView(v);
 	}
 	
 }

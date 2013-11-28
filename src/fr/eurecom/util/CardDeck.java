@@ -11,17 +11,14 @@ public class CardDeck {
 	private static int[] faces = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 	
 	private List<Card> cards;
-	private Context context;
 	
 	public CardDeck(Context context){
-		this.context = context;
 		this.cards = new LinkedList<Card>();
 		
 		for (char suit : suits){
 			for (int face : faces){
 				cards.add(new Card(context, suit, face));
 			}
-			//break;
 		}
 	}
 	
