@@ -21,7 +21,7 @@ public class CardDeck {
 			for (int face : faces){
 				cards.add(new Card(context, suit, face));
 			}
-			break;
+			//break;
 		}
 	}
 	
