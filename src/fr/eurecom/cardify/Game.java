@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
-import android.widget.HorizontalScrollView;
 import android.widget.RelativeLayout;
 import fr.eurecom.util.Card;
 import fr.eurecom.util.CardComparator;
