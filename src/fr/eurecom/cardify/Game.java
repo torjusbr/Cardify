@@ -2,7 +2,6 @@ package fr.eurecom.cardify;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import android.app.Activity;
 import android.graphics.Point;
@@ -19,7 +18,6 @@ public class Game extends Activity {
 
 	private ArrayList<Card> playerCards;
 	private Point screenSize;
-	private HorizontalScrollView scrollView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
