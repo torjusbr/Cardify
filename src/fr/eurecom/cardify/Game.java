@@ -1,7 +1,7 @@
 package fr.eurecom.cardify;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.app.Activity;
 import android.graphics.Point;
@@ -11,11 +11,12 @@ import android.view.Menu;
 import android.widget.RelativeLayout;
 import fr.eurecom.util.Card;
 import fr.eurecom.util.CardComparator;
+import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardSortingRule;
 
 public class Game extends Activity {
 
-	private ArrayList<Card> playerCards;
+	private List<Card> playerCards;
 	private Point screenSize;
 	
 	@Override
@@ -39,26 +40,10 @@ public class Game extends Activity {
 	}
 	
 	private void testCards() {
-		playerCards = new ArrayList<Card>();
-		playerCards.add(new Card(this,'h',5));
-		playerCards.add(new Card(this,'h',6));
-		playerCards.add(new Card(this,'h',7));
-		playerCards.add(new Card(this,'h',8));
-		playerCards.add(new Card(this,'h',9));
-		playerCards.add(new Card(this,'h',10));
-		playerCards.add(new Card(this,'h',11));
-		playerCards.add(new Card(this,'h',12));
-		playerCards.add(new Card(this,'h',13));
-		playerCards.add(new Card(this,'s',1));
-		playerCards.add(new Card(this,'h',4));
-		playerCards.add(new Card(this,'h',3));
-		playerCards.add(new Card(this,'h',1));
-		playerCards.add(new Card(this,'c',1));
-		playerCards.add(new Card(this,'h',2));
-		playerCards.add(new Card(this,'d',1));
-		
+		CardDeck deck = new CardDeck(this);
+		deck.shuffle();
+		playerCards = deck.draw(13);
 		Collections.sort(playerCards, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
-		
 		drawCards();
 	}
 	

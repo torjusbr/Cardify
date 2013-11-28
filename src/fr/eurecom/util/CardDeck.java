@@ -21,6 +21,7 @@ public class CardDeck {
 			for (int face : faces){
 				cards.add(new Card(context, suit, face));
 			}
+			break;
 		}
 	}
 	
@@ -34,7 +35,7 @@ public class CardDeck {
 		return cards.get(0);
 	}
 	
-	public List<Card> get(int n){
+	public List<Card> draw(int n){
 		List<Card> temp = new LinkedList<Card>();
 		for (int i = 0; i < n; i++){
 			if (cards.isEmpty()) break;
