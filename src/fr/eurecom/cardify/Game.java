@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.widget.HorizontalScrollView;
 import android.widget.RelativeLayout;
 import fr.eurecom.util.Card;
+import fr.eurecom.util.CardComparator;
+import fr.eurecom.util.CardSortingRule;
 
 public class Game extends Activity {
 
@@ -58,7 +60,7 @@ public class Game extends Activity {
 		playerCards.add(new Card(this,'h',2));
 		playerCards.add(new Card(this,'d',1));
 		
-		Collections.sort(playerCards, new CardComporator(SortingMethod.S_H_D_C_ACE_HIGH));
+		Collections.sort(playerCards, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
 		
 		drawCards();
 	}
@@ -78,44 +80,4 @@ public class Game extends Activity {
 		}
 	}
 	
-	private enum SortingMethod {
-		S_H_D_C_ACE_HIGH,
-		NO_SUIT_ACE_HIGH;
-	}
-	
-	private final class CardComporator implements Comparator<Card> {
-		private ArrayList<Character> suitArray = new ArrayList<Character>();
-		private SortingMethod sorting;
-
-		public CardComporator(SortingMethod sorting) {
-			this.sorting = sorting;
-			
-			switch (sorting) {
-				case S_H_D_C_ACE_HIGH:
-					suitArray.add('s');
-					suitArray.add('h');
-					suitArray.add('d');
-					suitArray.add('c');
-					break;
-			}
-		}
-		
-		@Override
-		public int compare(Card a, Card b) {
-			
-			switch (sorting) {
-				case S_H_D_C_ACE_HIGH:
-					if(a.getSuit() == b.getSuit()) {
-						return a.getFace()-b.getFace();
-					} else {
-						return suitArray.indexOf(b.getSuit())-suitArray.indexOf(a.getSuit());
-					}
-				default:
-					return 0;
-			}
-		}
-		
-		
-		
-	}
 }
