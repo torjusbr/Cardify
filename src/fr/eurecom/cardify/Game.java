@@ -1,35 +1,27 @@
 package fr.eurecom.cardify;
 
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.widget.RelativeLayout;
-import fr.eurecom.util.Card;
-import fr.eurecom.util.CardComparator;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
-import fr.eurecom.util.CardSortingRule;
 
 public class Game extends Activity {
 
-	private List<Card> playerCards;
-	private Point displaySize;
 	private CardDeck deck;
+	private SparseArray<CardPlayerHand> playerHands;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
-		this.displaySize = getDisplaySize();
-		
-		testCards();
+		initGame();
 	}
 	
 	public Point getDisplaySize(){
@@ -46,17 +38,14 @@ public class Game extends Activity {
 		return true;
 	}
 	
-	private void testCards() {
-		CardDeck deck = new CardDeck(this);
+	private void initGame(){
+		this.deck = new CardDeck(this);
 		deck.shuffle();
-		playerCards = deck.draw(13);
-		Collections.sort(playerCards, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
-		//drawCards();
-		
-		CardPlayerHand cards = new CardPlayerHand(this);
-		cards.dealInitialCards(playerCards);
-		
-	}	
+
+		playerHands = new SparseArray<CardPlayerHand>();	
+		playerHands.put(0, new CardPlayerHand(this));
+		playerHands.get(0).dealInitialCards(deck.draw(13));
+	}
 	
 	public void addView(View v){
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.rootGameLayout);

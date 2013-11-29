@@ -1,5 +1,6 @@
 package fr.eurecom.util;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +20,8 @@ public class CardPlayerHand {
 	}
 	
 	public void dealInitialCards(List<Card> cards){
-		this.cardStack = cards;
+		cardStack = cards;
+		Collections.sort(cardStack, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
 		stackCards();
 		for (Card c : cardStack){
 			game.addView(c);
@@ -66,6 +68,29 @@ public class CardPlayerHand {
 		if (x < 0 || x > displaySize.x) return false;
 		if (y < displaySize.y - 2*Card.height || y > displaySize.y) return false;
 		return true;
+	}
+	
+	public void indicateInsertInStack(Card card){
+		
+		if (!inStackZone(card.getX(), card.getY())) return;
+		Card prevCard = null;
+		Card nextCard = null;
+		for (int i = 0; i < cardStack.size(); i++){
+			Card tempCard = cardStack.get(i);
+			if (tempCard.getX() < card.getX()){
+				prevCard = tempCard;
+			}
+			if (tempCard.getX() >= card.getX()){
+				nextCard = tempCard;
+				break;
+			}
+		}
+		float moveY = 10;
+		float moveX = 10;
+		prevCard.setY(prevCard.getY() - moveY);
+		prevCard.setX(prevCard.getX() - moveX);
+		nextCard.setY(nextCard.getY() - moveY);
+		nextCard.setX(nextCard.getX() + moveX);
 	}
 	
 	public void moveCard(Card card){

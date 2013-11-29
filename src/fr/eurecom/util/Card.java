@@ -84,6 +84,8 @@ public class Card extends ImageView implements OnTouchListener {
                 v.setX(x-(anchorPoint.x));
                 v.setY(y-(anchorPoint.y));
                 
+                playerHand.indicateInsertInStack(this);
+                
 				break;
 				
 			case MotionEvent.ACTION_UP:
@@ -110,7 +112,7 @@ public class Card extends ImageView implements OnTouchListener {
 				
 				
 				v.setAlpha(1);
-				this.playerHand.moveCard((Card) v);
+				playerHand.moveCard(this);
 				
 				break;
 
