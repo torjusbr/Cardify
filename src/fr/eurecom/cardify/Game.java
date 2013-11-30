@@ -3,7 +3,6 @@ package fr.eurecom.cardify;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
@@ -14,7 +13,7 @@ import fr.eurecom.util.CardPlayerHand;
 public class Game extends Activity {
 
 	private CardDeck deck;
-	private SparseArray<CardPlayerHand> playerHands;
+	private CardPlayerHand playerHand;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +40,9 @@ public class Game extends Activity {
 	private void initGame(){
 		this.deck = new CardDeck(this);
 		deck.shuffle();
-
-		playerHands = new SparseArray<CardPlayerHand>();	
-		playerHands.put(0, new CardPlayerHand(this));
-		playerHands.get(0).dealInitialCards(deck.draw(13));
+		
+		playerHand = new CardPlayerHand(this);
+		playerHand.dealInitialCards(deck.draw(13));
 	}
 	
 	public void addView(View v){

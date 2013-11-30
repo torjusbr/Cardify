@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.R;
 import android.graphics.Point;
+import android.view.View;
 import fr.eurecom.cardify.Game;
 
 public class CardPlayerHand {
@@ -30,8 +32,7 @@ public class CardPlayerHand {
 	}
 	
 	public void addToStack(Card card){
-		cardStack.remove(card);
-		cardHeap.remove(card);
+		removeFromStackAndHeap(card);
 		int pos = 0;
 		for (Card c : cardStack){
 			if (c.getX() >= card.getX()) break;
@@ -42,8 +43,7 @@ public class CardPlayerHand {
 	}
 	
 	public void addToHeap(Card card){
-		cardStack.remove(card);
-		cardHeap.remove(card);
+		removeFromStackAndHeap(card);
 		cardHeap.add(card);
 		stackCards();
 	}
@@ -55,12 +55,14 @@ public class CardPlayerHand {
 		int y = displaySize.y-Card.height;
 		int x = 0;
 		
-		for (int i = 0; i < cardStack.size(); i++) {
-			Card card = cardStack.get(i);
-			x = i*pixelsBetweenCards;
+		int i = 0;
+		for (Card card : cardStack){
+			x = (i++)*pixelsBetweenCards;
 			card.setX(x);
 			card.setY(y);
+			queueBringToFront(card);
 		}
+		applyBringToFront(cardStack.get(0));
 	}
 	
 	public boolean inStackZone(float x, float y){
@@ -71,26 +73,13 @@ public class CardPlayerHand {
 	}
 	
 	public void indicateInsertInStack(Card card){
-		
+		stackCards();
 		if (!inStackZone(card.getX(), card.getY())) return;
-		Card prevCard = null;
-		Card nextCard = null;
-		for (int i = 0; i < cardStack.size(); i++){
-			Card tempCard = cardStack.get(i);
-			if (tempCard.getX() < card.getX()){
-				prevCard = tempCard;
-			}
-			if (tempCard.getX() >= card.getX()){
-				nextCard = tempCard;
-				break;
-			}
+		int i = 0;
+		for (Card tempCard : cardStack){
+			if (tempCard.getX() >= card.getX()) break;
+			i++;
 		}
-		float moveY = 10;
-		float moveX = 10;
-		prevCard.setY(prevCard.getY() - moveY);
-		prevCard.setX(prevCard.getX() - moveX);
-		nextCard.setY(nextCard.getY() - moveY);
-		nextCard.setX(nextCard.getX() + moveX);
 	}
 	
 	public void moveCard(Card card){
@@ -99,6 +88,20 @@ public class CardPlayerHand {
 		} else {
 			addToHeap(card);
 		}
+	}
+	
+	public void removeFromStackAndHeap(Card card){
+		cardHeap.remove(card);
+		cardStack.remove(card);
+	}
+	
+	private void queueBringToFront(View v){
+		v.bringToFront();
+	}
+	
+	private void applyBringToFront(View view){
+		view.requestLayout();
+		view.invalidate();
 	}
 	
 }

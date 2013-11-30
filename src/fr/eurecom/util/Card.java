@@ -72,6 +72,7 @@ public class Card extends ImageView implements OnTouchListener {
 				//TODO: Add better dragging graphics
 				v.setAlpha((float)0.5);
 				v.bringToFront();
+				playerHand.removeFromStackAndHeap(this);
 		    	break;
 		    	
 			case MotionEvent.ACTION_MOVE:
