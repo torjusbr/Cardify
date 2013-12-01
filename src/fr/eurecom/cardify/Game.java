@@ -87,4 +87,8 @@ public class Game extends Activity {
 			}).create().show();
 	}
 	
+	public Client getClient(){
+		return this.client;
+	}
+	
 }

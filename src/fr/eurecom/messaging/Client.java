@@ -70,6 +70,10 @@ public class Client {
 		}
 	}
 	
+	public void sendDummyMessage(){
+		sendMessage(Action.ACK, "test");
+	}
+	
 	private void handlePreGameMessage(Message message){
 		switch (message.getAction()){
 		case GAME_STARTED:
