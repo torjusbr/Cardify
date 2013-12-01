@@ -140,7 +140,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		    @Override
 		    public void onSuccess() {
 		        //success logic
-//		    	client.disconnect
+		    	client.disconnect();
 		    	client = null;
 		    	((Button)findViewById(R.id.startButton)).setVisibility(Button.INVISIBLE);
 		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "disconnected");

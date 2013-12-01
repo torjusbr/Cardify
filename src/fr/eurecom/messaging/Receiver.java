@@ -63,6 +63,10 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 			Log.e("ClientInterpreter:receiveMessage", e.getMessage());
 		}
 	}
+	
+	public void stopListening(){
+		this.listening = false;
+	}
 
 	
 }

@@ -13,13 +13,16 @@ public class Client {
 
 	private Game game;
 	private Set<InetAddress> receivers;
-	
+	private Receiver receiver;
 	public Client(WifiP2pInfo info) {
 		this.game = null;
-		// Start listening to messages
-		// TODO: WHAT HAPPENS IF I WANT TO STOP LISTENING?
-		new Receiver(this).execute();
+		this.receiver = new Receiver(this);
+		receiver.execute();
 		receivers = new HashSet<InetAddress>();
+	}
+	
+	public void disconnect(){
+		receiver.stopListening();
 	}
 	
 	public void addReceiver(InetAddress receiver) {
