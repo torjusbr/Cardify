@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.net.wifi.p2p.WifiP2pInfo;
+import android.util.Log;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.util.Card;
 
@@ -23,6 +24,9 @@ public class Client {
 	
 	public void addReceiver(InetAddress receiver){
 		receivers.add(receiver);
+		for (InetAddress r : receivers) {
+			Log.e("Receiver", r.toString());
+		}
 	}
 	
 	public void registerAtHost(){

@@ -22,7 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.eurecom.messaging.Client;
-import fr.eurecom.messaging.ServerAsyncTask;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
 public class Lobby extends Activity implements ConnectionInfoListener {
