@@ -1,5 +1,10 @@
 package fr.eurecom.cardify;
 
+import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
@@ -199,12 +204,17 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void startGame(View view) {
 		client.broadcastStartGame();
-		startGameActivity();
+		this.startGameActivity(this.client.getReceivers());
 	}
 	
-	public void startGameActivity(){
+	public void startGameActivity(Set<InetAddress> receivers){
+		client.disconnect();
 		Intent intent = new Intent(this, Game.class);
-		intent.putExtra("client", client);
+		String addresses = "";
+		for (InetAddress addr : receivers){
+			addresses += addr.toString() + ",";
+		}
+		intent.putExtra("receivers", addresses);
 		this.startActivity(intent);
 	}
 
@@ -227,7 +237,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
 		
 		if (this.client == null){
-			this.client = new Client(info, this);
+			this.client = new Client(this);
 			Button startButton = (Button) findViewById(R.id.startButton);
 			startButton.setVisibility(Button.VISIBLE);
 		}
@@ -236,7 +246,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	// Create client and register at host
 	private void setUpClient(WifiP2pInfo info) {
 		Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
-		this.client = new Client(info, this);
+		this.client = new Client(this);
 		this.client.addReceiver(info.groupOwnerAddress);
 		this.client.registerAtHost();
 	}

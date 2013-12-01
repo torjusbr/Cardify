@@ -3,7 +3,6 @@ package fr.eurecom.messaging;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,7 +13,7 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class Receiver extends AsyncTask<String, Void, JSONObject> implements Serializable {
+public class Receiver extends AsyncTask<String, Void, JSONObject> {
 	private static final String TAG = "Receiver";
 	private boolean listening;
 	private Client client;
