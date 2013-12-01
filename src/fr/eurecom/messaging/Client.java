@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.util.Log;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.util.Card;
@@ -11,15 +12,10 @@ import fr.eurecom.util.Card;
 public class Client {
 
 	private String id;
-	private Game game;
-	private Object sender;
-	private Object receiver;
+	private WifiP2pInfo info;
 	
-	public Client(Context context) {
-		this.id = "my wifi direct ip address";
-		this.game = null;
-		this.sender = null;
-		this.receiver = null;
+	public Client(WifiP2pInfo info) {
+		this.info = info;
 	}
 	
 	public void publishTakeCardFromPublicZone(Card card){
@@ -33,8 +29,7 @@ public class Client {
 	
 	private void sendMessage(Action action, String subject) {
 		ActionMessage message = new ActionMessage(this.id, action, subject);
-		//sender.send(message);
-		return;
+		Sender.send(message, info.groupOwnerAddress);
 	}
 	
 	
