@@ -1,7 +1,6 @@
 package fr.eurecom.cardify;
 
 import java.util.ArrayList;
-
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
@@ -24,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.eurecom.messaging.Receiver;
-import fr.eurecom.messaging.Sender;
 import fr.eurecom.messaging.ServerAsyncTask;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
@@ -46,9 +44,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		setContentView(R.layout.activity_lobby);
 		setUpWiFiDirect();
 		peers = new WifiP2pDeviceList();
-//		handler = new Handler();
-//		setUpWiFiDirect();
-//		handler.postDelayed(runnable, 2000);
 	}
 
 	protected void setUpWiFiDirect() {
@@ -65,19 +60,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 
 	}
 
-//	private Runnable runnable = new Runnable() {
-//		@Override
-//		public void run() {
-//			/* do what you need to do */
-//			resetPeerList();
-//			findPeers(mManager);
-//			
-//			/* and here comes the "trick" */
-//			handler.postDelayed(this, 10000);
-//		}
-//	};
 	
-	//TODO: Dum m�te � gj�re det p�
+	//TODO: Stupid
 	private void resetPeerList() {
 		TextView tv = (TextView)findViewById(R.id.peerText);
 		tv.setText("Players online: ");
@@ -100,7 +84,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		for (WifiP2pDevice peer : peers.getDeviceList()) {
 			Log.d(getLocalClassName(), "Peer from printPeers(): " + peer.deviceName);
-//			text.append("\n" + peer.deviceName);
 			printPeerButton(peer);
 		}
 		
@@ -108,8 +91,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void printPeerButton(final WifiP2pDevice device) {
-//		if (unconnectedDevices.contains(device.deviceName)) 
-//			return;
 		ViewGroup vg;
 		Button bt = new Button(this);
 		if (device.status == WifiP2pDevice.CONNECTED) {
@@ -133,7 +114,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 		vg.addView(bt);
-//		unconnectedDevices.add(device.deviceName);
 	}
 	
 	private void connectToDevice(WifiP2pDevice device) {
