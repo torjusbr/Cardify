@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class Sender {
 	
-	public static void send(ActionMessage message, InetAddress receiver) {
+	public static void send(Message message, InetAddress receiver) {
 		
 		//Hack
 	    if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -63,10 +63,9 @@ public class Sender {
 		}
 	}
 	
-	private static String serialize(ActionMessage message) {
+	private static String serialize(Message message) {
 		JSONObject json = new JSONObject();
 		try {
-			json.put("sender", message.getSender());
 			json.put("action", message.getAction());
 			json.put("subject", message.getSubject());
 		} catch (JSONException e) {

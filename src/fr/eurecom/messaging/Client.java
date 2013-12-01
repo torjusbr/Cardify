@@ -1,10 +1,6 @@
 package fr.eurecom.messaging;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.net.wifi.p2p.WifiP2pInfo;
-import android.util.Log;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.util.Card;
 
@@ -29,26 +25,12 @@ public class Client {
 	
 	
 	private void sendMessage(Action action, String subject) {
-		ActionMessage message = new ActionMessage(this.id, action, subject);
+		Message message = new Message(action, subject);
 		Sender.send(message, info.groupOwnerAddress);
 	}
 	
 	
-	
-	
-	public void receiveMessage(JSONObject json){
-		try {
-			String sender = json.getString("sender");
-			Action action = Action.values()[json.getInt("action")];
-			String subject = json.getString("subject");
-			parseMessage(new ActionMessage(sender, action, subject));
-		} catch (JSONException e){
-			Log.e("ClientInterpreter:receiveMessage", e.getMessage());
-		}
-	}
-	
-	private void parseMessage(ActionMessage message){
-		
+	public void handleMessage(Message message){
 		if (this.game == null) {
 			if (message.getAction().equals(Action.GAME_STARTED)){
 				handleGameStarted(message);
@@ -70,7 +52,7 @@ public class Client {
 		}
 	}
 	
-	private void handleNewCardInPublicZone(ActionMessage message) {
+	private void handleNewCardInPublicZone(Message message) {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		//TODO:
@@ -80,11 +62,10 @@ public class Client {
 		return;
 	}
 	
-	private void handleGameStarted(ActionMessage message){
+	private void handleGameStarted(Message message){
 		//TODO:
 		/*
 		 * Start new game and set local game variable in this interpreter to game instance
 		 */
 	}
-	
 }

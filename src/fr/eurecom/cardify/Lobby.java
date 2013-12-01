@@ -23,7 +23,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import fr.eurecom.messaging.ClientAsyncTask;
+import fr.eurecom.messaging.Receiver;
 import fr.eurecom.messaging.ClientSender;
 import fr.eurecom.messaging.ServerAsyncTask;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
@@ -244,7 +244,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private void setUpClient() {
 		Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
 		
-		new ClientAsyncTask(getApplicationContext()).execute();
+		new Receiver(null).execute();
 		
 		Button bt = new Button(this);
 		bt.setText("Send test shit");

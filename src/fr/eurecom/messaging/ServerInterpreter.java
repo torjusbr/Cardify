@@ -6,7 +6,7 @@ public class ServerInterpreter {
 	public ServerInterpreter() {
 	}
 	
-	public void broadcastMessage(ActionMessage message) {
+	public void broadcastMessage(Message message) {
 		return;
 	}
 }
