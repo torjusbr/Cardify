@@ -97,25 +97,6 @@ public class Card extends ImageView implements OnTouchListener {
 			case MotionEvent.ACTION_UP:
 				Log.e("TOUCH","ACTION_UP");
 				Log.e("DROP_POSITION","("+v.getX()+","+v.getY()+")");
-				/*
-				 * 
-				 * CHRISTIAN, SE P� DETTE!
-				//ScaleAnimation animation = new ScaleAnimation(v.getX(), v.getX()+50, v.getY(), v.getY()+50);
-				//TranslateAnimation animation = new TranslateAnimation(0, 100, 0, 100);
-				//animation.setDuration(1000);
-				//startAnimation(animation);
-				
-				if(v.getX() < Card.width/2) {
-					if(v.getY() < Card.height/2) {
-						TranslateAnimation animation = new TranslateAnimation(0, Math.abs(v.getX()), 0, Math.abs(v.getY()));
-						animation.setDuration(500);
-						startAnimation(animation);
-						v.setX(0);
-						v.setY(0);
-					}
-				}
-				*/
-				
 				
 				v.setAlpha(1);
 				playerHand.moveCard(this);

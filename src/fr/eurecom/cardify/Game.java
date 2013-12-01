@@ -1,6 +1,9 @@
 package fr.eurecom.cardify;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -48,6 +51,23 @@ public class Game extends Activity {
 	public void addView(View v){
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.rootGameLayout);
 		layout.addView(v);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		//TODO: Special dialog for host?
+		new AlertDialog.Builder(this)
+			.setTitle("Are you sure you want to exit?")
+			.setMessage("This game will be abandoned")
+			.setNegativeButton(android.R.string.no, null)
+			.setPositiveButton(android.R.string.yes, new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Game.super.onBackPressed();
+					
+				}
+			}).create().show();
 	}
 	
 }

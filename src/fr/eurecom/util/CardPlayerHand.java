@@ -56,15 +56,22 @@ public class CardPlayerHand {
 	public void stackCards(){
 		if (cardStack.isEmpty()) return;
 		Point displaySize = game.getDisplaySize();
-		int pixelsBetweenCards = displaySize.x/cardStack.size() - (Card.width-displaySize.x/cardStack.size())/cardStack.size();
-		int y = displaySize.y-Card.height;
+		
+		int maximumStackWidth = displaySize.x - 10; //5px free on each side of stack
+		double pixelsBetweenCards = cardStack.size() != 1 ? Math.min(Card.width/2, (maximumStackWidth - Card.width)/(cardStack.size() - 1)) : 0;
+		int y = displaySize.y - Card.height;
 		int x = 0;
 		
-		int i = 0;
-		for (Card card : cardStack){
-			x = (i++)*pixelsBetweenCards;
+		if (pixelsBetweenCards <= Card.width/2) {
+			x = (int) Math.round(((displaySize.x - ((cardStack.size() - 1)*pixelsBetweenCards + Card.width))/2));
+		} else {
+			x = 5;
+		}
+		
+		for (Card card : cardStack) {
 			card.setX(x);
 			card.setY(y);
+			x += Math.round(pixelsBetweenCards);
 			queueBringToFront(card);
 		}
 		applyBringToFront(cardStack.get(0));
