@@ -3,7 +3,6 @@ package fr.eurecom.messaging;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.util.Log;
 import fr.eurecom.cardify.Game;
@@ -13,9 +12,11 @@ public class Client {
 
 	private String id;
 	private WifiP2pInfo info;
+	private Game game;
 	
 	public Client(WifiP2pInfo info) {
 		this.info = info;
+		this.game = null;
 	}
 	
 	public void publishTakeCardFromPublicZone(Card card){
