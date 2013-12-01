@@ -1,21 +1,24 @@
 package fr.eurecom.messaging;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.app.Activity;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.util.Log;
 import fr.eurecom.cardify.Game;
+import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
 
-public class Client {
+public class Client implements Serializable {
 
-	private Game game;
+	private Activity activity;
 	private Set<InetAddress> receivers;
 	private Receiver receiver;
-	public Client(WifiP2pInfo info) {
-		this.game = null;
+	public Client(WifiP2pInfo info, Activity activity) {
+		this.activity = activity;
 		this.receiver = new Receiver(this);
 		receiver.execute();
 		receivers = new HashSet<InetAddress>();
@@ -59,7 +62,7 @@ public class Client {
 	
 	
 	public void handleMessage(Message message) {
-		if (this.game == null) {
+		if (this.activity instanceof Game) {
 			handlePreGameMessage(message);
 		} else {
 			handleInGameMessage(message);
@@ -88,6 +91,7 @@ public class Client {
 		/*
 		 * Start new game and set local game variable in this interpreter to game instance
 		 */
+		((Lobby) activity).startGameActivity();
 	}
 	
 	private void handleInGameMessage(Message message){

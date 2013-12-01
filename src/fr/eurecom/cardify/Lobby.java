@@ -3,6 +3,7 @@ package fr.eurecom.cardify;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -199,6 +200,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	public void startGame(View view) {
 		client.broadcastStartGame();
 	}
+	
+	public void startGameActivity(){
+		Intent intent = new Intent(this, Game.class);
+		intent.putExtra("client", client);
+		this.startActivity(intent);
+	}
 
 	// Every time new connection is available
 	@Override
@@ -219,7 +226,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
 		
 		if (this.client == null){
-			this.client = new Client(info);
+			this.client = new Client(info, this);
 			Button startButton = (Button) findViewById(R.id.startButton);
 			startButton.setVisibility(Button.VISIBLE);
 		}
@@ -228,7 +235,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	// Create client and register at host
 	private void setUpClient(WifiP2pInfo info) {
 		Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
-		this.client = new Client(info);
+		this.client = new Client(info, this);
 		this.client.addReceiver(info.groupOwnerAddress);
 		this.client.registerAtHost();
 	}

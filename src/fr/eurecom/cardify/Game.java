@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.widget.RelativeLayout;
+import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
 
@@ -17,11 +18,15 @@ public class Game extends Activity {
 
 	private CardDeck deck;
 	private CardPlayerHand playerHand;
+	private Client client;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
+		
+		this.client = (Client) getIntent().getSerializableExtra("client");
 		
 		initGame();
 	}
