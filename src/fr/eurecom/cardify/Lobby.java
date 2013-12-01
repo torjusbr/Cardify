@@ -24,7 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.eurecom.messaging.Receiver;
-import fr.eurecom.messaging.ClientSender;
+import fr.eurecom.messaging.Sender;
 import fr.eurecom.messaging.ServerAsyncTask;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
@@ -251,7 +251,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		bt.setOnClickListener(new View.OnClickListener() {
 	        public void onClick(View view) {
-	        	ClientSender.send("{'message':'test text'}", groupOwnerIp, 6969);
+	        	return;
 	        }
 	    });
 		ViewGroup vg = (ViewGroup) findViewById(R.id.connectedDevicesLayout);
