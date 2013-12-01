@@ -64,7 +64,7 @@ public class Client {
 	
 	
 	public void handleMessage(Message message) {
-		if (this.activity instanceof Game) {
+		if (this.activity instanceof Lobby) {
 			handlePreGameMessage(message);
 		} else {
 			handleInGameMessage(message);
