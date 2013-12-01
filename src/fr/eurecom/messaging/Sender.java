@@ -1,6 +1,5 @@
 package fr.eurecom.messaging;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -38,19 +37,11 @@ public class Sender {
 			outputStream.write(messageToSend.getBytes());
 			outputStream.close();
 			
-		} catch (FileNotFoundException e) {
-			// catch logic
-			e.printStackTrace();
-			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
 		} catch (IOException e) {
 			// catch logic
 			e.printStackTrace();
 			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
-			e.printStackTrace();
-		}
+		} 
 		
 		finally {
 		    if (socket != null) {
