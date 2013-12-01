@@ -17,6 +17,7 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 	private static final String TAG = "Receiver";
 	private boolean listening;
 	private Client client;
+	private ServerSocket socket;
 
 	public Receiver(Client client) {
 		Log.d(Receiver.TAG, "Constructor");
@@ -39,7 +40,7 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 				// Send message to client
 				Log.d("Tekst fra host", "Inputstreamen er: " + json.toString());
 				receiveMessage(json, sender.getInetAddress());
-				
+				sender.close();
 			}
 			
 		} catch (IOException e) {
@@ -66,6 +67,11 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 	
 	public void stopListening(){
 		this.listening = false;
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			Log.e("Receiver:stopListening", e.getMessage());
+		}
 	}
 
 	
