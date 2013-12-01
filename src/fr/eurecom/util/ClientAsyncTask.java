@@ -1,9 +1,12 @@
 package fr.eurecom.util;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.json.JSONObject;
@@ -13,63 +16,39 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class ClientAsyncTask extends AsyncTask<String, Void, JSONObject> {
-
+	private static final String TAG = "ClientAsyncTask";
 	private Context context;
-	private String host;
-	private final int port = 8888;
+	private boolean listening;
 
-	public ClientAsyncTask(Context context, String host) {
+	public ClientAsyncTask(Context context) {
 		this.context = context;
-		this.host = host;
 		Log.d("ClientAsyncTask", "Constructor");
+		listening = true;
 	}
 
 	@Override
 	protected JSONObject doInBackground(String... params) {
-		Log.d("ClientAsyncTask", "doInBackground");
-		Socket socket = new Socket();
-		byte buf[] = new byte[1024];
-
 		try {
-			/**
-			 * Create a client socket with the host, port, and timeout
-			 * information.
-			 */
-			socket.bind(null);
-			socket.connect((new InetSocketAddress(host, port)), 500);
-
-			/**
-			 * Create a byte stream from a JPEG file and pipe it to the output
-			 * stream of the socket. This data will be retrieved by the server
-			 * device.
-			 */
-			OutputStream outputStream = socket.getOutputStream();
-			
-			outputStream.write("Denne teksten er sendt fra klient til server".getBytes());
-			outputStream.close();
-		} catch (FileNotFoundException e) {
-			// catch logic
-		} catch (IOException e) {
-			// catch logic
-		}
-
-		/**
-		 * Clean up any open sockets when done transferring or if an exception
-		 * occurred.
-		 */
-		finally {
-			if (socket != null) {
-				if (socket.isConnected()) {
-					try {
-						socket.close();
-					} catch (IOException e) {
-						// catch logic
-					}
-				}
+			ServerSocket clientSocket = new ServerSocket(6969);
+			Log.d(ClientAsyncTask.TAG, "Client: Socket opened!!");
+			while (listening) {
+				Socket host = clientSocket.accept();
+				BufferedReader in = new BufferedReader(new InputStreamReader(host.getInputStream()));
+				
+				JSONObject json = new JSONObject(in.readLine());
+				
+				Log.d("Tekst fra host", "Inputstreamen er: " + in.readLine());
+				
 			}
-
+			
+		} catch (IOException e) {
+			
 			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		return null;
 	}
 	
 }
