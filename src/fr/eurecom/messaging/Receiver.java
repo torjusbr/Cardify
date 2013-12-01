@@ -1,19 +1,15 @@
 package fr.eurecom.messaging;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -42,7 +38,7 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 				JSONObject json = new JSONObject(in.readLine());
 				// Send message to client
 				receiveMessage(json, sender.getInetAddress());
-				Log.d("Tekst fra host", "Inputstreamen er: " + in.readLine());
+				Log.d("Tekst fra host", "Inputstreamen er: " + json.toString());
 				
 			}
 			
