@@ -36,7 +36,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private IntentFilter mIntentFilter;
 	private String groupOwnerIp;
 	private WifiP2pDeviceList peers;
-	
 	private Client client;
 
 	@Override
@@ -77,7 +76,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void printPeers() {
-		Log.d(getLocalClassName(), "printPeers()");
 		Log.d(getLocalClassName(), "printPeers(): " + peers.getDeviceList().size());
 		TextView tv = (TextView)findViewById(R.id.peerText);
 		StringBuilder text = new StringBuilder("Players online: ");
@@ -248,7 +246,4 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.client.addReceiver(info.groupOwnerAddress);
 		this.client.registerAtHost();
 	}
-	
-	
-
 }

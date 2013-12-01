@@ -42,7 +42,7 @@ public class CardPlayerHand {
 		cardStack.add(pos, card);
 		stackCards();
 		
-		// REMOVE
+		//TODO: REMOVE
 		game.getClient().sendDummyMessage();
 	}
 	
