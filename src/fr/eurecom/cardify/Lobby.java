@@ -1,8 +1,6 @@
 package fr.eurecom.cardify;
 
 import java.net.InetAddress;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import android.app.ActionBar.LayoutParams;

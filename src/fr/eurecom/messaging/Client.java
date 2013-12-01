@@ -6,7 +6,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.util.Log;
-import fr.eurecom.cardify.Game;
 import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
 
