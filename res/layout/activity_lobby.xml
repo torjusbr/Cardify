@@ -19,41 +19,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView1"
-        >
-        
-        <Button
-            android:id="@+id/refreshPeersButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:onClick="refreshPeers"
-            android:text="@string/lobby_refresh_peers" />
-
-        <TextView
-            android:id="@+id/peerText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:text="@string/lobby_playersOnline" />
-
-        
+        android:layout_alignParentTop="true" >
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/lobbyView_chat"
+    <Button
+        android:id="@+id/refreshPeersButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lobbyView"
-        android:layout_below="@+id/lobbyView"
-        android:layout_marginTop="50dp" >
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_marginRight="65dp"
+        android:onClick="refreshPeers"
+        android:text="@string/lobby_refresh_peers" />
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lobby_chat" />
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/peerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/refreshPeersButton"
+        android:layout_below="@+id/refreshPeersButton"
+        android:layout_marginTop="22dp"
+        android:text="@string/lobby_playersOnline" />
+
+    <LinearLayout
+        android:id="@+id/peerButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/peerText"
+        android:layout_below="@+id/peerText"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/connectedDevicesLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/refreshPeersButton"
+        android:orientation="vertical" >
+
+    </LinearLayout>
 
 </RelativeLayout>
