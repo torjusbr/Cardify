@@ -28,7 +28,7 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 	@Override
 	protected JSONObject doInBackground(String... params) {
 		try {
-			ServerSocket socket = new ServerSocket(Config.PORT);
+			socket = new ServerSocket(Config.PORT);
 			Log.d(Receiver.TAG, "Client: Socket opened!!");
 			while (listening) {
 				// Wait for incoming message
