@@ -204,7 +204,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void startGame(View view) {
 		client.broadcastStartGame();
-		this.startGameActivity(this.client.getReceivers());
+		startGameActivity(this.client.getReceivers());
 	}
 	
 	public void startGameActivity(Set<InetAddress> receivers){
