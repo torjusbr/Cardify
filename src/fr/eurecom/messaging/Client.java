@@ -1,69 +1,111 @@
 package fr.eurecom.messaging;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.net.InetAddress;
+import java.util.HashSet;
+import java.util.Set;
 
-import android.content.Context;
+import android.app.Activity;
 import android.util.Log;
-import fr.eurecom.cardify.Game;
+import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
 
 public class Client {
 
-	private String id;
-	private Game game;
-	private Object sender;
-	private Object receiver;
+	private Activity activity;
+	private Set<InetAddress> receivers;
+	private Receiver receiver;
+	private Sender sender;
 	
-	public Client(Context context) {
-		this.id = "my wifi direct ip address";
-		this.game = null;
-		this.sender = null;
-		this.receiver = null;
+	public Client(Activity activity) {
+		this.activity = activity;
+		this.receiver = new Receiver(this);
+		receiver.execute();
+		receivers = new HashSet<InetAddress>();
+		this.sender = new Sender();
 	}
 	
-	public void publishTakeCardFromPublicZone(Card card){
+	public void disconnect(){
+		receiver.stopListening();
+	}
+	
+	public void addReceiver(InetAddress receiver) {
+		receivers.add(receiver);
+		for (InetAddress r : receivers) {
+			Log.e("Receiver", r.toString());
+		}
+	}
+	
+	public void registerAtHost() {
+		sendMessage(Action.REGISTER, "");
+	}
+	
+	public Set<InetAddress> getReceivers(){
+		return receivers;
+	}
+	
+	public void broadcastStartGame() {
+		sendMessage(Action.GAME_STARTED, "");
+	}
+	
+	public void publishTakeCardFromPublicZone(Card card) {
 		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
 	}
 	
-	public void publishPutCardInPublicZone(Card card){
+	public void publishPutCardInPublicZone(Card card) {
 		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
 	}
 	
 	
 	private void sendMessage(Action action, String subject) {
-		ActionMessage message = new ActionMessage(this.id, action, subject);
-		//sender.send(message);
-		return;
+		Message message = new Message(action, subject);
+		for (InetAddress receiver : receivers){
+			this.sender.send(message, receiver);
+		}
+		//Sender.send(message, info.groupOwnerAddress);
 	}
 	
 	
-	
-	
-	public void receiveMessage(JSONObject json){
-		try {
-			String sender = json.getString("sender");
-			Action action = Action.values()[json.getInt("action")];
-			String subject = json.getString("subject");
-			parseMessage(new ActionMessage(sender, action, subject));
-		} catch (JSONException e){
-			Log.e("ClientInterpreter:receiveMessage", e.getMessage());
+	public void handleMessage(Message message) {
+		if (this.activity instanceof Lobby) {
+			handlePreGameMessage(message);
+		} else {
+			handleInGameMessage(message);
 		}
 	}
 	
-	private void parseMessage(ActionMessage message){
-		
-		if (this.game == null) {
-			if (message.getAction().equals(Action.GAME_STARTED)){
-				handleGameStarted(message);
-			} else {
-				return;
-			}
-		}
-		
+	public void sendDummyMessage(){
+		sendMessage(Action.ACK, "test");
+	}
+	
+	private void handlePreGameMessage(Message message){
 		switch (message.getAction()){
+		case GAME_STARTED:
+			handleGameStarted(message);
+			return;
+		case REGISTER:
+			handleRegister(message);
+			return;
+		default:
+			return;
+		}
+	}
+	
+	private void handleRegister(Message message) {
+		addReceiver(message.getSender());
+	}
+	
+	private void handleGameStarted(Message message) {
+		//TODO:
+		/*
+		 * Start new game and set local game variable in this interpreter to game instance
+		 */
+		((Lobby) activity).startGameActivity(receivers);
+	}
+	
+	private void handleInGameMessage(Message message){
+		switch (message.getAction()) {
 		case ADDED_CARD_TO_PUBLIC_ZONE:
-			handleNewCardInPublicZone(message);
+			handleAddedCardToPublicZone(message);
 			return;
 		case REMOVED_CARD_FROM_PUBLIC_ZONE:
 			return;
@@ -74,7 +116,7 @@ public class Client {
 		}
 	}
 	
-	private void handleNewCardInPublicZone(ActionMessage message) {
+	private void handleAddedCardToPublicZone(Message message) {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		//TODO:
@@ -83,12 +125,4 @@ public class Client {
 		 */
 		return;
 	}
-	
-	private void handleGameStarted(ActionMessage message){
-		//TODO:
-		/*
-		 * Start new game and set local game variable in this interpreter to game instance
-		 */
-	}
-	
 }

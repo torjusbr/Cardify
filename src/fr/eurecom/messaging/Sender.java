@@ -1,8 +1,8 @@
 package fr.eurecom.messaging;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class Sender {
 	
-	public static void send(ActionMessage message, String receiver) {
+	public void send(Message message, InetAddress receiver) {
 		
 		//Hack
 	    if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -22,8 +22,7 @@ public class Sender {
 	        StrictMode.setThreadPolicy(policy);
 	    }
 	    
-	    
-	    
+
 	    String messageToSend = serialize(message);
 	    if (messageToSend.length() == 0) return;
 	    
@@ -38,16 +37,11 @@ public class Sender {
 			outputStream.write(messageToSend.getBytes());
 			outputStream.close();
 			
-		} catch (FileNotFoundException e) {
-			// catch logic
-			Log.d("ClientSender", "WTF? Feilmelding\n" + e.getMessage());
 		} catch (IOException e) {
 			// catch logic
-			Log.d("ClientSender", "WTF? Feilmelding\n" + e.getMessage());
-		} catch (Exception e) {
-			Log.d("ClientSender", "WTF? Feilmelding\n" + e.getMessage());
 			e.printStackTrace();
-		}
+			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
+		} 
 		
 		finally {
 		    if (socket != null) {
@@ -62,11 +56,10 @@ public class Sender {
 		}
 	}
 	
-	private static String serialize(ActionMessage message) {
+	private String serialize(Message message) {
 		JSONObject json = new JSONObject();
 		try {
-			json.put("sender", message.getSender());
-			json.put("action", message.getAction());
+			json.put("action", message.getAction().ordinal());
 			json.put("subject", message.getSubject());
 		} catch (JSONException e) {
 			Log.e("Sender", "JSONError");

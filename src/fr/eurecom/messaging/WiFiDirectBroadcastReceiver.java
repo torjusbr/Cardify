@@ -28,14 +28,11 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 		this.lobby = activity;
 	}
 
-	
-	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		CardPeerListListener myPeerListListener = new CardPeerListListener();
 		String action = intent.getAction();
-		
-		
+			
 		Log.d("WifiDirectBroadcastReciever.onRecieve()", "In method");
 		if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
 			Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi enabled?");
@@ -70,7 +67,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 // we are connected with the other device, request connection
                 // info to find group owner IP
 
-               
                 mManager.requestConnectionInfo(mChannel, lobby);
                 Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
             } else {

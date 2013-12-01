@@ -43,6 +43,9 @@ public class CardPlayerHand {
 		}
 		cardStack.add(pos, card);
 		stackCards();
+		
+		//TODO: REMOVE
+		game.getClient().sendDummyMessage();
 	}
 	
 	public void addToHeap(Card card){

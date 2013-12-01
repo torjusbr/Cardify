@@ -1,10 +1,12 @@
 package fr.eurecom.cardify;
 
-import java.util.ArrayList;
+import java.net.InetAddress;
+import java.util.Set;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -23,9 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import fr.eurecom.messaging.ClientAsyncTask;
-import fr.eurecom.messaging.ClientSender;
-import fr.eurecom.messaging.ServerAsyncTask;
+import fr.eurecom.messaging.Client;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
 public class Lobby extends Activity implements ConnectionInfoListener {
@@ -34,21 +34,16 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private Channel mChannel;
 	private WiFiDirectBroadcastReceiver mReceiver;
 	private IntentFilter mIntentFilter;
-	private static ArrayList<String> unconnectedDevices;
 	private String groupOwnerIp;
-	private WifiP2pInfo info;
 	private WifiP2pDeviceList peers;
+	private Client client;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		unconnectedDevices = new ArrayList<String>();
 		setContentView(R.layout.activity_lobby);
 		setUpWiFiDirect();
 		peers = new WifiP2pDeviceList();
-//		handler = new Handler();
-//		setUpWiFiDirect();
-//		handler.postDelayed(runnable, 2000);
 	}
 
 	protected void setUpWiFiDirect() {
@@ -65,25 +60,13 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 
 	}
 
-//	private Runnable runnable = new Runnable() {
-//		@Override
-//		public void run() {
-//			/* do what you need to do */
-//			resetPeerList();
-//			findPeers(mManager);
-//			
-//			/* and here comes the "trick" */
-//			handler.postDelayed(this, 10000);
-//		}
-//	};
 	
-	//TODO: Dum m�te � gj�re det p�
+	//TODO: Stupid
 	private void resetPeerList() {
 		TextView tv = (TextView)findViewById(R.id.peerText);
 		tv.setText("Players online: ");
 		((LinearLayout) findViewById(R.id.peerButtons)).removeAllViews();
 		((LinearLayout) findViewById(R.id.connectedDevicesLayout)).removeAllViews();
-		unconnectedDevices.clear();
 	}
 	
 	public void setPeers(WifiP2pDeviceList peers) {
@@ -93,14 +76,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void printPeers() {
-		Log.d(getLocalClassName(), "printPeers()");
 		Log.d(getLocalClassName(), "printPeers(): " + peers.getDeviceList().size());
 		TextView tv = (TextView)findViewById(R.id.peerText);
 		StringBuilder text = new StringBuilder("Players online: ");
 		
 		for (WifiP2pDevice peer : peers.getDeviceList()) {
 			Log.d(getLocalClassName(), "Peer from printPeers(): " + peer.deviceName);
-//			text.append("\n" + peer.deviceName);
 			printPeerButton(peer);
 		}
 		
@@ -108,8 +89,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void printPeerButton(final WifiP2pDevice device) {
-//		if (unconnectedDevices.contains(device.deviceName)) 
-//			return;
 		ViewGroup vg;
 		Button bt = new Button(this);
 		if (device.status == WifiP2pDevice.CONNECTED) {
@@ -133,7 +112,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 		vg.addView(bt);
-//		unconnectedDevices.add(device.deviceName);
 	}
 	
 	private void connectToDevice(WifiP2pDevice device) {
@@ -164,6 +142,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		    @Override
 		    public void onSuccess() {
 		        //success logic
+		    	client.disconnect();
+		    	client = null;
+		    	((Button)findViewById(R.id.startButton)).setVisibility(Button.INVISIBLE);
 		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "disconnected");
 		    }
 
@@ -175,7 +156,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		});
 	}
 
-	private void findPeers(WifiP2pManager mManager) {
+	private void findPeers() {
 		mChannel = mManager.initialize(this, getMainLooper(), null);
 		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
 			@Override
@@ -214,48 +195,55 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void refreshPeers(View view) {
 		resetPeerList();
-		findPeers(mManager);
+		findPeers();
+	}
+	
+	public void startGame(View view) {
+		client.broadcastStartGame();
+		startGameActivity(this.client.getReceivers());
+	}
+	
+	public void startGameActivity(Set<InetAddress> receivers){
+		client.disconnect();
+		Intent intent = new Intent(this, Game.class);
+		String addresses = "";
+		for (InetAddress addr : receivers){
+			addresses += addr.toString() + ",";
+		}
+		intent.putExtra("receivers", addresses);
+		this.startActivity(intent);
 	}
 
+	// Every time new connection is available
 	@Override
 	public void onConnectionInfoAvailable(WifiP2pInfo info) {
-		this.info = info;
 		groupOwnerIp = info.groupOwnerAddress.getHostAddress();
 		
 		if (info.groupFormed) {
 			if (info.isGroupOwner) {
-				setUpHost();
+				setUpHost(info);
 			} else {
-				setUpClient();
+				setUpClient(info);
 			}
 		}
 	}
 	
-	private void setUpHost() {
+	// Create host if not already done
+	private void setUpHost(WifiP2pInfo info) {
 		Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
 		
-		//TODO: Må endre slik at det bare opprettes 1 ServerAsyncTask selv om man legger til flere personer
-		new ServerAsyncTask(getApplicationContext(), (TextView) findViewById(R.id.peerText)).execute();
-		
-		Button startButton = (Button) findViewById(R.id.startButton);
-		startButton.setVisibility(Button.VISIBLE);
+		if (this.client == null){
+			this.client = new Client(this);
+			Button startButton = (Button) findViewById(R.id.startButton);
+			startButton.setVisibility(Button.VISIBLE);
+		}
 	}
 	
-	private void setUpClient() {
+	// Create client and register at host
+	private void setUpClient(WifiP2pInfo info) {
 		Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
-		
-		new ClientAsyncTask(getApplicationContext()).execute();
-		
-		Button bt = new Button(this);
-		bt.setText("Send test shit");
-		bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		bt.setOnClickListener(new View.OnClickListener() {
-	        public void onClick(View view) {
-	        	ClientSender.send("{'message':'test text'}", groupOwnerIp, 6969);
-	        }
-	    });
-		ViewGroup vg = (ViewGroup) findViewById(R.id.connectedDevicesLayout);
-		vg.addView(bt);
+		this.client = new Client(this);
+		this.client.addReceiver(info.groupOwnerAddress);
+		this.client.registerAtHost();
 	}
-
 }
