@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.R;
 import android.graphics.Point;
 import android.view.View;
 import fr.eurecom.cardify.Game;
