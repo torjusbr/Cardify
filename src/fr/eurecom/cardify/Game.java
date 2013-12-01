@@ -1,16 +1,21 @@
 package fr.eurecom.cardify;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
 import fr.eurecom.util.CardSortingRule;
@@ -19,12 +24,23 @@ public class Game extends Activity {
 
 	private CardDeck deck;
 	private CardPlayerHand playerHand;
+	private Client client;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
+		String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
+		this.client = new Client(this);
+		for (String inetAddr : receiverAddresses){
+			try {
+				client.addReceiver(InetAddress.getByName(inetAddr.substring(1)));
+			} catch (UnknownHostException e) {
+				
+				Log.e("Game:onCreate", e.getMessage());
+			}
+		}
 		initGame();
 	}
 	
@@ -75,21 +91,24 @@ public class Game extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.NO_SUIT_ACE_HIGH:
-			playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_HIGH);
-			return true;
-		case R.id.NO_SUIT_ACE_LOW:
-			playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_LOW);
-			return true;
-		case R.id.S_D_H_C_ACE_HIGH:
-			playerHand.sortCards(CardSortingRule.S_H_D_C_ACE_HIGH);
-			return true;
-		case R.id.S_D_H_C_ACE_LOW:
-			playerHand.sortCards(CardSortingRule.S_H_D_C_ACE_LOW);
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.NO_SUIT_ACE_HIGH:
+				playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_HIGH);
+				return true;
+			case R.id.NO_SUIT_ACE_LOW:
+				playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_LOW);
+				return true;
+			case R.id.S_D_H_C_ACE_HIGH:
+				playerHand.sortCards(CardSortingRule.S_H_D_C_ACE_HIGH);
+				return true;
+			case R.id.S_D_H_C_ACE_LOW:
+				playerHand.sortCards(CardSortingRule.S_H_D_C_ACE_LOW);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
-	
+		
+	public Client getClient() {
+		return this.client;
+	}
 }
