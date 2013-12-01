@@ -1,5 +1,6 @@
 package fr.eurecom.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.Log;
@@ -134,6 +135,10 @@ public class Card extends ImageView implements OnTouchListener {
 
 	public int getFace() {
 		return face;
+	}
+	
+	public String toString() {
+		return ""+this.suit+this.face;
 	}
 }
 
