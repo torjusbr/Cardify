@@ -60,25 +60,19 @@ public class Client {
 	
 	public void handleMessage(Message message) {
 		if (this.game == null) {
-			switch (message.getAction()){
-			case GAME_STARTED:
-				handleGameStarted(message);
-				return;
-			case REGISTER:
-				handleRegister(message);
-				return;
-			default:
-				return;
-			}
+			handlePreGameMessage(message);
+		} else {
+			handleInGameMessage(message);
 		}
-		
-		switch (message.getAction()) {
-		case ADDED_CARD_TO_PUBLIC_ZONE:
-			handleNewCardInPublicZone(message);
+	}
+	
+	private void handlePreGameMessage(Message message){
+		switch (message.getAction()){
+		case GAME_STARTED:
+			handleGameStarted(message);
 			return;
-		case REMOVED_CARD_FROM_PUBLIC_ZONE:
-			return;
-		case ILLEGAL_ACTION:
+		case REGISTER:
+			handleRegister(message);
 			return;
 		default:
 			return;
@@ -89,7 +83,28 @@ public class Client {
 		addReceiver(message.getSender());
 	}
 	
-	private void handleNewCardInPublicZone(Message message) {
+	private void handleGameStarted(Message message) {
+		//TODO:
+		/*
+		 * Start new game and set local game variable in this interpreter to game instance
+		 */
+	}
+	
+	private void handleInGameMessage(Message message){
+		switch (message.getAction()) {
+		case ADDED_CARD_TO_PUBLIC_ZONE:
+			handleAddedCardToPublicZone(message);
+			return;
+		case REMOVED_CARD_FROM_PUBLIC_ZONE:
+			return;
+		case ILLEGAL_ACTION:
+			return;
+		default:
+			return;
+		}
+	}
+	
+	private void handleAddedCardToPublicZone(Message message) {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		//TODO:
@@ -99,10 +114,5 @@ public class Client {
 		return;
 	}
 	
-	private void handleGameStarted(Message message) {
-		//TODO:
-		/*
-		 * Start new game and set local game variable in this interpreter to game instance
-		 */
-	}
+	
 }
