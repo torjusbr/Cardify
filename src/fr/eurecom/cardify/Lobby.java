@@ -1,6 +1,5 @@
 package fr.eurecom.cardify;
 
-import java.util.ArrayList;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
@@ -22,7 +21,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import fr.eurecom.messaging.Receiver;
+import fr.eurecom.messaging.Client;
 import fr.eurecom.messaging.ServerAsyncTask;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
@@ -32,15 +31,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private Channel mChannel;
 	private WiFiDirectBroadcastReceiver mReceiver;
 	private IntentFilter mIntentFilter;
-	private static ArrayList<String> unconnectedDevices;
 	private String groupOwnerIp;
-	private WifiP2pInfo info;
 	private WifiP2pDeviceList peers;
+	
+	private Client client;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		unconnectedDevices = new ArrayList<String>();
 		setContentView(R.layout.activity_lobby);
 		setUpWiFiDirect();
 		peers = new WifiP2pDeviceList();
@@ -67,7 +65,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		tv.setText("Players online: ");
 		((LinearLayout) findViewById(R.id.peerButtons)).removeAllViews();
 		((LinearLayout) findViewById(R.id.connectedDevicesLayout)).removeAllViews();
-		unconnectedDevices.clear();
 	}
 	
 	public void setPeers(WifiP2pDeviceList peers) {
@@ -197,45 +194,38 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		findPeers(mManager);
 	}
 
+	// Every time new connection is available
 	@Override
 	public void onConnectionInfoAvailable(WifiP2pInfo info) {
-		this.info = info;
 		groupOwnerIp = info.groupOwnerAddress.getHostAddress();
 		
 		if (info.groupFormed) {
 			if (info.isGroupOwner) {
-				setUpHost();
+				setUpHost(info);
 			} else {
-				setUpClient();
+				setUpClient(info);
 			}
 		}
 	}
 	
-	private void setUpHost() {
+	// Create host if not already done
+	private void setUpHost(WifiP2pInfo info) {
 		Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
 		
-		//TODO: Må endre slik at det bare opprettes 1 ServerAsyncTask selv om man legger til flere personer
-		new ServerAsyncTask(getApplicationContext(), (TextView) findViewById(R.id.peerText)).execute();
+		if (this.client == null){
+			this.client = new Client(info);
+		}
 		
 		Button startButton = (Button) findViewById(R.id.startButton);
 		startButton.setVisibility(Button.VISIBLE);
 	}
 	
-	private void setUpClient() {
+	// Create client and register at host
+	private void setUpClient(WifiP2pInfo info) {
 		Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
-		
-		new Receiver(null).execute();
-		
-		Button bt = new Button(this);
-		bt.setText("Send test shit");
-		bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		bt.setOnClickListener(new View.OnClickListener() {
-	        public void onClick(View view) {
-	        	return;
-	        }
-	    });
-		ViewGroup vg = (ViewGroup) findViewById(R.id.connectedDevicesLayout);
-		vg.addView(bt);
+		this.client = new Client(info);
+		this.client.addReceiver(info.groupOwnerAddress);
+		this.client.registerAtHost();
 	}
 
 }

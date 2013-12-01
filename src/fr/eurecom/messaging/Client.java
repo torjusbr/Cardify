@@ -1,18 +1,32 @@
 package fr.eurecom.messaging;
 
+import java.net.InetAddress;
+import java.util.HashSet;
+import java.util.Set;
+
 import android.net.wifi.p2p.WifiP2pInfo;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.util.Card;
 
 public class Client {
 
-	private String id;
-	private WifiP2pInfo info;
 	private Game game;
+	private Set<InetAddress> receivers;
 	
 	public Client(WifiP2pInfo info) {
-		this.info = info;
 		this.game = null;
+		// Start listening to messages
+		// TODO: WHAT HAPPENS IF I WANT TO STOP LISTENING?
+		new Receiver(this).execute();
+		receivers = new HashSet<InetAddress>();
+	}
+	
+	public void addReceiver(InetAddress receiver){
+		receivers.add(receiver);
+	}
+	
+	public void registerAtHost(){
+		sendMessage(Action.REGISTER, "");
 	}
 	
 	public void publishTakeCardFromPublicZone(Card card){
@@ -26,15 +40,23 @@ public class Client {
 	
 	private void sendMessage(Action action, String subject) {
 		Message message = new Message(action, subject);
-		Sender.send(message, info.groupOwnerAddress);
+		for (InetAddress receiver : receivers){
+			Sender.send(message, receiver);
+		}
+		//Sender.send(message, info.groupOwnerAddress);
 	}
 	
 	
 	public void handleMessage(Message message){
 		if (this.game == null) {
-			if (message.getAction().equals(Action.GAME_STARTED)){
+			switch (message.getAction()){
+			case GAME_STARTED:
 				handleGameStarted(message);
-			} else {
+				return;
+			case REGISTER:
+				handleRegister(message);
+				return;
+			default:
 				return;
 			}
 		}
@@ -50,6 +72,10 @@ public class Client {
 		default:
 			return;
 		}
+	}
+	
+	private void handleRegister(Message message){
+		addReceiver(message.getSender());
 	}
 	
 	private void handleNewCardInPublicZone(Message message) {

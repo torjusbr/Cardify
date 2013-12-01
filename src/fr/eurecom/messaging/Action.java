@@ -6,4 +6,5 @@ public enum Action {
 	GAME_STARTED,
 	ILLEGAL_ACTION,
 	ACK,
+	REGISTER,
 }

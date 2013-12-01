@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -34,13 +35,13 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 			Log.d(Receiver.TAG, "Client: Socket opened!!");
 			while (listening) {
 				// Wait for incoming message
-				Socket host = socket.accept();
+				Socket sender = socket.accept();
 				// Read incoming message
-				BufferedReader in = new BufferedReader(new InputStreamReader(host.getInputStream()));			
+				BufferedReader in = new BufferedReader(new InputStreamReader(sender.getInputStream()));			
 				// Transform message to JSON Object
 				JSONObject json = new JSONObject(in.readLine());
 				// Send message to client
-				receiveMessage(json);
+				receiveMessage(json, sender.getInetAddress());
 				Log.d("Tekst fra host", "Inputstreamen er: " + in.readLine());
 				
 			}
@@ -55,11 +56,13 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 		return null;
 	}
 	
-	private void receiveMessage(JSONObject json){
+	private void receiveMessage(JSONObject json, InetAddress sender){
 		try {
 			Action action = Action.values()[json.getInt("action")];
 			String subject = json.getString("subject");
-			client.handleMessage(new Message(action, subject));
+			Message message = new Message(action, subject);
+			message.setSender(sender);
+			client.handleMessage(message);
 		} catch (JSONException e){
 			Log.e("ClientInterpreter:receiveMessage", e.getMessage());
 		}
