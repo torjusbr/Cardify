@@ -1,5 +1,6 @@
 package fr.eurecom.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.Log;
@@ -15,7 +16,6 @@ public class Card extends ImageView implements OnTouchListener {
 
 	public static int height = 208;
 	public static int width = 150;
-	
 	
 	private char suit;
 	private int face;
@@ -77,13 +77,20 @@ public class Card extends ImageView implements OnTouchListener {
 		    	
 			case MotionEvent.ACTION_MOVE:
 				
-				Log.e("TOUCH","ACTION_MOVE");
-				
                 int x = (int) event.getRawX();
                 int y = (int) event.getRawY();
                 
-                v.setX(x-(anchorPoint.x));
-                v.setY(y-(anchorPoint.y));
+                float posX = x-anchorPoint.x;
+                float posY = y-anchorPoint.y;
+                
+                if(posX < 0 || (posX+width) > screenSize.x) {
+                	if(posY > 0 && (posY+height) < screenSize.y) v.setY(y-(anchorPoint.y));
+                } else if(posY < 0 || (posY+height) > screenSize.y) {
+                	if(posX > 0 && (posX+width) < screenSize.x) v.setX(x-(anchorPoint.x));
+                } else {
+                	v.setX(x-(anchorPoint.x));
+                	v.setY(y-(anchorPoint.y));
+                }
                 
 				break;
 				
@@ -92,7 +99,7 @@ public class Card extends ImageView implements OnTouchListener {
 				Log.e("DROP_POSITION","("+v.getX()+","+v.getY()+")");
 				/*
 				 * 
-				 * CHRISTIAN, SE P DETTE!
+				 * CHRISTIAN, SE Pï¿½ DETTE!
 				//ScaleAnimation animation = new ScaleAnimation(v.getX(), v.getX()+50, v.getY(), v.getY()+50);
 				//TranslateAnimation animation = new TranslateAnimation(0, 100, 0, 100);
 				//animation.setDuration(1000);
@@ -128,6 +135,10 @@ public class Card extends ImageView implements OnTouchListener {
 
 	public int getFace() {
 		return face;
+	}
+	
+	public String toString() {
+		return ""+this.suit+this.face;
 	}
 }
 
