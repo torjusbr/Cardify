@@ -1,4 +1,4 @@
-package fr.eurecom.interpreter;
+package fr.eurecom.messaging;
 
 public class ActionMessage {
 	

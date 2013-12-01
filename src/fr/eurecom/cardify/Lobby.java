@@ -25,9 +25,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import fr.eurecom.util.ClientSender;
-import fr.eurecom.util.ServerAsyncTask;
-import fr.eurecom.util.WiFiDirectBroadcastReceiver;
+import fr.eurecom.messaging.ClientSender;
+import fr.eurecom.messaging.ServerAsyncTask;
+import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
 public class Lobby extends Activity implements ConnectionInfoListener {
 
@@ -78,7 +78,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 //		}
 //	};
 	
-	//TODO: Dum mŒte Œ gj¿re det pŒ
+	//TODO: Dum mï¿½te ï¿½ gjï¿½re det pï¿½
 	private void resetPeerList() {
 		TextView tv = (TextView)findViewById(R.id.peerText);
 		tv.setText("Players online: ");
@@ -142,7 +142,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		config.deviceAddress = device.deviceAddress;
 		new ServerAsyncTask(getApplicationContext(), (TextView) findViewById(R.id.peerText)).execute();
 		
-		config.groupOwnerIntent = 15; //15 Gj¿r denne personen til groupOwner (host).  
+		config.groupOwnerIntent = 15; //15 Gjï¿½r denne personen til groupOwner (host).  
 		mManager.connect(mChannel, config, new ActionListener() {
 
 		    @Override

@@ -1,4 +1,4 @@
-package fr.eurecom.interpreter;
+package fr.eurecom.messaging;
 
 public enum Action {
 	ADDED_CARD_TO_PUBLIC_ZONE,

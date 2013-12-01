@@ -1,4 +1,4 @@
-package fr.eurecom.util;
+package fr.eurecom.messaging;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,34 +1,57 @@
-package fr.eurecom.interpreter;
+package fr.eurecom.messaging;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.util.Card;
 
-public class ClientInterpreter {
+public class Client {
 
 	private String id;
 	private Game game;
+	private Object sender;
+	private Object receiver;
 	
-	public ClientInterpreter(Context context) {
+	public Client(Context context) {
 		this.id = "my wifi direct ip address";
 		this.game = null;
-	}
-	
-	private void sendActionMessage(Action action, String subject) {
-		ActionMessage message = new ActionMessage(this.id, action, subject);
-		return;
+		this.sender = null;
+		this.receiver = null;
 	}
 	
 	public void publishTakeCardFromPublicZone(Card card){
-		sendActionMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
+		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
 	}
 	
 	public void publishPutCardInPublicZone(Card card){
-		sendActionMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
+		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
 	}
 	
 	
-	public void parseMessage(ActionMessage message){
+	private void sendMessage(Action action, String subject) {
+		ActionMessage message = new ActionMessage(this.id, action, subject);
+		//sender.send(message);
+		return;
+	}
+	
+	
+	
+	
+	public void receiveMessage(JSONObject json){
+		try {
+			String sender = json.getString("sender");
+			Action action = Action.values()[json.getInt("action")];
+			String subject = json.getString("subject");
+			parseMessage(new ActionMessage(sender, action, subject));
+		} catch (JSONException e){
+			Log.e("ClientInterpreter:receiveMessage", e.getMessage());
+		}
+	}
+	
+	private void parseMessage(ActionMessage message){
 		
 		if (this.game == null) {
 			if (message.getAction().equals(Action.GAME_STARTED)){
