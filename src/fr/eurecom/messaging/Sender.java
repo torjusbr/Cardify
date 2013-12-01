@@ -3,6 +3,7 @@ package fr.eurecom.messaging;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -14,7 +15,7 @@ import android.util.Log;
 
 public class Sender {
 	
-	public static void send(ActionMessage message, String receiver) {
+	public static void send(ActionMessage message, InetAddress receiver) {
 		
 		//Hack
 	    if (android.os.Build.VERSION.SDK_INT > 9) {
