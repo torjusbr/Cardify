@@ -2,7 +2,14 @@
 <resources>
 
     <string name="app_name">Cardify</string>
+    
     <string name="action_settings">Settings</string>
+    <string name="settings_sort">Sort</string>
+    <string name="NO_SUIT_ACE_HIGH">By face, ace high</string>
+    <string name="NO_SUIT_ACE_LOW">By face, ace low</string>
+    <string name="S_H_D_C_ACE_HIGH">By suit, ace high</string>
+    <string name="S_H_D_C_ACE_LOW">By suit, ace low</string>
+    
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_host_game">HostGame</string>
     <string name="title_activity_game">Game</string>

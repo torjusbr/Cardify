@@ -12,5 +12,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="well hello motherfucker" />
+    
+    <View
+        android:id="@+id/left"
+        android:layout_width="0dp"
+        android:layout_height="0dp" 
+        android:layout_centerHorizontal="true" />
+    
+    <View
+        android:id="@+id/top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerVertical="true" />
+    
+    <View
+    	android:id="@+id/public_rectangle"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/top"
+        android:layout_toRightOf="@+id/left"
+        android:background="@drawable/public_rectangle" />
 
 </RelativeLayout>

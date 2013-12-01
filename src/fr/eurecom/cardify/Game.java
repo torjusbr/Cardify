@@ -8,10 +8,12 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
+import fr.eurecom.util.CardSortingRule;
 
 public class Game extends Activity {
 
@@ -68,6 +70,26 @@ public class Game extends Activity {
 					
 				}
 			}).create().show();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.NO_SUIT_ACE_HIGH:
+			playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_HIGH);
+			return true;
+		case R.id.NO_SUIT_ACE_LOW:
+			playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_LOW);
+			return true;
+		case R.id.S_D_H_C_ACE_HIGH:
+			playerHand.sortCards(CardSortingRule.S_H_D_C_ACE_HIGH);
+			return true;
+		case R.id.S_D_H_C_ACE_LOW:
+			playerHand.sortCards(CardSortingRule.S_H_D_C_ACE_LOW);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 	
 }

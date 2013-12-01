@@ -5,8 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Point;
+import android.graphics.drawable.ShapeDrawable;
 import android.view.View;
 import fr.eurecom.cardify.Game;
+import fr.eurecom.cardify.R;
 
 public class CardPlayerHand {
 
@@ -91,11 +93,26 @@ public class CardPlayerHand {
 		return true;	
 	}
 	
-	public void moveCard(Card card){
+	public void dropCard(Card card){
 		if (inStackZone(card.getX(), card.getY())){
 			addToStack(card);
 		} else {
 			addToHeap(card);
+		}
+	}
+	
+	//TODO: FIX :>
+	boolean publicZoneHighlighted;
+	public void moveCard(Card card) {
+		if (inPublicZone(card.getX(), card.getY())) {
+			System.out.println("In public zone");
+			if(publicZoneHighlighted) {
+				View v = (View) game.findViewById(R.id.public_rectangle);
+				ShapeDrawable d = (ShapeDrawable) v.getBackground();
+				d.getPaint().setColor(game.getResources().getColor(R.color.green));
+			}
+		} else {
+			System.out.println("fasd");
 		}
 	}
 	
@@ -111,6 +128,13 @@ public class CardPlayerHand {
 	private void applyBringToFront(View view){
 		view.requestLayout();
 		view.invalidate();
+	}
+	
+	public void sortCards(CardSortingRule sorting) {
+		cardStack.addAll(cardHeap);
+		cardHeap.clear();
+		Collections.sort(cardStack, new CardComparator(sorting));
+		stackCards();
 	}
 	
 }

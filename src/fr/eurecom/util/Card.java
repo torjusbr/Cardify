@@ -1,6 +1,5 @@
 package fr.eurecom.util;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.Log;
@@ -63,13 +62,9 @@ public class Card extends ImageView implements OnTouchListener {
 		switch(action) {
 			case MotionEvent.ACTION_DOWN:
 				
-				Log.e("TOUCH","ACTION_DOWN");
-				
-				//Calculate the anchor point (x,y) in card image
 				anchorPoint.x = (int) (event.getRawX() - v.getX());
 				anchorPoint.y = (int) (event.getRawY() - v.getY());
 				
-				//TODO: Add better dragging graphics
 				v.setAlpha((float)0.5);
 				v.bringToFront();
 				playerHand.removeFromStackAndHeap(this);
@@ -84,23 +79,26 @@ public class Card extends ImageView implements OnTouchListener {
                 float posY = y-anchorPoint.y;
                 
                 if(posX < 0 || (posX+width) > screenSize.x) {
-                	if(posY > 0 && (posY+height) < screenSize.y) v.setY(y-(anchorPoint.y));
+                	if(posY > 0 && (posY+height) < screenSize.y) {
+                		v.setY(y-(anchorPoint.y));
+                		playerHand.moveCard(this);
+                	}
                 } else if(posY < 0 || (posY+height) > screenSize.y) {
-                	if(posX > 0 && (posX+width) < screenSize.x) v.setX(x-(anchorPoint.x));
+                	if(posX > 0 && (posX+width) < screenSize.x) {
+                		v.setX(x-(anchorPoint.x));
+                		playerHand.moveCard(this);
+                	}
                 } else {
                 	v.setX(x-(anchorPoint.x));
                 	v.setY(y-(anchorPoint.y));
+                	playerHand.moveCard(this);
                 }
-                
 				break;
 				
 			case MotionEvent.ACTION_UP:
-				Log.e("TOUCH","ACTION_UP");
-				Log.e("DROP_POSITION","("+v.getX()+","+v.getY()+")");
 				
 				v.setAlpha(1);
-				playerHand.moveCard(this);
-				
+				playerHand.dropCard(this);
 				break;
 
 			default:

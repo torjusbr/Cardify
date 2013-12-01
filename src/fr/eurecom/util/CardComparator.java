@@ -26,10 +26,20 @@ public class CardComparator implements Comparator<Card> {
 		switch (sorting) {
 			case S_H_D_C_ACE_HIGH:
 				if(a.getSuit() == b.getSuit()) {
-					return a.getFace()-b.getFace();
+					return a.getFace() == 1 ? 1 : (b.getFace() == 1 ? -1 : a.getFace() - b.getFace());
 				} else {
 					return suitArray.indexOf(b.getSuit())-suitArray.indexOf(a.getSuit());
 				}
+			case NO_SUIT_ACE_HIGH:
+				return a.getFace() == 1 ? 1 : (b.getFace() == 1 ? -1 : a.getFace() - b.getFace());
+			case S_H_D_C_ACE_LOW:
+				if(a.getSuit() == b.getSuit()) {
+					return a.getFace() - b.getFace();
+				} else {
+					return suitArray.indexOf(b.getSuit())-suitArray.indexOf(a.getSuit());
+				}
+			case NO_SUIT_ACE_LOW:
+				return a.getFace() - b.getFace();
 			default:
 				return 0;
 		}
