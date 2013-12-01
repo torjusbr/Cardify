@@ -3,9 +3,10 @@ package fr.eurecom.messaging;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -14,7 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class ServerAsyncTask extends AsyncTask<String, Void, String> {
-	private static final String TAG = "FileServerAsyncTask";
+	private static final String TAG = "ServerAsyncTask";
 	private Context context;
 	private TextView statusText;
 	private boolean listening;
@@ -46,8 +47,12 @@ public class ServerAsyncTask extends AsyncTask<String, Void, String> {
 	//			InputStream inputstream = client.getInputStream();
 				BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 				
+				String clientText = in.readLine();
+				
+				JSONObject json = new JSONObject(clientText);
+				
 	//			InputStreamReader isr = new InputStreamReader(inputstream); 
-				Log.d("Text fra klient", "Inputstreamen er: " + in.readLine());
+				Log.d("Text fra klient", "Inputstreamen er: " + json.getString("message"));
 				
 			}
 		} catch (IOException e) {

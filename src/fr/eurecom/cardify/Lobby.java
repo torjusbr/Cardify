@@ -1,7 +1,6 @@
 package fr.eurecom.cardify;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
@@ -16,7 +15,6 @@ import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -25,6 +23,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import fr.eurecom.messaging.ClientAsyncTask;
 import fr.eurecom.messaging.ClientSender;
 import fr.eurecom.messaging.ServerAsyncTask;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
@@ -101,7 +100,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		for (WifiP2pDevice peer : peers.getDeviceList()) {
 			Log.d(getLocalClassName(), "Peer from printPeers(): " + peer.deviceName);
-			text.append("\n" + peer.deviceName);
+//			text.append("\n" + peer.deviceName);
 			printPeerButton(peer);
 		}
 		
@@ -118,7 +117,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			vg = (ViewGroup) findViewById(R.id.connectedDevicesLayout);
 			bt.setOnClickListener(new View.OnClickListener() {
 		        public void onClick(View view) {
-//		        	Disconnect!!
+		        	disconnectFromDevice(device);
 		        }
 		    });
 		} else {
@@ -140,9 +139,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private void connectToDevice(WifiP2pDevice device) {
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
-		new ServerAsyncTask(getApplicationContext(), (TextView) findViewById(R.id.peerText)).execute();
 		
-		config.groupOwnerIntent = 15; //15 Gj�r denne personen til groupOwner (host).  
+
+		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
 		mManager.connect(mChannel, config, new ActionListener() {
 
 		    @Override
@@ -155,6 +154,23 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		    public void onFailure(int reason) {
 		        //failure logic
 		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "not connected to peer " + reason);
+		    }
+		});
+	}
+	
+	private void disconnectFromDevice(WifiP2pDevice device) {
+		mManager.removeGroup(mChannel, new ActionListener() {
+
+		    @Override
+		    public void onSuccess() {
+		        //success logic
+		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "disconnected");
+		    }
+
+		    @Override
+		    public void onFailure(int reason) {
+		        //failure logic
+		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "failed to disconnect " + reason);
 		    }
 		});
 	}
@@ -206,21 +222,40 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.info = info;
 		groupOwnerIp = info.groupOwnerAddress.getHostAddress();
 		
-		if (info.isGroupOwner) {
-			Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
-		} else {
-			Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
-			Button bt = new Button(this);
-			bt.setText("Send test shit");
-			bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-			bt.setOnClickListener(new View.OnClickListener() {
-		        public void onClick(View view) {
-		        	ClientSender.send("This is a test message", groupOwnerIp, 6969);
-		        }
-		    });
-			ViewGroup vg = (ViewGroup) findViewById(R.id.connectedDevicesLayout);
-			vg.addView(bt);
+		if (info.groupFormed) {
+			if (info.isGroupOwner) {
+				setUpHost();
+			} else {
+				setUpClient();
+			}
 		}
+	}
+	
+	private void setUpHost() {
+		Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
+		
+		//TODO: Må endre slik at det bare opprettes 1 ServerAsyncTask selv om man legger til flere personer
+		new ServerAsyncTask(getApplicationContext(), (TextView) findViewById(R.id.peerText)).execute();
+		
+		Button startButton = (Button) findViewById(R.id.startButton);
+		startButton.setVisibility(Button.VISIBLE);
+	}
+	
+	private void setUpClient() {
+		Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
+		
+		new ClientAsyncTask(getApplicationContext()).execute();
+		
+		Button bt = new Button(this);
+		bt.setText("Send test shit");
+		bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		bt.setOnClickListener(new View.OnClickListener() {
+	        public void onClick(View view) {
+	        	ClientSender.send("{'message':'test text'}", groupOwnerIp, 6969);
+	        }
+	    });
+		ViewGroup vg = (ViewGroup) findViewById(R.id.connectedDevicesLayout);
+		vg.addView(bt);
 	}
 
 }
