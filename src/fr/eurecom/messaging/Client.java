@@ -14,11 +14,14 @@ public class Client {
 	private Activity activity;
 	private Set<InetAddress> receivers;
 	private Receiver receiver;
+	private Sender sender;
+	
 	public Client(Activity activity) {
 		this.activity = activity;
 		this.receiver = new Receiver(this);
 		receiver.execute();
 		receivers = new HashSet<InetAddress>();
+		this.sender = new Sender();
 	}
 	
 	public void disconnect(){
@@ -56,7 +59,7 @@ public class Client {
 	private void sendMessage(Action action, String subject) {
 		Message message = new Message(action, subject);
 		for (InetAddress receiver : receivers){
-			Sender.send(message, receiver);
+			this.sender.send(message, receiver);
 		}
 		//Sender.send(message, info.groupOwnerAddress);
 	}
