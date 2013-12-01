@@ -66,7 +66,7 @@ public class Sender {
 	private static String serialize(Message message) {
 		JSONObject json = new JSONObject();
 		try {
-			json.put("action", message.getAction());
+			json.put("action", message.getAction().ordinal());
 			json.put("subject", message.getSubject());
 		} catch (JSONException e) {
 			Log.e("Sender", "JSONError");
