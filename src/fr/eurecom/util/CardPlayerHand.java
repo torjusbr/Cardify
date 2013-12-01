@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.R;
 import android.graphics.Point;
 import android.view.View;
 import fr.eurecom.cardify.Game;
@@ -82,27 +81,14 @@ public class CardPlayerHand {
 		Point displaySize = game.getDisplaySize();
 		if (x < displaySize.x*0.5 || x > displaySize.x) return false;
 		if (y < 0 || y > displaySize.y*0.5) return false;
-		return true;
+		return true;	
 	}
 	
-	public boolean inHeapZone(float x, float y){
-		Point displaySize = game.getDisplaySize();
-		if(x > displaySize.x*0.5 || x < 0) return false;
-		if(y < 0 || y > displaySize.y - Card.height) return false;
-		return true;
-	}
-
 	public void moveCard(Card card){
 		if (inStackZone(card.getX(), card.getY())){
-			System.out.println("In stack zone!");
 			addToStack(card);
-		} else if(inHeapZone(card.getX(), card.getY())){
-			System.out.println("In heap zone");
-			addToHeap(card);
-		} else if(inPublicZone(card.getX(), card.getY())) {
-			System.out.println("In public zone");
 		} else {
-			System.out.println("Outside stack and heap");
+			addToHeap(card);
 		}
 	}
 	
