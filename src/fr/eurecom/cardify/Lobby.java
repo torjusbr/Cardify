@@ -199,6 +199,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void startGame(View view) {
 		client.broadcastStartGame();
+		startGameActivity();
 	}
 	
 	public void startGameActivity(){
