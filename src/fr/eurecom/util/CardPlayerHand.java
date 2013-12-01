@@ -13,12 +13,14 @@ public class CardPlayerHand {
 
 	public List<Card> cardStack;
 	public List<Card> cardHeap;
+	public List<Card> cardPublic;
 	public Game game;
 	
 	public CardPlayerHand(Game game){
 		this.game = game;
 		cardStack = new LinkedList<Card>();
 		cardHeap = new LinkedList<Card>();
+		cardPublic = new LinkedList<Card>();
 	}
 	
 	public void dealInitialCards(List<Card> cards){
@@ -48,6 +50,10 @@ public class CardPlayerHand {
 		stackCards();
 	}
 	
+	public void addToPublic(Card card){
+		
+	}
+	
 	public void stackCards(){
 		if (cardStack.isEmpty()) return;
 		Point displaySize = game.getDisplaySize();
@@ -68,19 +74,18 @@ public class CardPlayerHand {
 	public boolean inStackZone(float x, float y){
 		Point displaySize = game.getDisplaySize();
 		if (x < 0 || x > displaySize.x) return false;
-		if (y < displaySize.y - 2*Card.height || y > displaySize.y) return false;
+		if (y < displaySize.y - 1.75*Card.height || y > displaySize.y) return false;
 		return true;
 	}
 	
-	public void indicateInsertInStack(Card card){
-		stackCards();
-		if (!inStackZone(card.getX(), card.getY())) return;
-		int i = 0;
-		for (Card tempCard : cardStack){
-			if (tempCard.getX() >= card.getX()) break;
-			i++;
-		}
+	public boolean inPublicZone(float x, float y){
+		Point displaySize = game.getDisplaySize();
+		if (x < displaySize.x*0.5 || x > displaySize.x) return false;
+		if (y < 0 || y > displaySize.y*0.5) return false;
+		return true;
+		
 	}
+
 	
 	public void moveCard(Card card){
 		if (inStackZone(card.getX(), card.getY())){

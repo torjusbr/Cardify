@@ -85,8 +85,6 @@ public class Card extends ImageView implements OnTouchListener {
                 v.setX(x-(anchorPoint.x));
                 v.setY(y-(anchorPoint.y));
                 
-                playerHand.indicateInsertInStack(this);
-                
 				break;
 				
 			case MotionEvent.ACTION_UP:
