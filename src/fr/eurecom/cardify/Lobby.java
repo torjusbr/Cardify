@@ -140,6 +140,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		    @Override
 		    public void onSuccess() {
 		        //success logic
+//		    	client.disconnect
+		    	client = null;
+		    	((Button)findViewById(R.id.startButton)).setVisibility(Button.INVISIBLE);
 		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "disconnected");
 		    }
 
@@ -151,7 +154,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		});
 	}
 
-	private void findPeers(WifiP2pManager mManager) {
+	private void findPeers() {
 		mChannel = mManager.initialize(this, getMainLooper(), null);
 		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
 			@Override
@@ -190,7 +193,11 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void refreshPeers(View view) {
 		resetPeerList();
-		findPeers(mManager);
+		findPeers();
+	}
+	
+	public void startGame(View view) {
+		client.broadcastStartGame();
 	}
 
 	// Every time new connection is available
@@ -213,10 +220,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		if (this.client == null){
 			this.client = new Client(info);
+			Button startButton = (Button) findViewById(R.id.startButton);
+			startButton.setVisibility(Button.VISIBLE);
 		}
-		
-		Button startButton = (Button) findViewById(R.id.startButton);
-		startButton.setVisibility(Button.VISIBLE);
 	}
 	
 	// Create client and register at host
@@ -226,5 +232,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.client.addReceiver(info.groupOwnerAddress);
 		this.client.registerAtHost();
 	}
+	
+	
 
 }

@@ -70,6 +70,7 @@
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/lobbyView"
         android:text="Start"
+        android:onClick="startGame"
         android:visibility="invisible" />
 
 </RelativeLayout>

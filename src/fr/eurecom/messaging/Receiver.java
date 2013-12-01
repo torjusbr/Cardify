@@ -14,12 +14,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class Receiver extends AsyncTask<String, Void, JSONObject> {
-	private static final String TAG = "ClientAsyncTask";
+	private static final String TAG = "Receiver";
 	private boolean listening;
 	private Client client;
 
 	public Receiver(Client client) {
-		Log.d("ClientAsyncTask", "Constructor");
+		Log.d(Receiver.TAG, "Constructor");
 		listening = true;
 		this.client = client;
 	}
@@ -37,8 +37,8 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 				// Transform message to JSON Object
 				JSONObject json = new JSONObject(in.readLine());
 				// Send message to client
-				receiveMessage(json, sender.getInetAddress());
 				Log.d("Tekst fra host", "Inputstreamen er: " + json.toString());
+				receiveMessage(json, sender.getInetAddress());
 				
 			}
 			

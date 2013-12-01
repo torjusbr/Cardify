@@ -22,22 +22,26 @@ public class Client {
 		receivers = new HashSet<InetAddress>();
 	}
 	
-	public void addReceiver(InetAddress receiver){
+	public void addReceiver(InetAddress receiver) {
 		receivers.add(receiver);
 		for (InetAddress r : receivers) {
 			Log.e("Receiver", r.toString());
 		}
 	}
 	
-	public void registerAtHost(){
+	public void registerAtHost() {
 		sendMessage(Action.REGISTER, "");
 	}
 	
-	public void publishTakeCardFromPublicZone(Card card){
+	public void broadcastStartGame() {
+		sendMessage(Action.GAME_STARTED, "");
+	}
+	
+	public void publishTakeCardFromPublicZone(Card card) {
 		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
 	}
 	
-	public void publishPutCardInPublicZone(Card card){
+	public void publishPutCardInPublicZone(Card card) {
 		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
 	}
 	
@@ -51,7 +55,7 @@ public class Client {
 	}
 	
 	
-	public void handleMessage(Message message){
+	public void handleMessage(Message message) {
 		if (this.game == null) {
 			switch (message.getAction()){
 			case GAME_STARTED:
@@ -65,7 +69,7 @@ public class Client {
 			}
 		}
 		
-		switch (message.getAction()){
+		switch (message.getAction()) {
 		case ADDED_CARD_TO_PUBLIC_ZONE:
 			handleNewCardInPublicZone(message);
 			return;
@@ -78,7 +82,7 @@ public class Client {
 		}
 	}
 	
-	private void handleRegister(Message message){
+	private void handleRegister(Message message) {
 		addReceiver(message.getSender());
 	}
 	
@@ -92,7 +96,7 @@ public class Client {
 		return;
 	}
 	
-	private void handleGameStarted(Message message){
+	private void handleGameStarted(Message message) {
 		//TODO:
 		/*
 		 * Start new game and set local game variable in this interpreter to game instance
