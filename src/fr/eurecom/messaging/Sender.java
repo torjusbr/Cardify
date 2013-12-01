@@ -23,8 +23,7 @@ public class Sender {
 	        StrictMode.setThreadPolicy(policy);
 	    }
 	    
-	    
-	    
+
 	    String messageToSend = serialize(message);
 	    if (messageToSend.length() == 0) return;
 	    
@@ -41,12 +40,15 @@ public class Sender {
 			
 		} catch (FileNotFoundException e) {
 			// catch logic
-			Log.d("ClientSender", "WTF? Feilmelding\n" + e.getMessage());
+			e.printStackTrace();
+			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
 		} catch (IOException e) {
 			// catch logic
-			Log.d("ClientSender", "WTF? Feilmelding\n" + e.getMessage());
+			e.printStackTrace();
+			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
 		} catch (Exception e) {
-			Log.d("ClientSender", "WTF? Feilmelding\n" + e.getMessage());
+			e.printStackTrace();
+			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
 			e.printStackTrace();
 		}
 		
