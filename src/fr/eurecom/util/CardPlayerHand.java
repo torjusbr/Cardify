@@ -53,6 +53,7 @@ public class CardPlayerHand {
 		Log.e("CardPlayerHand:blindAddToPublic", ""+suit+face);
 		Card card = new Card(this.game, suit, face);
 		cardPublic.add(card);
+		game.addView(card);
 	}
 	
 	public void stackCards(){
