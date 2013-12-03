@@ -69,13 +69,9 @@ public class Client {
 	public void handleMessage(Message message) {
 		if (this.activity instanceof Lobby) {
 			handlePreGameMessage(message);
-		} else {
+		} else if (this.activity instanceof Game){
 			handleInGameMessage(message);
 		}
-	}
-	
-	public void sendDummyMessage(){
-		sendMessage(Action.ACK, "test");
 	}
 	
 	private void handlePreGameMessage(Message message){
@@ -104,6 +100,7 @@ public class Client {
 	}
 	
 	private void handleInGameMessage(Message message){
+		Log.e("Client:handleInGameMessage", "HI");
 		switch (message.getAction()) {
 		case ADDED_CARD_TO_PUBLIC_ZONE:
 			handleAddedCardToPublicZone(message);
@@ -118,6 +115,7 @@ public class Client {
 	}
 	
 	private void handleAddedCardToPublicZone(Message message) {
+		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.getSubject());
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		((Game) activity).getPlayerHand().blindAddToPublic(suit, face);

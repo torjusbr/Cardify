@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
 import fr.eurecom.cardify.Game;
 
@@ -49,9 +50,8 @@ public class CardPlayerHand {
 	}
 	
 	public void blindAddToPublic(char suit, int face){
+		Log.e("CardPlayerHand:blindAddToPublic", ""+suit+face);
 		Card card = new Card(this.game, suit, face);
-		cardPublic.add(card);
-		cardStack.remove(card);
 		cardPublic.add(card);
 	}
 	
