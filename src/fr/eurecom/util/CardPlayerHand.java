@@ -23,14 +23,14 @@ public class CardPlayerHand {
 		displaySize = game.getDisplaySize();
 	}
 	
-	public void dealInitialCards(List<Card> cards){
-		cardStack = cards;
-		Collections.sort(cardStack, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
-		stackCards();
-		for (Card c : cardStack){
+	public void dealCards(List<Card> cards){
+		for (Card c : cards){
 			game.addView(c);
 			c.setOwner(this);
 		}
+		cardStack.addAll(cards);
+		Collections.sort(cardStack, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
+		stackCards();
 	}
 	
 	public void addToStack(Card card){
@@ -92,6 +92,16 @@ public class CardPlayerHand {
 		
 		game.addView(card);
 		card.animate().translationY(yTranslation).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
+	}
+	
+	public void blindDealCards(String[] cardStrings){
+		List<Card> cards = new LinkedList<Card>();
+		for (String str : cardStrings){
+			char suit = str.charAt(0);
+			int face = Integer.parseInt(str.substring(1));
+			cards.add(new Card(this.game, suit, face));
+		}
+		this.dealCards(cards);
 	}
 	
 	public void stackCards(){

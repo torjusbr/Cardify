@@ -9,6 +9,7 @@ import android.util.Log;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
+import fr.eurecom.util.CardDeck;
 
 public class Client {
 
@@ -16,6 +17,7 @@ public class Client {
 	private Set<InetAddress> receivers;
 	private Receiver receiver;
 	private Sender sender;
+	private boolean isHost;
 	
 	public Client(Activity activity) {
 		this.activity = activity;
@@ -24,10 +26,19 @@ public class Client {
 		//receiver.run();
 		receivers = new HashSet<InetAddress>();
 		this.sender = new Sender();
+		this.isHost = false;
 	}
 	
 	public void disconnect(){
 		receiver.stopListening();
+	}
+	
+	public void changeToHost(){
+		this.isHost = true;
+	}
+	
+	public boolean isHost(){
+		return this.isHost;
 	}
 	
 	public void addReceiver(InetAddress receiver) {
@@ -57,13 +68,20 @@ public class Client {
 		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
 	}
 	
+	public void pushInitialCards(CardDeck deck, int n) {
+		String cards = "";
+		for (int i = 0; i < n; i++){
+			cards += deck.pop().toString() + ";";
+		}
+		sendMessage(Action.INITIAL_CARDS, cards);
+	}
+	
 	
 	private void sendMessage(Action action, String subject) {
 		Message message = new Message(action, subject);
 		for (InetAddress receiver : receivers){
 			this.sender.send(message, receiver);
 		}
-		//Sender.send(message, info.groupOwnerAddress);
 	}
 	
 	
@@ -111,6 +129,9 @@ public class Client {
 			return;
 		case ILLEGAL_ACTION:
 			return;
+		case INITIAL_CARDS:
+			handleInitialCards(message);
+			return;
 		default:
 			return;
 		}
@@ -128,5 +149,11 @@ public class Client {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face);
+	}
+	
+	private void handleInitialCards(Message message) {
+		Log.e("Client:handleInitialCards", "Cards: " + message.getSubject());
+		String[] cards = message.getSubject().split(";");
+		((Game) activity).getPlayerHand().blindDealCards(cards);
 	}
 }

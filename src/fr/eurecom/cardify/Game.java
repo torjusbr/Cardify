@@ -34,9 +34,15 @@ public class Game extends Activity {
 		setContentView(R.layout.activity_game);
 		
 		messageStream = (TextView) findViewById(R.id.messageStream);
+		// If client, we receive cards from host at a later stage
+		deck = null;
 		
+		// Set up client
 		String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
+		Boolean isHost = getIntent().getExtras().getBoolean("isHost");
 		this.client = new Client(this);
+		if (isHost) client.changeToHost();
+		
 		for (String inetAddr : receiverAddresses){
 			try {
 				client.addReceiver(InetAddress.getByName(inetAddr.substring(1)));
@@ -45,8 +51,10 @@ public class Game extends Activity {
 				Log.e("Game:onCreate", e.getMessage());
 			}
 		} 
-		
-		initGame();
+
+		if (client.isHost()){
+			initGame();
+		}
 		
 	}
 	
@@ -64,12 +72,17 @@ public class Game extends Activity {
 		return true;
 	}
 	
+	// Set up game if the this.client is host
 	private void initGame(){
+		//int numPlayers = client.getReceivers().size() + 1;
 		this.deck = new CardDeck(this);
 		deck.shuffle();
 		
+		int cardsPerPlayer = 6;
 		playerHand = new CardPlayerHand(this);
-		playerHand.dealInitialCards(deck.draw(13));
+		playerHand.dealCards(deck.draw(cardsPerPlayer));
+		
+		client.pushInitialCards(deck, cardsPerPlayer);
 	}
 	
 	public void addView(View v){
