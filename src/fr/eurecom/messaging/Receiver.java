@@ -14,18 +14,21 @@ import android.os.AsyncTask;
 import android.os.Process;
 import android.util.Log;
 
-public class Receiver implements Runnable {//extends AsyncTask<String, Void, JSONObject> {
+public class Receiver extends AsyncTask<String, Void, JSONObject> { //implements Runnable {
 	private static final String TAG = "Receiver";
 	private boolean listening;
 	private Client client;
 	private ServerSocket socket;
+	private JSONObject json;
+	private Socket sender;
 
 	public Receiver(Client client) {
 		Log.d(Receiver.TAG, "Constructor");
 		this.listening = true;
 		this.client = client;
 	}
-
+	
+	/*
 	@Override
 	public void run() {
 		Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
@@ -53,8 +56,18 @@ public class Receiver implements Runnable {//extends AsyncTask<String, Void, JSO
 
 		return;
 	}
+	*/
 	
-	/*
+	
+	@Override
+	protected void onProgressUpdate(Void... values) {
+		// TODO Auto-generated method stub
+		super.onProgressUpdate(values);
+		
+		receiveMessage(json, sender.getInetAddress());
+	}
+	
+	
 	@Override
 	protected JSONObject doInBackground(String... params) {
 		try {
@@ -62,15 +75,17 @@ public class Receiver implements Runnable {//extends AsyncTask<String, Void, JSO
 			Log.d(Receiver.TAG, "Client: Socket opened!!");
 			while (listening) {
 				// Wait for incoming message
-				Socket sender = socket.accept();
+				sender = socket.accept();
 				// Read incoming message
 				BufferedReader in = new BufferedReader(new InputStreamReader(sender.getInputStream()));			
 				// Transform message to JSON Object
-				JSONObject json = new JSONObject(in.readLine());
+				json = new JSONObject(in.readLine());
 				// Send message to client
 				Log.d("Tekst fra host", "Inputstreamen er: " + json.toString());
-				receiveMessage(json, sender.getInetAddress());
+				
 				sender.close();
+				
+				publishProgress();
 			}
 			
 		} catch (IOException e) {
@@ -83,7 +98,7 @@ public class Receiver implements Runnable {//extends AsyncTask<String, Void, JSO
 		return null;
 	}
 	
-	*/
+	
 	
 	private void receiveMessage(JSONObject json, InetAddress sender){
 		try {
@@ -99,15 +114,15 @@ public class Receiver implements Runnable {//extends AsyncTask<String, Void, JSO
 	
 	
 	public void stopListening(){
-		//this.listening = false;
+		this.listening = false;
 		
-		/*
+		
 		try {
 			this.socket.close();
 		} catch (IOException e) {
 			Log.e("Receiver:stopListening", e.getMessage());
 		}
-		*/
+		
 	}
 	
 }

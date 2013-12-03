@@ -20,8 +20,8 @@ public class Client {
 	public Client(Activity activity) {
 		this.activity = activity;
 		this.receiver = new Receiver(this);
-		//receiver.execute();
-		receiver.run();
+		receiver.execute();
+		//receiver.run();
 		receivers = new HashSet<InetAddress>();
 		this.sender = new Sender();
 	}
