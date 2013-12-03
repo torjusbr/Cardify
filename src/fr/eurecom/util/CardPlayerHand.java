@@ -3,7 +3,6 @@ package fr.eurecom.util;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
 import android.graphics.Point;
 import android.view.View;
 import fr.eurecom.cardify.Game;
@@ -46,14 +45,14 @@ public class CardPlayerHand {
 			cardPublic.add(card);
 			game.getClient().publishPutCardInPublicZone(card);
 		}
+		stackCards();
 	}
 	
 	public void blindAddToPublic(Card card){
 		cardPublic.add(card);
 		cardStack.remove(card);
 		cardPublic.add(card);
-		stackCards();
-		System.out.println("Add to public");
+		//stackCards();
 	}
 	
 	public void stackCards(){
