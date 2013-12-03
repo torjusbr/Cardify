@@ -64,6 +64,16 @@ public class CardPlayerHand {
 		game.addView(card);
 	}
 	
+	public void blindRemoveFromPublic(char suit, int face){
+		Card card = null;
+		for (Card c : cardPublic){
+			if (c.getSuit() == suit && c.getFace() == face){
+				game.removeView(card);
+				return;
+			}
+		}
+	}
+	
 	public void stackCards(){
 		if (cardStack.isEmpty()) return;
 		Point displaySize = game.getDisplaySize();

@@ -14,6 +14,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
@@ -71,6 +72,12 @@ public class Game extends Activity {
 	public void addView(View v){
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.rootGameLayout);
 		layout.addView(v);
+	}
+	
+	public void removeView(View v){
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.rootGameLayout);
+		// Must recycle image resource!
+		layout.removeView(v);
 	}
 	
 	@Override

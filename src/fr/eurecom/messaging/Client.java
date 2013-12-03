@@ -107,6 +107,7 @@ public class Client {
 			handleAddedCardToPublicZone(message);
 			return;
 		case REMOVED_CARD_FROM_PUBLIC_ZONE:
+			handleRemovedCardFromPublicZone(message);
 			return;
 		case ILLEGAL_ACTION:
 			return;
@@ -120,6 +121,12 @@ public class Client {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		((Game) activity).getPlayerHand().blindAddToPublic(suit, face);
-		return;
+	}
+	
+	private void handleRemovedCardFromPublicZone(Message message) {
+		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.getSubject());
+		char suit = message.getSubject().charAt(0);
+		int face = Integer.parseInt(message.getSubject().substring(1));
+		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face);
 	}
 }
