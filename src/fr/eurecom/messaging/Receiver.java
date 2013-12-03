@@ -11,9 +11,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
+import android.os.Process;
 import android.util.Log;
 
-public class Receiver extends AsyncTask<String, Void, JSONObject> {
+public class Receiver implements Runnable {//extends AsyncTask<String, Void, JSONObject> {
 	private static final String TAG = "Receiver";
 	private boolean listening;
 	private Client client;
@@ -25,6 +26,35 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 		this.client = client;
 	}
 
+	@Override
+	public void run() {
+		Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+		
+		try {
+			socket = new ServerSocket(Config.PORT);
+			Log.d(Receiver.TAG, "Client: Socket opened!!");
+			while (listening) {
+				// Wait for incoming message
+				Socket sender = socket.accept();
+				// Read incoming message
+				BufferedReader in = new BufferedReader(new InputStreamReader(sender.getInputStream()));			
+				// Transform message to JSON Object
+				JSONObject json = new JSONObject(in.readLine());
+				// Send message to client
+				Log.d("Tekst fra host", "Inputstreamen er: " + json.toString());
+				receiveMessage(json, sender.getInetAddress());
+				sender.close();
+			}	
+		} catch (IOException e) {
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return;
+	}
+	
+	/*
 	@Override
 	protected JSONObject doInBackground(String... params) {
 		try {
@@ -53,6 +83,8 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 		return null;
 	}
 	
+	*/
+	
 	private void receiveMessage(JSONObject json, InetAddress sender){
 		try {
 			Action action = Action.values()[json.getInt("action")];
@@ -73,6 +105,4 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 			Log.e("Receiver:stopListening", e.getMessage());
 		}
 	}
-
-	
 }
