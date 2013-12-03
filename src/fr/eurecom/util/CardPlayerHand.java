@@ -49,6 +49,13 @@ public class CardPlayerHand {
 		stackCards();
 	}
 	
+	public void removeFromPublic(Card card) {
+		if (cardPublic.remove(card)) {
+			cardStack.add(card);
+			game.getClient().publishTakeCardFromPublicZone(card);
+		}
+	}
+	
 	public void blindAddToPublic(char suit, int face){
 		Log.e("CardPlayerHand:blindAddToPublic", ""+suit+face);
 		Card card = new Card(this.game, suit, face);
@@ -94,6 +101,7 @@ public class CardPlayerHand {
 	
 	public void dropCard(Card card){
 		if(inStackZone(card.getX(), card.getY())) {
+			removeFromPublic(card);
 			addToStack(card);
 		} else {
 			addToPublic(card);
