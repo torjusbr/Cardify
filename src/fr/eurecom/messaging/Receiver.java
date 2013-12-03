@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
-import android.os.Process;
 import android.util.Log;
 
 public class Receiver extends AsyncTask<String, Void, JSONObject> { //implements Runnable {
@@ -28,40 +27,8 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> { //implements
 		this.client = client;
 	}
 	
-	/*
-	@Override
-	public void run() {
-		Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-		
-		try {
-			socket = new ServerSocket(Config.PORT);
-			Log.d(Receiver.TAG, "Client: Socket opened!!");
-			while (listening) {
-				// Wait for incoming message
-				Socket sender = socket.accept();
-				// Read incoming message
-				BufferedReader in = new BufferedReader(new InputStreamReader(sender.getInputStream()));			
-				// Transform message to JSON Object
-				JSONObject json = new JSONObject(in.readLine());
-				// Send message to client
-				Log.d("Tekst fra host", "Inputstreamen er: " + json.toString());
-				receiveMessage(json, sender.getInetAddress());
-				sender.close();
-			}	
-		} catch (IOException e) {
-			return;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return;
-	}
-	*/
-	
-	
 	@Override
 	protected void onProgressUpdate(Void... values) {
-		// TODO Auto-generated method stub
 		super.onProgressUpdate(values);
 		
 		receiveMessage(json, sender.getInetAddress());
