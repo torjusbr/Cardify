@@ -43,7 +43,7 @@ public class CardPlayerHand {
 	public void addToPublic(Card card){
 		if (cardStack.remove(card)){
 			cardPublic.add(card);
-			//game.getClient().publishPutCardInPublicZone(card);
+			game.getClient().publishPutCardInPublicZone(card);
 		}
 		stackCards();
 	}
