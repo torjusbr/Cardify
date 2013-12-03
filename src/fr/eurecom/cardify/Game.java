@@ -14,7 +14,6 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;

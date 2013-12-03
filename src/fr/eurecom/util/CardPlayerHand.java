@@ -6,6 +6,7 @@ import java.util.List;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import fr.eurecom.cardify.Game;
 
 public class CardPlayerHand {
@@ -13,11 +14,13 @@ public class CardPlayerHand {
 	public List<Card> cardStack;
 	public List<Card> cardPublic;
 	public Game game;
+	private Point displaySize;
 	
 	public CardPlayerHand(Game game){
 		this.game = game;
 		cardStack = new LinkedList<Card>();
 		cardPublic = new LinkedList<Card>();
+		displaySize = game.getDisplaySize();
 	}
 	
 	public void dealInitialCards(List<Card> cards){
@@ -61,7 +64,17 @@ public class CardPlayerHand {
 		Card card = new Card(this.game, suit, face);
 		card.setOwner(this);
 		cardPublic.add(card);
+		animateCardIntoView(card);
+	}
+	
+	private void animateCardIntoView(Card card) {
+		card.setX(displaySize.x/2 - Card.width/2);
+		card.setY(0 - Card.height);
+		
+		int yTranslation = (displaySize.y/2 - Card.height/2);
+		
 		game.addView(card);
+		card.animate().translationY(yTranslation).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
 	}
 	
 	public void blindRemoveFromPublic(char suit, int face){
@@ -79,7 +92,6 @@ public class CardPlayerHand {
 	
 	public void stackCards(){
 		if (cardStack.isEmpty()) return;
-		Point displaySize = game.getDisplaySize();
 		
 		int maximumStackWidth = displaySize.x - 10; //5px free on each side of stack
 		double pixelsBetweenCards = cardStack.size() != 1 ? Math.min(Card.width/2, (maximumStackWidth - Card.width)/(cardStack.size() - 1)) : 0;
@@ -102,7 +114,6 @@ public class CardPlayerHand {
 	}
 	
 	public boolean inStackZone(float x, float y){
-		Point displaySize = game.getDisplaySize();
 		if (x < 0 || x > displaySize.x) return false;
 		if (y < displaySize.y - 1.75*Card.height || y > displaySize.y) return false;
 		return true;
