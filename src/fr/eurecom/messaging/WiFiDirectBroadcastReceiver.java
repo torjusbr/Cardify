@@ -69,6 +69,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
                 mManager.requestConnectionInfo(mChannel, lobby);
                 Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
+                lobby.dismissProgressDialog();
             } else {
                 // It's a disconnect
             	Toast.makeText(context, "Disonnected", Toast.LENGTH_SHORT).show();

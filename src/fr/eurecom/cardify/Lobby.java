@@ -5,6 +5,7 @@ import java.util.Set;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -37,6 +38,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private String groupOwnerIp;
 	private WifiP2pDeviceList peers;
 	private Client client;
+	private ProgressDialog progressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		setContentView(R.layout.activity_lobby);
 		setUpWiFiDirect();
 		peers = new WifiP2pDeviceList();
+		progressDialog = new ProgressDialog(this);
 	}
 
 	protected void setUpWiFiDirect() {
@@ -73,6 +76,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.peers = peers;
 		resetPeerList();
 		printPeers();
+		((Button) findViewById(R.id.refreshPeersButton)).setClickable(true);
 	}
 	
 	private void printPeers() {
@@ -115,6 +119,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void connectToDevice(WifiP2pDevice device) {
+		
+		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
 		
@@ -126,6 +132,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		    public void onSuccess() {
 		        //success logic
 		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "connected to peer");
+		    	
 		    }
 
 		    @Override
@@ -134,6 +141,17 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "not connected to peer " + reason);
 		    }
 		});
+	}
+	
+	private void showProgressDialog(String title, String message) {
+		this.progressDialog.setTitle(title);
+		this.progressDialog.setMessage(message);
+		this.progressDialog.setCancelable(false);
+		this.progressDialog.show();
+	}
+	
+	public void dismissProgressDialog() {
+		progressDialog.dismiss();
 	}
 	
 	private void disconnectFromDevice(WifiP2pDevice device) {
@@ -166,8 +184,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 
 			@Override
 			public void onFailure(int reasonCode) {
-				Log.d(getLocalClassName(),
-						"Couldn't search for peers. Fucking error!!! :( " + reasonCode);
+				Log.d(getLocalClassName(), "Couldn't search for peers. " + reasonCode);
 			}
 		});
 	}
@@ -194,6 +211,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	public void refreshPeers(View view) {
+		((Button) view).setClickable(false);
 		resetPeerList();
 		findPeers();
 	}

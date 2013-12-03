@@ -21,7 +21,7 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> {
 
 	public Receiver(Client client) {
 		Log.d(Receiver.TAG, "Constructor");
-		listening = true;
+		this.listening = true;
 		this.client = client;
 	}
 
