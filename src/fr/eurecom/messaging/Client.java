@@ -152,9 +152,8 @@ public class Client {
 	}
 	
 	private void handleInitialCards(Message message) {
-		Log.e("Client:handleInitialCards", "Cards: " + message.getSubject().substring(0, message.getSubject().length()-2));
+		Log.e("Client:handleInitialCards", "Cards: " + message.getSubject());
 		String[] cards = message.getSubject().split(";");
-		Log.e("Client:handleInitialCards", ""+cards);
 		((Game) activity).getPlayerHand().blindDealCards(cards);
 	}
 }

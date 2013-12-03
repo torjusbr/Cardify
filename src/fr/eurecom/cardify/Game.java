@@ -36,6 +36,7 @@ public class Game extends Activity {
 		messageStream = (TextView) findViewById(R.id.messageStream);
 		// If client, we receive cards from host at a later stage
 		deck = null;
+		playerHand = new CardPlayerHand(this);
 		
 		// Set up client
 		String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
@@ -79,7 +80,6 @@ public class Game extends Activity {
 		deck.shuffle();
 		
 		int cardsPerPlayer = 6;
-		playerHand = new CardPlayerHand(this);
 		playerHand.dealCards(deck.draw(cardsPerPlayer));
 		
 		client.pushInitialCards(deck, cardsPerPlayer);
