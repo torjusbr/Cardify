@@ -65,12 +65,15 @@ public class CardPlayerHand {
 	}
 	
 	public void blindRemoveFromPublic(char suit, int face){
-		Card card = null;
-		for (Card c : cardPublic){
-			if (c.getSuit() == suit && c.getFace() == face){
-				game.removeView(card);
-				return;
+		Card cardToRemove = null;
+		for (Card card : cardPublic){
+			if (card.getSuit() == suit && card.getFace() == face){
+				cardToRemove = card;
+				break;
 			}
+		}
+		if (cardPublic.remove(cardToRemove)){
+			game.removeView(cardToRemove);
 		}
 	}
 	
