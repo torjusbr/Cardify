@@ -48,7 +48,8 @@ public class CardPlayerHand {
 		stackCards();
 	}
 	
-	public void blindAddToPublic(Card card){
+	public void blindAddToPublic(char suit, int face){
+		Card card = new Card(this.game, suit, face);
 		cardPublic.add(card);
 		cardStack.remove(card);
 		cardPublic.add(card);

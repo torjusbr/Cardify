@@ -120,7 +120,7 @@ public class Client {
 	private void handleAddedCardToPublicZone(Message message) {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
-		((Game) activity).getPlayerHand().blindAddToPublic(new Card(activity, suit, face));
+		((Game) activity).getPlayerHand().blindAddToPublic(suit, face);
 		return;
 	}
 }
