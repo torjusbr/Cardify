@@ -31,6 +31,7 @@ public class Game extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
+		
 		String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
 		this.client = new Client(this);
 		for (String inetAddr : receiverAddresses){
@@ -40,8 +41,9 @@ public class Game extends Activity {
 				
 				Log.e("Game:onCreate", e.getMessage());
 			}
-		}
+		} 
 		initGame();
+		
 	}
 	
 	public Point getDisplaySize(){
