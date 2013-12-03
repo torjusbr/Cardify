@@ -36,7 +36,7 @@ public class Game extends Activity {
 		this.client = new Client(this);
 		for (String inetAddr : receiverAddresses){
 			try {
-				client.addReceiver(InetAddress.getByName(inetAddr.substring(1)));
+				client.addReceiver(InetAddress.getByName(inetAddr));
 			} catch (UnknownHostException e) {
 				
 				Log.e("Game:onCreate", e.getMessage());

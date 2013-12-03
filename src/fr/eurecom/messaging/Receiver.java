@@ -97,12 +97,17 @@ public class Receiver implements Runnable {//extends AsyncTask<String, Void, JSO
 		}
 	}
 	
+	
 	public void stopListening(){
-		this.listening = false;
+		//this.listening = false;
+		
+		/*
 		try {
 			this.socket.close();
 		} catch (IOException e) {
 			Log.e("Receiver:stopListening", e.getMessage());
 		}
+		*/
 	}
+	
 }
