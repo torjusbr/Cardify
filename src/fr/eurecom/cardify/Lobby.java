@@ -216,12 +216,13 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		findPeers();
 	}
 	
+	// Start a new game as host
 	public void startGame(View view) {
 		client.broadcastStartGame();
-		startGameActivity(this.client.getReceivers());
+		startGameActivity(this.client.getReceivers(), true);
 	}
 	
-	public void startGameActivity(Set<InetAddress> receivers){
+	public void startGameActivity(Set<InetAddress> receivers, boolean isHost){
 		client.disconnect();
 		Intent intent = new Intent(this, Game.class);
 		String addresses = "";
@@ -229,9 +230,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			addresses += addr.toString() + ",";
 		}
 		intent.putExtra("receivers", addresses);
+		intent.putExtra("isHost", isHost);
 		this.startActivity(intent);
 	}
-
+	
+	public void startGameActivity(Set<InetAddress> receivers){
+		startGameActivity(receivers, false);
+	}
+	
 	// Every time new connection is available
 	@Override
 	public void onConnectionInfoAvailable(WifiP2pInfo info) {
