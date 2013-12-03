@@ -5,22 +5,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Point;
-import android.graphics.drawable.ShapeDrawable;
 import android.view.View;
 import fr.eurecom.cardify.Game;
-import fr.eurecom.cardify.R;
 
 public class CardPlayerHand {
 
 	public List<Card> cardStack;
-	public List<Card> cardHeap;
 	public List<Card> cardPublic;
 	public Game game;
 	
 	public CardPlayerHand(Game game){
 		this.game = game;
 		cardStack = new LinkedList<Card>();
-		cardHeap = new LinkedList<Card>();
 		cardPublic = new LinkedList<Card>();
 	}
 	
@@ -35,22 +31,13 @@ public class CardPlayerHand {
 	}
 	
 	public void addToStack(Card card){
-		removeFromStackAndHeap(card);
+		cardStack.remove(card);
 		int pos = 0;
 		for (Card c : cardStack){
 			if (c.getX() >= card.getX()) break;
 			pos++;
 		}
 		cardStack.add(pos, card);
-		stackCards();
-		
-		//TODO: REMOVE
-		//game.getClient().sendDummyMessage();
-	}
-	
-	public void addToHeap(Card card){
-		removeFromStackAndHeap(card);
-		cardHeap.add(card);
 		stackCards();
 	}
 	
@@ -63,6 +50,10 @@ public class CardPlayerHand {
 	
 	public void blindAddToPublic(Card card){
 		cardPublic.add(card);
+		cardStack.remove(card);
+		cardPublic.add(card);
+		stackCards();
+		System.out.println("Add to public");
 	}
 	
 	public void stackCards(){
@@ -96,39 +87,20 @@ public class CardPlayerHand {
 		return true;
 	}
 	
-	public boolean inPublicZone(float x, float y){
-		Point displaySize = game.getDisplaySize();
-		if (x < displaySize.x*0.5 || x > displaySize.x) return false;
-		if (y < 0 || y > displaySize.y*0.5) return false;
-		return true;	
+	public void takeCard(Card card) {
+		
 	}
 	
 	public void dropCard(Card card){
-		if (inStackZone(card.getX(), card.getY())){
+		if(inStackZone(card.getX(), card.getY())) {
 			addToStack(card);
 		} else {
-			addToHeap(card);
+			addToPublic(card);
 		}
 	}
 	
-	//TODO: FIX :>
-	boolean publicZoneHighlighted;
 	public void moveCard(Card card) {
-		if (inPublicZone(card.getX(), card.getY())) {
-			System.out.println("In public zone");
-			if(publicZoneHighlighted) {
-				View v = (View) game.findViewById(R.id.public_rectangle);
-				ShapeDrawable d = (ShapeDrawable) v.getBackground();
-				d.getPaint().setColor(game.getResources().getColor(R.color.green));
-			}
-		} else {
-			System.out.println("fasd");
-		}
-	}
-	
-	public void removeFromStackAndHeap(Card card){
-		cardHeap.remove(card);
-		cardStack.remove(card);
+		
 	}
 	
 	private void queueBringToFront(View v){
@@ -141,8 +113,6 @@ public class CardPlayerHand {
 	}
 	
 	public void sortCards(CardSortingRule sorting) {
-		cardStack.addAll(cardHeap);
-		cardHeap.clear();
 		Collections.sort(cardStack, new CardComparator(sorting));
 		stackCards();
 	}

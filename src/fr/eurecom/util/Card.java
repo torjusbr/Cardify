@@ -67,7 +67,8 @@ public class Card extends ImageView implements OnTouchListener {
 				
 				v.setAlpha((float)0.5);
 				v.bringToFront();
-				playerHand.removeFromStackAndHeap(this);
+				playerHand.takeCard(this);
+				
 		    	break;
 		    	
 			case MotionEvent.ACTION_MOVE:
