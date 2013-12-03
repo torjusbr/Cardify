@@ -52,6 +52,7 @@ public class CardPlayerHand {
 	public void blindAddToPublic(char suit, int face){
 		Log.e("CardPlayerHand:blindAddToPublic", ""+suit+face);
 		Card card = new Card(this.game, suit, face);
+		card.setOwner(this);
 		cardPublic.add(card);
 		game.addView(card);
 	}
