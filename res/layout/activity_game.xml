@@ -8,29 +8,44 @@
     android:background="@color/green"
     tools:context=".Game" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="well hello motherfucker" />
-    
     <View
-        android:id="@+id/left"
+        android:id="@+id/right"
         android:layout_width="0dp"
         android:layout_height="0dp" 
         android:layout_centerHorizontal="true" />
     
-    <View
-        android:id="@+id/top"
+    <View 
+        android:id="@+id/bottom"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"/>
     
-    <View
-    	android:id="@+id/public_rectangle"
-        android:layout_width="fill_parent"
+    <LinearLayout 
+        android:id="@+id/gameMessageLayout"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/top"
-        android:layout_toRightOf="@+id/left"
-        android:background="@drawable/public_rectangle" />
+        android:layout_alignRight="@id/right"
+        android:layout_alignBottom="@id/bottom"
+        android:orientation="horizontal" >
+        
+        <TextView
+         android:id="@+id/messageStream"
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_marginTop="10dp"
+         android:layout_marginLeft="10dp"
+         android:layout_weight="0.6"
+         android:background="@drawable/public_rectangle"
+         android:padding="@dimen/activity_horizontal_margin"
+         android:text="textview" />
+        
+        <View 
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="0.4"/>
+        
+    </LinearLayout>
+    
+     
 
 </RelativeLayout>

@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
@@ -25,12 +26,14 @@ public class Game extends Activity {
 	private CardDeck deck;
 	private CardPlayerHand playerHand;
 	private Client client;
+	private TextView messageStream;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
+		messageStream = (TextView) findViewById(R.id.messageStream);
 		
 		String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
 		this.client = new Client(this);
@@ -42,6 +45,7 @@ public class Game extends Activity {
 				Log.e("Game:onCreate", e.getMessage());
 			}
 		} 
+		
 		initGame();
 		
 	}
@@ -122,5 +126,9 @@ public class Game extends Activity {
 	
 	public CardPlayerHand getPlayerHand() {
 		return this.playerHand;
+	}
+	
+	public void printMessage(String message) {
+		messageStream.append(message);
 	}
 }

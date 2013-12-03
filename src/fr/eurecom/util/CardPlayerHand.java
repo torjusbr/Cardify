@@ -65,16 +65,8 @@ public class CardPlayerHand {
 		card.setOwner(this);
 		cardPublic.add(card);
 		animateCardIntoView(card);
-	}
-	
-	private void animateCardIntoView(Card card) {
-		card.setX(displaySize.x/2 - Card.width/2);
-		card.setY(0 - Card.height);
 		
-		int yTranslation = (displaySize.y/2 - Card.height/2);
-		
-		game.addView(card);
-		card.animate().translationY(yTranslation).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
+		game.printMessage("?? played "+suit+face);
 	}
 	
 	public void blindRemoveFromPublic(char suit, int face){
@@ -88,6 +80,18 @@ public class CardPlayerHand {
 		if (cardPublic.remove(cardToRemove)){
 			game.removeView(cardToRemove);
 		}
+		
+		game.printMessage("?? took "+suit+face+" from the table");
+	}
+	
+	private void animateCardIntoView(Card card) {
+		card.setX(displaySize.x/2 - Card.width/2);
+		card.setY(0 - Card.height);
+		
+		int yTranslation = (displaySize.y/2 - Card.height/2);
+		
+		game.addView(card);
+		card.animate().translationY(yTranslation).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
 	}
 	
 	public void stackCards(){
