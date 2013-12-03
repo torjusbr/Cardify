@@ -6,6 +6,7 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.util.Log;
+import fr.eurecom.cardify.Game;
 import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
 
@@ -119,10 +120,7 @@ public class Client {
 	private void handleAddedCardToPublicZone(Message message) {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
-		//TODO:
-		/*
-		 * Make receiver method in game instance to handle such events
-		 */
+		((Game) activity).getPlayerHand().blindAddToPublic(new Card(activity, suit, face));
 		return;
 	}
 }

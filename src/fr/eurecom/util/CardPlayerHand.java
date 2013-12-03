@@ -55,7 +55,14 @@ public class CardPlayerHand {
 	}
 	
 	public void addToPublic(Card card){
-		
+		if (cardStack.remove(card)){
+			cardPublic.add(card);
+			game.getClient().publishPutCardInPublicZone(card);
+		}
+	}
+	
+	public void blindAddToPublic(Card card){
+		cardPublic.add(card);
 	}
 	
 	public void stackCards(){

@@ -111,4 +111,8 @@ public class Game extends Activity {
 	public Client getClient() {
 		return this.client;
 	}
+	
+	public CardPlayerHand getPlayerHand() {
+		return this.playerHand;
+	}
 }
