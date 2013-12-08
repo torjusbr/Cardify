@@ -1,76 +1,71 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/green"
+    android:baselineAligned="false"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Lobby" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_activity_lobby" />
-
-    <RelativeLayout
-        android:id="@+id/lobbyView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_alignParentTop="true" >
-
-    </RelativeLayout>
-
-    <Button
-        android:id="@+id/refreshPeersButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/textView1"
-        android:layout_marginRight="65dp"
-        android:onClick="refreshPeers"
-        android:text="@string/lobby_refresh_peers" />
-
-    <TextView
-        android:id="@+id/peerText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/refreshPeersButton"
-        android:layout_below="@+id/refreshPeersButton"
-        android:layout_marginTop="22dp"
-        android:text="@string/lobby_playersOnline" />
-
     <LinearLayout
-        android:id="@+id/peerButtons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/peerText"
-        android:layout_below="@+id/peerText"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
         android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lobby_connected_peers" />
+
+        <LinearLayout
+            android:id="@+id/lobby_connectedPeersList"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/connectedDevicesLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/refreshPeersButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
         android:orientation="vertical" >
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lobby_available_peers" />
+
+            <Button
+                android:id="@+id/lobby_refreshPeersBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="refreshPeers"
+                android:text="@string/lobby_refresh_peers" />
+
+            <Button
+                android:id="@+id/lobby_startGameBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="startGame"
+                android:text="@string/lobby_start_game"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lobby_availablePeersList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/startButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/lobbyView"
-        android:text="Start"
-        android:onClick="startGame"
-        android:visibility="invisible" />
-
-</RelativeLayout>
+</LinearLayout>

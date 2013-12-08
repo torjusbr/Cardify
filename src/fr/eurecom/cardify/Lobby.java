@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
@@ -66,58 +65,55 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	//TODO: Stupid
 	private void resetPeerList() {
-		TextView tv = (TextView)findViewById(R.id.peerText);
-		tv.setText("Players online: ");
-		((LinearLayout) findViewById(R.id.peerButtons)).removeAllViews();
-		((LinearLayout) findViewById(R.id.connectedDevicesLayout)).removeAllViews();
+		((LinearLayout) findViewById(R.id.lobby_connectedPeersList)).removeAllViews();
+		((LinearLayout) findViewById(R.id.lobby_availablePeersList)).removeAllViews();
 	}
 	
 	public void setPeers(WifiP2pDeviceList peers) {
 		this.peers = peers;
 		resetPeerList();
 		printPeers();
-		((Button) findViewById(R.id.refreshPeersButton)).setClickable(true);
+		((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 	}
 	
 	private void printPeers() {
-		Log.d(getLocalClassName(), "printPeers(): " + peers.getDeviceList().size());
-		TextView tv = (TextView)findViewById(R.id.peerText);
-		StringBuilder text = new StringBuilder("Players online: ");
+		Log.d(getLocalClassName(), "Lobby:printPeers(): " + peers.getDeviceList().size());
 		
-		for (WifiP2pDevice peer : peers.getDeviceList()) {
-			Log.d(getLocalClassName(), "Peer from printPeers(): " + peer.deviceName);
-			printPeerButton(peer);
+		for (WifiP2pDevice device : peers.getDeviceList()) {
+			Log.d(getLocalClassName(), "Peer from printPeers(): " + device.deviceName);
+			if (device.status == WifiP2pDevice.CONNECTED)
+				addToListOfConnectedPeers(device);
+			else {
+				addToListOfAvailablePeers(device);
+			}
 		}
 		
-		tv.setText(text);
 	}
 	
-	private void printPeerButton(final WifiP2pDevice device) {
-		ViewGroup vg;
-		Button bt = new Button(this);
-		if (device.status == WifiP2pDevice.CONNECTED) {
-			bt.setText("Disconnect " + device.deviceName);
-			vg = (ViewGroup) findViewById(R.id.connectedDevicesLayout);
-			bt.setOnClickListener(new View.OnClickListener() {
-		        public void onClick(View view) {
-		        	disconnectFromDevice(device);
-		        }
-		    });
-		} else {
-			bt.setText("Connect " + device.deviceName);
-			vg = (ViewGroup) findViewById(R.id.peerButtons);
-			bt.setOnClickListener(new View.OnClickListener() {
-		        public void onClick(View view) {
-		        	connectToDevice(device);
-		        }
-		    });
-		}
+	private void addToListOfAvailablePeers(final WifiP2pDevice device) {
+		Button view = new Button(this);
+		view.setText(device.deviceName);
+		view.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				connectToDevice(device);
+			}
+		});
+		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		((ViewGroup) findViewById(R.id.lobby_availablePeersList)).addView(view);
+	}
+	
+	private void addToListOfConnectedPeers(final WifiP2pDevice device) {
+		Button view = new Button(this);
+		view.setText(String.format("Disconnect from %s", device.deviceName));
+		view.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				disconnectFromDevice(device);
+			}
+		});
+		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		((ViewGroup) findViewById(R.id.lobby_connectedPeersList)).addView(view);
+	}
 		
-		bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-
-		vg.addView(bt);
-	}
-	
 	private void connectToDevice(WifiP2pDevice device) {
 		
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
@@ -258,7 +254,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		if (this.client == null){
 			this.client = new Client(this);
-			Button startButton = (Button) findViewById(R.id.startButton);
+			Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
 			startButton.setVisibility(Button.VISIBLE);
 		}
 	}
