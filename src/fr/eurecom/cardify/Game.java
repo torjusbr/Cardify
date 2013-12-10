@@ -48,7 +48,8 @@ public class Game extends Activity {
 			try {
 				client.addReceiver(InetAddress.getByName(inetAddr.substring(1)));
 			} catch (UnknownHostException e) {
-				
+				Log.e("Game:onCreate", e.getMessage());
+			} catch (StringIndexOutOfBoundsException e) {
 				Log.e("Game:onCreate", e.getMessage());
 			}
 		} 

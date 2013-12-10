@@ -77,8 +77,8 @@ public class Client {
 	}
 	
 	
-	private void sendMessage(Action action, String subject) {
-		Message message = new Message(action, subject);
+	private void sendMessage(Action what, String about) {
+		Message message = new Message(what, about);
 		for (InetAddress receiver : receivers){
 			this.sender.send(message, receiver);
 		}
