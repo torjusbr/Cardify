@@ -19,13 +19,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lobby_connected_peers" />
+            android:text="@string/lobby_connected_peers"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:id="@+id/lobby_connectedPeersList"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
         </LinearLayout>
     </LinearLayout>
 
@@ -42,22 +43,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/lobby_available_peers" />
+                android:text="@string/lobby_available_peers"
+                android:textSize="24sp" />
 
             <Button
                 android:id="@+id/lobby_refreshPeersBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="refreshPeers"
-                android:text="@string/lobby_refresh_peers" />
+                android:background="@drawable/ic_action_refresh"
+                android:onClick="refreshPeers" />
 
             <Button
                 android:id="@+id/lobby_startGameBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="startGame"
-                android:text="@string/lobby_start_game"
-                android:visibility="invisible" />
+                android:text="@string/lobby_start_game" />
         </LinearLayout>
 
         <LinearLayout
