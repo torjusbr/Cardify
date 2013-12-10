@@ -54,12 +54,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		group = null;
 	}
 
+
 	protected void setUpWiFiDirect() {
-		
 		mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 		mChannel = mManager.initialize(this, getMainLooper(), null);
 		mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
-
+		
 		mIntentFilter = new IntentFilter();
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -68,7 +68,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 
 	}
 
-	
 	//TODO: Stupid
 	private void resetPeerList() {
 		((LinearLayout) findViewById(R.id.lobby_connectedPeersList)).removeAllViews();
@@ -77,9 +76,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void setPeers(WifiP2pDeviceList peers) {
 		this.peers = peers;
+		((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 		resetPeerList();
 		printPeers();
-		((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 	}
 	
 	private void printPeers() {
@@ -94,6 +93,15 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			}
 		}
 		
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if (progressDialog.isShowing()) {
+			progressDialog.dismiss();
+			cancelConnect();
+		}
+		super.onBackPressed();
 	}
 	
 	private void addToListOfAvailablePeers(final WifiP2pDevice device) {
@@ -126,7 +134,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		timerDelayRemoveDialog(10000, progressDialog);
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
-		
 
 		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
@@ -142,18 +149,24 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	public void timerDelayRemoveDialog(long time, final Dialog d){
 	    new Handler().postDelayed(new Runnable() {
 	        public void run() {                
-	            d.dismiss();  
-	            mManager.cancelConnect(mChannel, new LobbyActionListener("Failed cancel connect", "Canceled connect"));
+	            if (d.isShowing()) { 
+		        	d.dismiss();  
+		            cancelConnect();
+	            }
 	        }
 	    }, time); 
 	}
 	
 	public void dismissProgressDialog() {
-		progressDialog.dismiss();
+		if (progressDialog.isShowing()) {
+			progressDialog.dismiss();
+		}
 	}
 	
 	private void disconnectFromDevice(WifiP2pDevice device) {
 		mManager.removeGroup(mChannel, new LobbyActionListener("Disconnected", "Failed disconnecting"));
+		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 	}
 
 	private void findPeers() {
@@ -251,11 +264,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.client.registerAtHost();
 	}
 	
-	
-	
-	
+	private void cancelConnect() {
+		mManager.cancelConnect(mChannel, new LobbyActionListener("Failed cancel connect", "Canceled connect"));
+	}
+		
 	private class LobbyActionListener implements ActionListener {
-
+		
 		private String failureMessage, successMessage;
 		
 		private LobbyActionListener(String failureMessage, String successMessage) {

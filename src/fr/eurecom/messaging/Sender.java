@@ -38,9 +38,7 @@ public class Sender {
 			outputStream.close();
 			
 		} catch (IOException e) {
-			// catch logic
-			e.printStackTrace();
-			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
+			Log.e("Sender:send", e.getMessage());
 		} 
 		
 		finally {
@@ -59,8 +57,8 @@ public class Sender {
 	private String serialize(Message message) {
 		JSONObject json = new JSONObject();
 		try {
-			json.put("action", message.getAction().ordinal());
-			json.put("subject", message.getSubject());
+			json.put("what", message.what.ordinal());
+			json.put("about", message.about);
 		} catch (JSONException e) {
 			Log.e("Sender", "JSONError");
 			e.printStackTrace();

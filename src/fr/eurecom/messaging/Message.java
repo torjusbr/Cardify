@@ -4,30 +4,37 @@ import java.net.InetAddress;
 
 public class Message {
 	
-	private Action action;
-	private String subject;
-	private InetAddress sender;
+	public final Action what;
+	public final String about;
+	private InetAddress originatorAddr;
+	private String originatorName; 
 	
-	public Message(Action action, String subject) {
-		this.action = action;
-		this.subject = subject;
-		this.sender = null;
+	public Message(Action what, String about) {
+		this.what = what;
+		this.about = about;
+		this.originatorAddr = null;
+		this.originatorName = null;
 	}
 	
-	public Action getAction() {
-		return action;
-	}
-
-	public String getSubject() {
-		return subject;
+	public Message(Action what, String about, String originatorName){
+		this(what, about);
+		this.originatorName = originatorName;
 	}
 	
-	public void setSender(InetAddress sender) {
-		this.sender = sender;
+	public void setOriginatorAddr(InetAddress originator) {
+		this.originatorAddr = originator;
 	}
 	
-	public InetAddress getSender(){
-		return this.sender;
+	public InetAddress getOriginatorAddr(){
+		return this.originatorAddr;
+	}
+	
+	public void setOriginatorName(String originator) {
+		this.originatorName = originator;
+	}
+	
+	public String getOriginatorName(){
+		return this.originatorName;
 	}
 	
 }
