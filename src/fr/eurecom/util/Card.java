@@ -24,6 +24,9 @@ public class Card extends ImageView implements OnTouchListener {
 	private Point anchorPoint = new Point();
 	private Point screenSize;
 	private CardPlayerHand playerHand;
+	private Context context;
+	
+	private long lastDown;
 	
 	
 	public Card(Context context) {
@@ -32,14 +35,12 @@ public class Card extends ImageView implements OnTouchListener {
 	
 	public Card(Context context, char suit, int face) {
 		super(context);
+		this.context = context;
 		this.suit = suit;
 		this.face = face;
 		this.playerHand = null;
 		
-		String resourceString = "drawable/"+suit+face;
-		imageResource = getImageResource(context, resourceString);
-		
-		this.setImageResource(imageResource);
+		updateImageResource();
 		this.setLayoutParams(new LayoutParams(width, height));
 		
 		this.setOnTouchListener(this);
@@ -54,14 +55,17 @@ public class Card extends ImageView implements OnTouchListener {
 		this.playerHand = owner;
 	}
 	
+	private void updateImageResource() {
+		imageResource = getImageResource(context, getImageResource());
+		this.setImageResource(imageResource);
+	}
+	
 	private static int getImageResource(Context context, String string) {		
 		return context.getResources().getIdentifier(string, null, context.getPackageName());
 	}
 	
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		System.out.println("touchEvent");
-		return false;
+	private String getImageResource() {
+		return turned ? "drawable/back_blue" : "drawable/"+suit+face;
 	}
 	
 	@Override
@@ -70,6 +74,11 @@ public class Card extends ImageView implements OnTouchListener {
 		
 		switch(action) {
 			case MotionEvent.ACTION_DOWN:
+				if(lastDown != 0 && (System.currentTimeMillis() - lastDown) <= 200) {
+					turned = turned ? false : true;
+					updateImageResource();
+				}
+				lastDown = System.currentTimeMillis();
 				
 				anchorPoint.x = (int) (event.getRawX() - v.getX());
 				anchorPoint.y = (int) (event.getRawY() - v.getY());
@@ -78,7 +87,7 @@ public class Card extends ImageView implements OnTouchListener {
 				v.bringToFront();
 				playerHand.takeCard(this);
 				
-		    	break;
+		    	return true;
 		    	
 			case MotionEvent.ACTION_MOVE:
 				
@@ -103,19 +112,19 @@ public class Card extends ImageView implements OnTouchListener {
                 	v.setY(y-(anchorPoint.y));
                 	playerHand.moveCard(this);
                 }
-				break;
+				
+                return true;
 				
 			case MotionEvent.ACTION_UP:
 				
 				v.setAlpha(1);
 				playerHand.dropCard(this);
-				break;
+				return true;
 
 			default:
 				Log.e("TOUCH", "OTHER TOUCH EVENT NO."+action);
-				break;
+				return false;
 		}
-		return true;
 	}
 
 	public char getSuit() {
@@ -129,5 +138,6 @@ public class Card extends ImageView implements OnTouchListener {
 	public String toString() {
 		return ""+this.suit+this.face;
 	}
+
 }
 
