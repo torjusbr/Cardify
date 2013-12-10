@@ -18,10 +18,13 @@ public class Card extends ImageView implements OnTouchListener {
 	
 	private char suit;
 	private int face;
+	private boolean turned;
+	
 	private int imageResource;
 	private Point anchorPoint = new Point();
 	private Point screenSize;
 	private CardPlayerHand playerHand;
+	
 	
 	public Card(Context context) {
 		super(context);
@@ -54,7 +57,13 @@ public class Card extends ImageView implements OnTouchListener {
 	private static int getImageResource(Context context, String string) {		
 		return context.getResources().getIdentifier(string, null, context.getPackageName());
 	}
-
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		System.out.println("touchEvent");
+		return false;
+	}
+	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		final int action = event.getAction();

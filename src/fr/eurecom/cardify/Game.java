@@ -19,12 +19,14 @@ import android.widget.TextView;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
+import fr.eurecom.util.CardSolitaireHand;
 import fr.eurecom.util.CardSortingRule;
 
 public class Game extends Activity {
 
 	private CardDeck deck;
 	private CardPlayerHand playerHand;
+	private CardSolitaireHand solitaireHand;
 	private Client client;
 	private TextView messageStream;
 	
@@ -33,30 +35,33 @@ public class Game extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
-		messageStream = (TextView) findViewById(R.id.messageStream);
-		// If client, we receive cards from host at a later stage
-		deck = null;
-		playerHand = new CardPlayerHand(this);
-		
-		// Set up client
-		String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
-		Boolean isHost = getIntent().getExtras().getBoolean("isHost");
-		this.client = new Client(this);
-		if (isHost) client.changeToHost();
-		
-		for (String inetAddr : receiverAddresses){
-			try {
-				client.addReceiver(InetAddress.getByName(inetAddr.substring(1)));
-			} catch (UnknownHostException e) {
-				
-				Log.e("Game:onCreate", e.getMessage());
-			}
-		} 
+		if((Boolean) getIntent().getExtras().get("isSolitaire")) {
+			initSolitaire();
+		} else {
+			messageStream = (TextView) findViewById(R.id.messageStream);
+			// If client, we receive cards from host at a later stage
+			deck = null;
+			playerHand = new CardPlayerHand(this);
+			
+			// Set up client
+			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
+			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
+			this.client = new Client(this);
+			if (isHost) client.changeToHost();
+			
+			for (String inetAddr : receiverAddresses){
+				try {
+					client.addReceiver(InetAddress.getByName(inetAddr.substring(1)));
+				} catch (UnknownHostException e) {
+					
+					Log.e("Game:onCreate", e.getMessage());
+				}
+			} 
 
-		if (client.isHost()){
-			initGame();
+			if (client.isHost()){
+				initGame();
+			}
 		}
-		
 	}
 	
 	public Point getDisplaySize(){
@@ -83,6 +88,14 @@ public class Game extends Activity {
 		playerHand.dealCards(deck.draw(cardsPerPlayer));
 		
 		client.pushInitialCards(deck, cardsPerPlayer);
+	}
+	
+	private void initSolitaire() {
+		this.deck = new CardDeck(this);
+		deck.shuffle();
+		
+		this.solitaireHand = new CardSolitaireHand(this);
+		solitaireHand.dealCards(deck.draw(52));
 	}
 	
 	public void addView(View v){

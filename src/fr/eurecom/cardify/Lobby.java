@@ -194,6 +194,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		startGameActivity(this.client.getReceivers(), true);
 	}
 	
+	public void startSolitaire(View view) {
+		Intent intent = new Intent(this, Game.class);
+		intent.putExtra("isSolitaire", true);
+		this.startActivity(intent);
+	}
+	
 	public void startGameActivity(Set<InetAddress> receivers, boolean isHost){
 		client.disconnect();
 		Intent intent = new Intent(this, Game.class);
@@ -201,6 +207,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		for (InetAddress addr : receivers){
 			addresses += addr.toString() + ",";
 		}
+		intent.putExtra("isSolitaire", false);
 		intent.putExtra("receivers", addresses);
 		intent.putExtra("isHost", isHost);
 		this.startActivity(intent);

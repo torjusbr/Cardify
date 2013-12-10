@@ -18,6 +18,7 @@
     <string name="lobby_connected_peers">Connected players</string>
     <string name="lobby_refresh_peers">Refresh</string>
     <string name="lobby_start_game">Start Game</string>
+    <string name="lobby_solitaire">Solitaire</string>
     
     
     <string name="lobby_chat">Game</string>
