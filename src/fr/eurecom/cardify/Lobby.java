@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -28,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import fr.eurecom.cardify.R.drawable;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
@@ -111,6 +113,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			}
 		});
 		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		view.setCompoundDrawablesWithIntrinsicBounds(drawable.ic_action_add_person,0,0,0);
 		((ViewGroup) findViewById(R.id.lobby_availablePeersList)).addView(view);
 	}
 	
@@ -123,6 +126,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			}
 		});
 		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_remove,0);
 		((ViewGroup) findViewById(R.id.lobby_connectedPeersList)).addView(view);
 	}
 		
