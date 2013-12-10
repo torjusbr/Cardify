@@ -38,7 +38,7 @@
         android:orientation="vertical" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
@@ -54,24 +54,15 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ic_action_refresh"
                 android:onClick="refreshPeers" />
-            
-            <Button
-                android:id="@+id/lobby_solitaire"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="startSolitaire"
-				android:text="@string/lobby_solitaire" />
-				
+
             <Button
                 android:id="@+id/lobby_startGameBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="startGame"
-                android:text="@string/lobby_start_game"
+                android:background="@drawable/ic_action_play"
                 android:visibility="invisible" />
         </LinearLayout>
-        
-        
 
         <LinearLayout
             android:id="@+id/lobby_availablePeersList"
@@ -79,6 +70,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
         </LinearLayout>
+
+        <Button
+            android:id="@+id/lobby_solitaire"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="startSolitaire"
+            android:text="@string/lobby_solitaire" />
     </LinearLayout>
 
 </LinearLayout>
