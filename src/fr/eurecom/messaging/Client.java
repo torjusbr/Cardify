@@ -84,6 +84,14 @@ public class Client {
 		}
 	}
 	
+	private void broadcastChange(Message message){
+		for (InetAddress receiver : receivers){
+			if (!receiver.equals(message.getSender())){
+				this.sender.send(message, receiver);
+			}
+		}
+	}
+	
 	
 	public void handleMessage(Message message) {
 		if (this.activity instanceof Lobby) {
@@ -119,7 +127,6 @@ public class Client {
 	}
 	
 	private void handleInGameMessage(Message message){
-		Log.e("Client:handleInGameMessage", "HI");
 		switch (message.getAction()) {
 		case ADDED_CARD_TO_PUBLIC_ZONE:
 			handleAddedCardToPublicZone(message);
@@ -142,6 +149,9 @@ public class Client {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		((Game) activity).getPlayerHand().blindAddToPublic(suit, face);
+		if (isHost) { 
+			broadcastChange(message);
+		}
 	}
 	
 	private void handleRemovedCardFromPublicZone(Message message) {
@@ -149,6 +159,9 @@ public class Client {
 		char suit = message.getSubject().charAt(0);
 		int face = Integer.parseInt(message.getSubject().substring(1));
 		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face);
+		if (isHost) {
+			broadcastChange(message);
+		}
 	}
 	
 	private void handleInitialCards(Message message) {
