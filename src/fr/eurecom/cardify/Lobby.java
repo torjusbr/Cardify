@@ -62,7 +62,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		mIntentFilter = new IntentFilter();
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+//		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
 	}
@@ -172,7 +172,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		mManager.discoverPeers(mChannel, new ActionListener() {
 			@Override
 			public void onSuccess() {
-				Log.d("Lobby", "Done searching for peers" + " Reason is ");
+				Log.d("Lobby", "Done searching for peers");
 				((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 			}
 			
@@ -290,7 +290,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void cancelConnect() {
-		mManager.cancelConnect(mChannel, new LobbyActionListener("Failed cancel connect", "Canceled connect"));
+		mManager.cancelConnect(mChannel, new LobbyActionListener("Failed cancel connect", "Cancelled connect"));
+		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 	}
 		
 	private class LobbyActionListener implements ActionListener {

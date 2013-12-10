@@ -30,9 +30,9 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		CardPeerListListener myPeerListListener = new CardPeerListListener();
+		CardPeerListListener cardPeerListListener = new CardPeerListListener();
 		String action = intent.getAction();
-			
+		
 		Log.d("WifiDirectBroadcastReciever.onRecieve()", "In method");
 		if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
 			Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi enabled?");
@@ -45,10 +45,12 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 	        	Toast.makeText(context, "WiFi direct is not enabled. Turn on WiFi Direct!", Toast.LENGTH_LONG).show();
 	        }
 		} else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+			Log.d("WifiDirectBroadcastReciever.onRecieve()", "peers changed");
 		    if (mManager != null) {
-		        mManager.requestPeers(mChannel, myPeerListListener);
+		        mManager.requestPeers(mChannel, cardPeerListListener);
 		    }
 		} else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+			Log.d("WifiDirectBroadcastReciever.onRecieve()", "Connection changed");
 			NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 			if (networkInfo.isConnected()) {
                 mManager.requestConnectionInfo(mChannel, lobby);
@@ -59,6 +61,8 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             }
 		} else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
 			Toast.makeText(context, "WiFi direct state changed", Toast.LENGTH_SHORT).show();
+		} else {
+			Log.e("WifiDirectBroadcastReciever.onRecieve()", "Something else happened in onreceive. Action: " + action);
 		}
 	}
 	
