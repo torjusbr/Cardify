@@ -5,6 +5,7 @@ import java.util.Set;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,12 +13,14 @@ import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -38,6 +41,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private WifiP2pDeviceList peers;
 	private Client client;
 	private ProgressDialog progressDialog;
+	//Group
+	private WifiP2pGroup group;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		setUpWiFiDirect();
 		peers = new WifiP2pDeviceList();
 		progressDialog = new ProgressDialog(this);
+		group = null;
 	}
 
 	protected void setUpWiFiDirect() {
@@ -117,26 +123,13 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private void connectToDevice(WifiP2pDevice device) {
 		
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
+		timerDelayRemoveDialog(10000, progressDialog);
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
 		
 
 		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
-		mManager.connect(mChannel, config, new ActionListener() {
-
-		    @Override
-		    public void onSuccess() {
-		        //success logic
-		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "connected to peer");
-		    	
-		    }
-
-		    @Override
-		    public void onFailure(int reason) {
-		        //failure logic
-		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "not connected to peer " + reason);
-		    }
-		});
+		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
 	}
 	
 	private void showProgressDialog(String title, String message) {
@@ -146,43 +139,26 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.progressDialog.show();
 	}
 	
+	public void timerDelayRemoveDialog(long time, final Dialog d){
+	    new Handler().postDelayed(new Runnable() {
+	        public void run() {                
+	            d.dismiss();  
+	            mManager.cancelConnect(mChannel, new LobbyActionListener("Failed cancel connect", "Canceled connect"));
+	        }
+	    }, time); 
+	}
+	
 	public void dismissProgressDialog() {
 		progressDialog.dismiss();
 	}
 	
 	private void disconnectFromDevice(WifiP2pDevice device) {
-		mManager.removeGroup(mChannel, new ActionListener() {
-
-		    @Override
-		    public void onSuccess() {
-		        //success logic
-		    	client.disconnect();
-		    	client = null;
-		    	((Button)findViewById(R.id.startButton)).setVisibility(Button.INVISIBLE);
-		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "disconnected");
-		    }
-
-		    @Override
-		    public void onFailure(int reason) {
-		        //failure logic
-		    	Log.d("WifiDirectBroadcastReciever.onRecieve()", "failed to disconnect " + reason);
-		    }
-		});
+		mManager.removeGroup(mChannel, new LobbyActionListener("Disconnected", "Failed disconnecting"));
 	}
 
 	private void findPeers() {
 		mChannel = mManager.initialize(this, getMainLooper(), null);
-		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
-			@Override
-			public void onSuccess() {
-				Log.d(getLocalClassName(), "Done searching for peers :)");
-			}
-
-			@Override
-			public void onFailure(int reasonCode) {
-				Log.d(getLocalClassName(), "Couldn't search for peers. " + reasonCode);
-			}
-		});
+		mManager.discoverPeers(mChannel, new LobbyActionListener("Couldn't search for peers", "Done searching for peers"));
 	}
 
 	@Override
@@ -246,6 +222,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 				setUpClient(info);
 			}
 		}
+		dismissProgressDialog();
 	}
 	
 	// Create host if not already done
@@ -265,5 +242,32 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.client = new Client(this);
 		this.client.addReceiver(info.groupOwnerAddress);
 		this.client.registerAtHost();
+	}
+	
+	
+	
+	
+	private class LobbyActionListener implements ActionListener {
+
+		private String failureMessage, successMessage;
+		
+		private LobbyActionListener(String failureMessage, String successMessage) {
+			this.failureMessage = failureMessage;
+			this.successMessage = successMessage;
+		}
+		
+		@Override
+		public void onFailure(int reason) {
+			// TODO Auto-generated method stub
+			Log.d("Lobby", failureMessage + " Reason is " + reason);
+		}
+
+		@Override
+		public void onSuccess() {
+			// TODO Auto-generated method stub
+			Log.d("Lobby", successMessage);
+		}
+		
+		
 	}
 }
