@@ -10,7 +10,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.drawable.Drawable;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -66,7 +65,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-
 	}
 
 	//TODO: Stupid
@@ -93,11 +91,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			}
 		}
 		
-	}
-	
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
 	}
 	
 	private void addToListOfAvailablePeers(final WifiP2pDevice device) {
@@ -127,7 +120,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 		
 	private void connectToDevice(WifiP2pDevice device) {
-		
 		
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
@@ -268,6 +260,11 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			startButton.setVisibility(Button.VISIBLE);
 			this.client = new Client(this);
 		}
+	}
+	
+	public void removeStartButton() {
+		Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
+		startButton.setVisibility(Button.INVISIBLE);
 	}
 	
 	// Create client and register at host
