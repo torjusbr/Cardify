@@ -54,7 +54,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		group = null;
 	}
 
-
 	protected void setUpWiFiDirect() {
 		mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 		mChannel = mManager.initialize(this, getMainLooper(), null);
@@ -76,7 +75,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void setPeers(WifiP2pDeviceList peers) {
 		this.peers = peers;
-		((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 		resetPeerList();
 		printPeers();
 	}
@@ -121,7 +119,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		view.setText(String.format("Disconnect from %s", device.deviceName));
 		view.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				disconnectFromDevice(device);
+				disconnectFromDevices();
 			}
 		});
 		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -163,15 +161,28 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		}
 	}
 	
-	private void disconnectFromDevice(WifiP2pDevice device) {
-		mManager.removeGroup(mChannel, new LobbyActionListener("Disconnected", "Failed disconnecting"));
+	private void disconnectFromDevices() {
+		mManager.removeGroup(mChannel, new LobbyActionListener("Disconnected", "Failed disconnecting or disconnected because of gamequit"));
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 	}
 
 	private void findPeers() {
 		mChannel = mManager.initialize(this, getMainLooper(), null);
-		mManager.discoverPeers(mChannel, new LobbyActionListener("Couldn't search for peers", "Done searching for peers"));
+		mManager.discoverPeers(mChannel, new ActionListener() {
+			@Override
+			public void onSuccess() {
+				Log.d("Lobby", "Done searching for peers" + " Reason is ");
+				((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
+			}
+			
+			@Override
+			public void onFailure(int reason) {
+				// TODO Auto-generated method stub
+				Log.d("Lobby", "Failed searching for peers" + " Reason is " + reason);
+				((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
+			}
+		});
 	}
 
 	@Override
@@ -191,8 +202,21 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	/* unregister the broadcast receiver */
 	@Override
 	protected void onPause() {
+		//disconnectFromDevices();
 		super.onPause();
 		unregisterReceiver(mReceiver);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		disconnectFromDevices();
+		super.onDestroy();
+	}
+	
+	@Override
+	protected void onStop() {
+		//disconnectFromDevices();
+		super.onStop();
 	}
 	
 	public void refreshPeers(View view) {
@@ -230,6 +254,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		if (info.groupFormed) {
 			if (info.isGroupOwner) {
+				dismissProgressDialog();
 				setUpHost(info);
 			} else {
 				setUpClient(info);
@@ -281,7 +306,5 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			// TODO Auto-generated method stub
 			Log.d("Lobby", successMessage);
 		}
-		
-		
 	}
 }
