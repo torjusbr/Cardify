@@ -38,9 +38,7 @@ public class Sender {
 			outputStream.close();
 			
 		} catch (IOException e) {
-			// catch logic
-			e.printStackTrace();
-			Log.d("Sender", "WTF? Feilmelding\n" + e.getMessage());
+			Log.e("Sender:send", e.getMessage());
 		} 
 		
 		finally {
