@@ -2,7 +2,6 @@ package fr.eurecom.cardify;
 
 import java.net.InetAddress;
 import java.util.Set;
-
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.Dialog;
@@ -50,6 +49,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lobby);
 		setUpWiFiDirect();
+		disconnectFromDevices();
 		peers = new WifiP2pDeviceList();
 		progressDialog = new ProgressDialog(this);
 		group = null;
@@ -156,8 +156,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void disconnectFromDevices() {
 		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
-		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+		this.client = null;
 	}
 
 	private void findPeers() {
@@ -265,6 +265,10 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	public void removeStartButton() {
 		Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
 		startButton.setVisibility(Button.INVISIBLE);
+	}
+	
+	public void removeClient() {
+		this.client = null;
 	}
 	
 	// Create client and register at host
