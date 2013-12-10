@@ -86,7 +86,7 @@ public class Client {
 	
 	private void broadcastChange(Message message){
 		for (InetAddress receiver : receivers){
-			if (!receiver.equals(message.getSender())){
+			if (!receiver.equals(message.getOriginatorAddr())){
 				this.sender.send(message, receiver);
 			}
 		}
@@ -102,7 +102,7 @@ public class Client {
 	}
 	
 	private void handlePreGameMessage(Message message){
-		switch (message.getAction()){
+		switch (message.what){
 		case GAME_STARTED:
 			handleGameStarted(message);
 			return;
@@ -115,7 +115,7 @@ public class Client {
 	}
 	
 	private void handleRegister(Message message) {
-		addReceiver(message.getSender());
+		addReceiver(message.getOriginatorAddr());
 	}
 	
 	private void handleGameStarted(Message message) {
@@ -127,7 +127,7 @@ public class Client {
 	}
 	
 	private void handleInGameMessage(Message message){
-		switch (message.getAction()) {
+		switch (message.what) {
 		case ADDED_CARD_TO_PUBLIC_ZONE:
 			handleAddedCardToPublicZone(message);
 			return;
@@ -145,9 +145,9 @@ public class Client {
 	}
 	
 	private void handleAddedCardToPublicZone(Message message) {
-		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.getSubject());
-		char suit = message.getSubject().charAt(0);
-		int face = Integer.parseInt(message.getSubject().substring(1));
+		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
+		char suit = message.about.charAt(0);
+		int face = Integer.parseInt(message.about.substring(1));
 		((Game) activity).getPlayerHand().blindAddToPublic(suit, face);
 		if (isHost) { 
 			broadcastChange(message);
@@ -155,9 +155,9 @@ public class Client {
 	}
 	
 	private void handleRemovedCardFromPublicZone(Message message) {
-		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.getSubject());
-		char suit = message.getSubject().charAt(0);
-		int face = Integer.parseInt(message.getSubject().substring(1));
+		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
+		char suit = message.about.charAt(0);
+		int face = Integer.parseInt(message.about.substring(1));
 		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face);
 		if (isHost) {
 			broadcastChange(message);
@@ -165,8 +165,8 @@ public class Client {
 	}
 	
 	private void handleInitialCards(Message message) {
-		Log.e("Client:handleInitialCards", "Cards: " + message.getSubject());
-		String[] cards = message.getSubject().split(";");
+		Log.e("Client:handleInitialCards", "Cards: " + message.about);
+		String[] cards = message.about.split(";");
 		((Game) activity).getPlayerHand().blindDealCards(cards);
 	}
 }
