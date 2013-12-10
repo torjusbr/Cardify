@@ -33,7 +33,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 		CardPeerListListener cardPeerListListener = new CardPeerListListener();
 		String action = intent.getAction();
 		
-		Log.d("WifiDirectBroadcastReciever.onRecieve()", "In method");
+		Log.d("WifiDirectBroadcastReciever.onRecieve()", "In method. Action: " + action);
 		if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
 			Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi enabled?");
 			int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
@@ -55,12 +55,12 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 			if (networkInfo.isConnected()) {
                 mManager.requestConnectionInfo(mChannel, lobby);
                 Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
-//                lobby.dismissProgressDialog();
+                lobby.dismissProgressDialog();
             } else {
             	Toast.makeText(context, "Disonnected", Toast.LENGTH_SHORT).show();
             }
 		} else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-			Toast.makeText(context, "WiFi direct state changed", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "WiFi direct this device changed", Toast.LENGTH_SHORT).show();
 		} else {
 			Log.e("WifiDirectBroadcastReciever.onRecieve()", "Something else happened in onreceive. Action: " + action);
 		}

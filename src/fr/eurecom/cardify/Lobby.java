@@ -64,7 +64,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		mIntentFilter = new IntentFilter();
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-//		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
 	}
@@ -97,10 +97,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	@Override
 	public void onBackPressed() {
-		if (progressDialog.isShowing()) {
-			progressDialog.dismiss();
-			cancelConnect();
-		}
 		super.onBackPressed();
 	}
 	
@@ -132,13 +128,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 	private void connectToDevice(WifiP2pDevice device) {
 		
-		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
-		timerDelayRemoveDialog(10000, progressDialog);
+		
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
 
 		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
+		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
+		timerDelayRemoveDialog(10000, progressDialog);
 	}
 	
 	private void showProgressDialog(String title, String message) {
@@ -166,9 +163,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void disconnectFromDevices() {
-		mManager.removeGroup(mChannel, new LobbyActionListener("Disconnected", "Failed disconnecting or disconnected because of gamequit"));
+		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 	}
 
 	private void findPeers() {
@@ -177,14 +174,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			@Override
 			public void onSuccess() {
 				Log.d("Lobby", "Done searching for peers");
-				((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
+				//((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 			}
 			
 			@Override
 			public void onFailure(int reason) {
 				// TODO Auto-generated method stub
 				Log.d("Lobby", "Failed searching for peers" + " Reason is " + reason);
-				((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
+				//((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 			}
 		});
 	}
@@ -206,25 +203,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	/* unregister the broadcast receiver */
 	@Override
 	protected void onPause() {
-		//disconnectFromDevices();
 		super.onPause();
 		unregisterReceiver(mReceiver);
 	}
 	
-	@Override
-	protected void onDestroy() {
-		disconnectFromDevices();
-		super.onDestroy();
-	}
-	
-	@Override
-	protected void onStop() {
-		//disconnectFromDevices();
-		super.onStop();
-	}
-	
 	public void refreshPeers(View view) {
-		((Button) view).setClickable(false);
+		//((Button) view).setClickable(false);
 		resetPeerList();
 		findPeers();
 	}
@@ -277,11 +261,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	// Create host if not already done
 	private void setUpHost(WifiP2pInfo info) {
 		Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
-		
+		Log.e("Lobby", "is this.client==null?" + (this.client == null));
 		if (this.client == null){
-			this.client = new Client(this);
+			Log.e("Lobby", "you are the new host");
 			Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
 			startButton.setVisibility(Button.VISIBLE);
+			this.client = new Client(this);
 		}
 	}
 	

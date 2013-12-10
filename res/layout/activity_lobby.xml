@@ -29,6 +29,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
         </LinearLayout>
+
+        <Button
+            android:id="@+id/lobby_startGameBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_action_play"
+            android:onClick="startGame"
+            android:visibility="invisible" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -55,13 +64,6 @@
                 android:drawableLeft="@drawable/ic_action_refresh"
                 android:onClick="refreshPeers" />
 
-            <Button
-                android:id="@+id/lobby_startGameBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="startGame"
-                android:drawableLeft="@drawable/ic_action_play"
-                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
