@@ -17,7 +17,7 @@ public class CardDeck {
 		
 		for (char suit : suits){
 			for (int face : faces){
-				cards.add(new Card(context, suit, face));
+				cards.add(new Card(context, suit, face, false));
 			}
 		}
 	}

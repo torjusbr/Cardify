@@ -68,6 +68,10 @@ public class Client {
 		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
 	}
 	
+	public void publishTurnCardInPublicZone(Card card) {
+		//TODO: FIX!!
+	}
+	
 	public void pushInitialCards(CardDeck deck, int n) {
 		String cards = "";
 		for (int i = 0; i < n; i++){
@@ -146,9 +150,10 @@ public class Client {
 	
 	private void handleAddedCardToPublicZone(Message message) {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
-		char suit = message.about.charAt(0);
-		int face = Integer.parseInt(message.about.substring(1));
-		((Game) activity).getPlayerHand().blindAddToPublic(suit, face);
+		boolean turned = message.about.charAt(0) == '1' ? true : false ;
+		char suit = message.about.charAt(1);
+		int face = Integer.parseInt(message.about.substring(2));
+		((Game) activity).getPlayerHand().blindAddToPublic(suit, face, turned);
 		if (isHost) { 
 			broadcastChange(message);
 		}
@@ -156,8 +161,8 @@ public class Client {
 	
 	private void handleRemovedCardFromPublicZone(Message message) {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
-		char suit = message.about.charAt(0);
-		int face = Integer.parseInt(message.about.substring(1));
+		char suit = message.about.charAt(1);
+		int face = Integer.parseInt(message.about.substring(2));
 		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face);
 		if (isHost) {
 			broadcastChange(message);

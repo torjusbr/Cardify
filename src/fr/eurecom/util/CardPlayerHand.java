@@ -59,9 +59,9 @@ public class CardPlayerHand {
 		}
 	}
 	
-	public void blindAddToPublic(char suit, int face){
+	public void blindAddToPublic(char suit, int face, boolean turned){
 		Log.e("CardPlayerHand:blindAddToPublic", ""+suit+face);
-		Card card = new Card(this.game, suit, face);
+		Card card = new Card(this.game, suit, face, turned);
 		card.setOwner(this);
 		cardPublic.add(card);
 		animateCardIntoView(card);
@@ -99,7 +99,7 @@ public class CardPlayerHand {
 		for (String str : cardStrings){
 			char suit = str.charAt(0);
 			int face = Integer.parseInt(str.substring(1));
-			cards.add(new Card(this.game, suit, face));
+			cards.add(new Card(this.game, suit, face, false));
 		}
 		this.dealCards(cards);
 	}

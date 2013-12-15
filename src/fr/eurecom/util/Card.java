@@ -33,11 +33,12 @@ public class Card extends ImageView implements OnTouchListener {
 		super(context);
 	}
 	
-	public Card(Context context, char suit, int face) {
+	public Card(Context context, char suit, int face, boolean turned) {
 		super(context);
 		this.context = context;
 		this.suit = suit;
 		this.face = face;
+		this.turned = turned;
 		this.playerHand = null;
 		
 		updateImageResource();
@@ -136,7 +137,7 @@ public class Card extends ImageView implements OnTouchListener {
 	}
 	
 	public String toString() {
-		return ""+this.suit+this.face;
+		return this.turned ? "1"+this.suit+this.face : "0"+this.suit+this.face;
 	}
 
 }
