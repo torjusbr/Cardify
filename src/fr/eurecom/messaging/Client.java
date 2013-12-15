@@ -73,11 +73,15 @@ public class Client {
 	}
 	
 	public void pushInitialCards(CardDeck deck, int n) {
-		String cards = "";
-		for (int i = 0; i < n; i++){
-			cards += deck.pop().toString() + ";";
+		for (InetAddress receiver : receivers){
+			String cards = "";
+			for (int i = 0; i < n; i++){
+				if (deck.peak() == null) break;
+				cards += deck.pop().toString() + ";";
+			}
+			Message message = new Message(Action.INITIAL_CARDS, cards);
+			this.sender.send(message, receiver);
 		}
-		sendMessage(Action.INITIAL_CARDS, cards);
 	}
 	
 	
