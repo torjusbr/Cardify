@@ -120,6 +120,7 @@ public class Client {
 	
 	private void handleRegister(Message message) {
 		addReceiver(message.getOriginatorAddr());
+		((Lobby) activity).dismissProgressDialog();
 	}
 	
 	private void handleGameStarted(Message message) {

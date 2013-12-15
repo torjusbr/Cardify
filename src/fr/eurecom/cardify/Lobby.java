@@ -2,6 +2,7 @@ package fr.eurecom.cardify;
 
 import java.net.InetAddress;
 import java.util.Set;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.Dialog;
@@ -12,7 +13,6 @@ import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
@@ -41,8 +41,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private WifiP2pDeviceList peers;
 	private Client client;
 	private ProgressDialog progressDialog;
-	//Group
-	private WifiP2pGroup group;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +50,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		disconnectFromDevices();
 		peers = new WifiP2pDeviceList();
 		progressDialog = new ProgressDialog(this);
-		group = null;
 	}
 
 	protected void setUpWiFiDirect() {
@@ -84,6 +81,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		for (WifiP2pDevice device : peers.getDeviceList()) {
 			Log.d(getLocalClassName(), "Peer from printPeers(): " + device.deviceName);
+			
 			if (device.status == WifiP2pDevice.CONNECTED)
 				addToListOfConnectedPeers(device);
 			else {
@@ -238,16 +236,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	@Override
 	public void onConnectionInfoAvailable(WifiP2pInfo info) {
 		groupOwnerIp = info.groupOwnerAddress.getHostAddress();
-		
 		if (info.groupFormed) {
 			if (info.isGroupOwner) {
-				dismissProgressDialog();
 				setUpHost(info);
 			} else {
 				setUpClient(info);
 			}
 		}
-		dismissProgressDialog();
+		
 	}
 	
 	// Create host if not already done
