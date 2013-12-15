@@ -78,6 +78,7 @@ public class Card extends ImageView implements OnTouchListener {
 				if(lastDown != 0 && (System.currentTimeMillis() - lastDown) <= 200) {
 					turned = turned ? false : true;
 					updateImageResource();
+					playerHand.turnCard(this);
 				}
 				lastDown = System.currentTimeMillis();
 				
@@ -138,6 +139,15 @@ public class Card extends ImageView implements OnTouchListener {
 	
 	public String toString() {
 		return this.turned ? "1"+this.suit+this.face : "0"+this.suit+this.face;
+	}
+	
+	public void setTurned() {
+		turned = turned ? false : true;
+		updateImageResource();
+	}
+	
+	public boolean getTurned() {
+		return this.turned;
 	}
 
 }

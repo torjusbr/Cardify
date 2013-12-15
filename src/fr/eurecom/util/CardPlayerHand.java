@@ -48,6 +48,8 @@ public class CardPlayerHand {
 		if (cardStack.remove(card)){
 			cardPublic.add(card);
 			game.getClient().publishPutCardInPublicZone(card);
+			
+			game.printMessage("You played "+card.getSuit()+card.getFace()+"\n");
 		}
 		stackCards();
 	}
@@ -56,17 +58,19 @@ public class CardPlayerHand {
 		if (cardPublic.remove(card)) {
 			cardStack.add(card);
 			game.getClient().publishTakeCardFromPublicZone(card);
+			
+			game.printMessage("You took "+card.getSuit()+card.getFace()+" from the table\n");
 		}
 	}
 	
-	public void blindAddToPublic(char suit, int face, boolean turned){
+	public void blindAddToPublic(char suit, int face, boolean turned) {
 		Log.e("CardPlayerHand:blindAddToPublic", ""+suit+face);
 		Card card = new Card(this.game, suit, face, turned);
 		card.setOwner(this);
 		cardPublic.add(card);
 		animateCardIntoView(card);
 		
-		game.printMessage("?? played "+suit+face);
+		game.printMessage("PLAYER played "+suit+face+"\n");
 	}
 	
 	public void blindRemoveFromPublic(char suit, int face){
@@ -81,7 +85,23 @@ public class CardPlayerHand {
 			game.removeView(cardToRemove);
 		}
 		
-		game.printMessage("?? took "+suit+face+" from the table");
+		game.printMessage("PLAYER took "+suit+face+" from the table\n");
+	}
+	
+	public void blindTurnInPublic(char suit, int face) {
+		Card cardToTurn = null;
+		for (Card card: cardPublic) {
+			if (card.getSuit() == suit && card.getFace() == face) {
+				cardToTurn = card;
+				break;
+			}
+		}
+		if (cardToTurn != null) {
+			cardToTurn.setTurned();
+			String turned = cardToTurn.getTurned() ? "down" : "up";
+			
+			game.printMessage("PLAYER turned "+suit+face+" face "+turned+"\n");
+		}
 	}
 	
 	private void animateCardIntoView(Card card) {
@@ -97,9 +117,10 @@ public class CardPlayerHand {
 	public void blindDealCards(String[] cardStrings){
 		List<Card> cards = new LinkedList<Card>();
 		for (String str : cardStrings){
-			char suit = str.charAt(0);
-			int face = Integer.parseInt(str.substring(1));
-			cards.add(new Card(this.game, suit, face, false));
+			boolean turned = str.charAt(0) == '1' ? true : false;
+			char suit = str.charAt(1);
+			int face = Integer.parseInt(str.substring(2));
+			cards.add(new Card(this.game, suit, face, turned));
 		}
 		this.dealCards(cards);
 	}
@@ -148,6 +169,12 @@ public class CardPlayerHand {
 	
 	public void moveCard(Card card) {
 		
+	}
+	
+	public void turnCard(Card card) {
+		if(!inStackZone(card.getX(), card.getY())) {
+			game.getClient().publishTurnCardInPublicZone(card);
+		} 
 	}
 	
 	private void queueBringToFront(View v){

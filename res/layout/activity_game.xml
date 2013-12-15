@@ -35,9 +35,8 @@
          android:layout_marginTop="10dp"
          android:layout_marginLeft="10dp"
          android:layout_weight="0.6"
-         android:background="@drawable/public_rectangle"
-         android:padding="@dimen/activity_horizontal_margin"
-         android:text="textview" />
+         android:maxLines="100"
+         android:scrollbars="vertical" />
         
         <View 
 	        android:layout_width="0dp"

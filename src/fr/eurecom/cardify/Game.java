@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -39,6 +40,7 @@ public class Game extends Activity {
 			initSolitaire();
 		} else {
 			messageStream = (TextView) findViewById(R.id.messageStream);
+			messageStream.setMovementMethod(new ScrollingMovementMethod());
 			// If client, we receive cards from host at a later stage
 			deck = null;
 			playerHand = new CardPlayerHand(this);
@@ -156,6 +158,6 @@ public class Game extends Activity {
 	}
 	
 	public void printMessage(String message) {
-		messageStream.append(message);
+		messageStream.setText(message+messageStream.getText());
 	}
 }
