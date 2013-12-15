@@ -125,7 +125,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
-		timerDelayRemoveDialog(10000, progressDialog);
+		timerDelayRemoveDialog(15000, progressDialog);
 	}
 	
 	private void showProgressDialog(String title, String message) {
