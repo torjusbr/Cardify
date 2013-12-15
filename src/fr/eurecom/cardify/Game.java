@@ -8,7 +8,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Point;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -31,7 +30,6 @@ public class Game extends Activity {
 	private CardSolitaireHand solitaireHand;
 	private Client client;
 	private TextView messageStream;
-	private WifiP2pDevice device;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +48,6 @@ public class Game extends Activity {
 			// Set up client
 			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
 			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
-			device = new WifiP2pDevice();
 			Log.d("Game", "Device name is ");
 			this.client = new Client(this);
 			if (isHost) client.changeToHost();

@@ -55,7 +55,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 			if (networkInfo.isConnected()) {
                 mManager.requestConnectionInfo(mChannel, lobby);
                 Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
-                lobby.dismissProgressDialog();
             } else {
             	Toast.makeText(context, "Disonnected", Toast.LENGTH_SHORT).show();
             	lobby.removeStartButton();
