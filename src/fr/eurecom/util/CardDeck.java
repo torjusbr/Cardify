@@ -40,8 +40,6 @@ public class CardDeck extends ImageView implements OnTouchListener {
 		this.setOnTouchListener(this);
 		this.setImageResource(context.getResources().getIdentifier("drawable/deck", null, context.getPackageName()));
 		
-		
-		
 		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		screenSize = new Point();
@@ -60,6 +58,10 @@ public class CardDeck extends ImageView implements OnTouchListener {
 	public Card peak(){
 		if (cards.isEmpty()) return null;
 		return cards.get(0);
+	}
+	
+	public void addCard(Card card) {
+		this.cards.add(0, card);
 	}
 	
 	public List<Card> draw(int n){
@@ -81,9 +83,9 @@ public class CardDeck extends ImageView implements OnTouchListener {
 			this.setOnTouchListener(null);
 		}
 		Card c = pop();
-		//TODO: Set pos
 		c.setX(this.getX() + this.getWidth());
 		c.setY(this.getY());
+		c.setTurned();
 		return c;
 	}
 

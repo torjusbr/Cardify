@@ -37,7 +37,18 @@ public class CardPlayerHand {
 		game.addView(card);
 		card.setOwner(this);
 		cardPublic.add(card);
+		
+		//TODO: Publish
 	}
+	
+	private void addToDeck(Card card) {
+		game.removeView(card);
+		card.setOwner(null);
+		if (!cardPublic.remove(card)) cardStack.remove(card);
+		game.getDeck().addCard(card);
+		//TODO: publish
+	}
+	
 	
 	public void addToStack(Card card){
 		cardStack.remove(card);
@@ -154,10 +165,21 @@ public class CardPlayerHand {
 		applyBringToFront(cardStack.get(0));
 	}
 	
-	public boolean inStackZone(float x, float y){
+	public boolean inStackZone(float x, float y) {
 		if (x < 0 || x > displaySize.x) return false;
 		if (y < displaySize.y - 1.75*Card.height || y > displaySize.y) return false;
 		return true;
+	}
+	
+	protected boolean inCardDeck(float x, float y) {
+		CardDeck d = game.getDeck();
+		float w = d.getWidth()/2;
+		float h = d.getHeight()/2;
+		
+		return 	(x < d.getX() + w) && 
+				(x > d.getX() - w) &&
+				(y < d.getY() + h) &&
+				(y > d.getY() - h);
 	}
 	
 	public void takeCard(Card card) {
@@ -168,6 +190,8 @@ public class CardPlayerHand {
 		if(inStackZone(card.getX(), card.getY())) {
 			removeFromPublic(card);
 			addToStack(card);
+		} else if (inCardDeck(card.getX(), card.getY())) {
+			addToDeck(card);
 		} else {
 			addToPublic(card);
 		}

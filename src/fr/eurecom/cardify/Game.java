@@ -171,4 +171,8 @@ public class Game extends Activity {
 	public void printMessage(String message) {
 		messageStream.setText(message+messageStream.getText());
 	}
+	
+	public CardDeck getDeck() {
+		return deck;
+	}
 }
