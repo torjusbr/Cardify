@@ -93,12 +93,16 @@ public class Game extends Activity {
 	private void initGame(){
 		//int numPlayers = client.getReceivers().size() + 1;
 		this.deck = new CardDeck(this);
+		deck.setOwner(playerHand);
 		deck.shuffle();
 		
 		int cardsPerPlayer = 6;
 		playerHand.dealCards(deck.draw(cardsPerPlayer));
 		
+		addView(deck);
+		
 		client.pushInitialCards(deck, cardsPerPlayer);
+		client.pushRemainingDeck(deck);
 	}
 	
 	private void initSolitaire() {
@@ -174,5 +178,9 @@ public class Game extends Activity {
 	
 	public CardDeck getDeck() {
 		return deck;
+	}
+	
+	public void setDeck(CardDeck deck) {
+		this.deck = deck;
 	}
 }

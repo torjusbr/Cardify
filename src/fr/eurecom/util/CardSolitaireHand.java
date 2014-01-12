@@ -34,5 +34,26 @@ public class CardSolitaireHand extends CardPlayerHand {
 		//Avoid publishing when turning card
 	}
 	
+	@Override
+	protected void addToDeck(Card card) {
+		game.removeView(card);
+		card.setOwner(null);
+		
+		if (!cardStack.remove(card)) {
+			cardPublic.remove(card);
+			stackCards();
+		}
+		
+		game.getDeck().addCard(card);
+		game.getDeck().setColorFilter(null);
+	}
+	
+	@Override
+	public void drawFromDeck(Card card) {
+		game.addView(card);
+		card.setOwner(this);
+		cardPublic.add(card);
+	}
+	
 	
 }

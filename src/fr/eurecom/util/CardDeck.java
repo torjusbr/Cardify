@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -21,6 +24,7 @@ public class CardDeck extends ImageView implements OnTouchListener {
 	private Point anchorPoint = new Point();
 	private Point screenSize;
 	private CardPlayerHand playerHand;
+	private final ColorFilter highlightFilter = new LightingColorFilter(Color.DKGRAY, 1);
 	
 	private long lastDown;
 	
@@ -44,6 +48,25 @@ public class CardDeck extends ImageView implements OnTouchListener {
 		Display display = wm.getDefaultDisplay();
 		screenSize = new Point();
 		display.getSize(screenSize);
+		
+		this.setX(screenSize.x/4);
+		this.setY(screenSize.y/4);
+	}
+	
+	public CardDeck(Context context, List<Card> receivedCards) {
+		super(context);
+		
+		this.cards = receivedCards;
+		this.setOnTouchListener(this);
+		this.setImageResource(context.getResources().getIdentifier("drawable/deck", null, context.getPackageName()));
+		
+		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		screenSize = new Point();
+		display.getSize(screenSize);
+		
+		this.setX(screenSize.x/4);
+		this.setY(screenSize.y/4);
 	}
 	
 	public void setOwner(CardPlayerHand owner) {
@@ -62,6 +85,9 @@ public class CardDeck extends ImageView implements OnTouchListener {
 	
 	public void addCard(Card card) {
 		this.cards.add(0, card);
+		if (cards.size() == 1) {
+			toggleEmpty();
+		}
 	}
 	
 	public List<Card> draw(int n){
@@ -77,15 +103,16 @@ public class CardDeck extends ImageView implements OnTouchListener {
 		Collections.shuffle(this.cards);
 	}
 	
-	private Card drawFromDeck() {
-		if (cards.size() == 1) { //Drawing the last card of the deck
-			this.setAlpha((float)0.1);
-			this.setOnTouchListener(null);
-		}
+	public Card drawFromDeck() {
 		Card c = pop();
 		c.setX(this.getX() + this.getWidth());
 		c.setY(this.getY());
-		c.setTurned();
+		c.setTurned(true);
+		
+		if (cards.isEmpty()) {
+			toggleEmpty();
+		}
+		
 		return c;
 	}
 
@@ -95,7 +122,7 @@ public class CardDeck extends ImageView implements OnTouchListener {
 		
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			if(lastDown != 0 && (System.currentTimeMillis() - lastDown) <= 200) {
+			if(lastDown != 0 && (System.currentTimeMillis() - lastDown) <= 200 && !cards.isEmpty()) {
 				playerHand.drawFromDeck(drawFromDeck());
 				return true;
 			}
@@ -104,7 +131,7 @@ public class CardDeck extends ImageView implements OnTouchListener {
 			anchorPoint.x = (int) (event.getRawX() - v.getX());
 			anchorPoint.y = (int) (event.getRawY() - v.getY());
 			
-			v.setAlpha((float)0.5);
+			if (!cards.isEmpty()) v.setAlpha((float)0.5);
 			v.bringToFront();
 			
 			return true;
@@ -131,10 +158,31 @@ public class CardDeck extends ImageView implements OnTouchListener {
             
             return true;
 		case MotionEvent.ACTION_UP:
-			v.setAlpha(1);
+			if (!cards.isEmpty()) v.setAlpha(1);
 			return true;
 		default:
 			return false;
 		}
+	}
+	
+	public void toggleHighlight(boolean highlight) {
+		if (highlight) {
+			this.setColorFilter(highlightFilter);
+		} else {
+			this.setColorFilter(null);
+		}
+	}
+	
+	public void toggleEmpty() {
+		if (cards.isEmpty()) {
+			System.out.println("FLÆ");
+			this.setAlpha((float)0.3);
+		} else {
+			this.setAlpha((float)1.0);
+		}
+	}
+	
+	public List<Card> getCards() {
+		return cards;
 	}
 }

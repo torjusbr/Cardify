@@ -2,6 +2,7 @@ package fr.eurecom.messaging;
 
 import java.net.InetAddress;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
@@ -72,6 +73,14 @@ public class Client {
 		sendMessage(Action.TURNED_CARD_IN_PUBLIC_ZONE, card.toString());
 	}
 	
+	public void publishAddCardToDeck(Card card) {
+		sendMessage(Action.ADDED_CARD_TO_DECK, card.toString());
+	}
+	
+	public void publishDrawFromDeck(Card card) {
+		sendMessage(Action.DREW_CARD_FROM_DECK, "");
+	}
+	
 	public void pushInitialCards(CardDeck deck, int n) {
 		for (InetAddress receiver : receivers){
 			String cards = "";
@@ -82,6 +91,20 @@ public class Client {
 			Message message = new Message(Action.INITIAL_CARDS, cards);
 			this.sender.send(message, receiver);
 		}
+	}
+	
+	public void pushRemainingDeck(CardDeck deck) {
+		StringBuilder cardStringBuilder = new StringBuilder();
+		List<Card> cards = deck.getCards();
+		for (int i = 0; i < cards.size(); i++) {
+			cardStringBuilder.append(cards.get(i).toString());
+			cardStringBuilder.append(";");
+		}
+		for (InetAddress receiver : receivers) {
+			Message message = new Message(Action.REMAINING_DECK,cardStringBuilder.toString());
+			this.sender.send(message, receiver);
+		}
+		
 	}
 	
 	
@@ -146,10 +169,19 @@ public class Client {
 		case TURNED_CARD_IN_PUBLIC_ZONE:
 			handleTurnedCardInPublicZone(message);
 			return;
+		case ADDED_CARD_TO_DECK:
+			handleAddCardToDeck(message);
+			return;
+		case DREW_CARD_FROM_DECK:
+			handleDrawCardFromDeck(message);
+			return;
 		case ILLEGAL_ACTION:
 			return;
 		case INITIAL_CARDS:
 			handleInitialCards(message);
+			return;
+		case REMAINING_DECK:
+			handleRemainingDeck(message);
 			return;
 		default:
 			return;
@@ -191,5 +223,30 @@ public class Client {
 		Log.e("Client:handleInitialCards", "Cards: " + message.about);
 		String[] cards = message.about.split(";");
 		((Game) activity).getPlayerHand().blindDealCards(cards);
+	}
+	
+	private void handleRemainingDeck(Message message) {
+		Log.e("Client:handleRemainingDeck", "Cards: " +message.about);
+		String[] cards = message.about.split(";");
+		((Game) activity).getPlayerHand().blindAddDeck(cards);
+	}
+	
+	private void handleAddCardToDeck(Message message) {
+		Log.e("Client:handleAddCardToDeck", "Cards: " + message.about);
+		char suit = message.about.charAt(1);
+		int face = Integer.parseInt(message.about.substring(2));
+		boolean turned = message.about.charAt(0) == '1' ? true : false;
+		((Game) activity).getPlayerHand().blindAddToDeck(suit, face, turned);
+		if (isHost) { 
+			broadcastChange(message);
+		}
+	}
+	
+	private void handleDrawCardFromDeck(Message message) {
+		Log.e("Client:handleDrawCardFromDeck","no message");
+		((Game) activity).getPlayerHand().blindDrawFromDeck();
+		if (isHost) { 
+			broadcastChange(message);
+		}
 	}
 }

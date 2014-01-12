@@ -16,6 +16,9 @@ public class CardPlayerHand {
 	public Game game;
 	private Point displaySize;
 	
+	//TODO: handle add to deck from stack (not restacking)
+	
+	
 	public CardPlayerHand(Game game){
 		this.game = game;
 		cardStack = new LinkedList<Card>();
@@ -38,15 +41,25 @@ public class CardPlayerHand {
 		card.setOwner(this);
 		cardPublic.add(card);
 		
-		//TODO: Publish
+		this.printMessage("You drew", "from the deck", card, false);
+		game.getClient().publishDrawFromDeck(card);
 	}
 	
-	private void addToDeck(Card card) {
+	protected void addToDeck(Card card) {
 		game.removeView(card);
 		card.setOwner(null);
-		if (!cardPublic.remove(card)) cardStack.remove(card);
+		
 		game.getDeck().addCard(card);
-		//TODO: publish
+		game.getDeck().setColorFilter(null);
+		
+		if (!cardPublic.remove(card)) {
+			cardStack.remove(card);
+			card.setTurned(true);
+			stackCards();
+		}
+		
+		this.printMessage("You added", "to the deck", card, !card.getTurned());
+		game.getClient().publishAddCardToDeck(card);
 	}
 	
 	
@@ -65,8 +78,7 @@ public class CardPlayerHand {
 		if (cardStack.remove(card)){
 			cardPublic.add(card);
 			game.getClient().publishPutCardInPublicZone(card);
-			
-			game.printMessage("You played "+card.getSuit()+card.getFace()+"\n");
+			this.printMessage("You played", "", card, !card.getTurned());
 		}
 		stackCards();
 	}
@@ -76,7 +88,7 @@ public class CardPlayerHand {
 			cardStack.add(card);
 			game.getClient().publishTakeCardFromPublicZone(card);
 			
-			game.printMessage("You took "+card.getSuit()+card.getFace()+" from the table\n");
+			this.printMessage("You took", "from the table", card, !card.getTurned());
 		}
 	}
 	
@@ -87,7 +99,7 @@ public class CardPlayerHand {
 		cardPublic.add(card);
 		animateCardIntoView(card);
 		
-		game.printMessage("PLAYER played "+suit+face+"\n");
+		this.printMessage("Opponent played", "", card, !card.getTurned());
 	}
 	
 	public void blindRemoveFromPublic(char suit, int face){
@@ -102,7 +114,43 @@ public class CardPlayerHand {
 			game.removeView(cardToRemove);
 		}
 		
-		game.printMessage("PLAYER took "+suit+face+" from the table\n");
+		this.printMessage("Opponent took", "from the table", cardToRemove, cardToRemove.getTurned());
+	}
+	
+	public void blindAddToDeck(char suit, int face, boolean turned) {
+		Card card = null;
+		String endOfMessage = "";
+		
+		for (Card c : cardPublic) {
+			if (c.getSuit() == suit && c.getFace() == face){
+				card = c;
+				cardPublic.remove(c);
+				game.removeView(c);
+				endOfMessage = "to the deck";
+				break;
+			}
+		}
+		if (card == null) { //from opponents stack
+			card = new Card(this.game, suit, face, true);
+			card.setOwner(this);
+			endOfMessage = "from his stack to the deck";
+		}
+		
+		game.getDeck().addCard(card);
+		
+		//TODO: Opponent added card to deck animation
+		this.printMessage("Opponent added", endOfMessage, card, !card.getTurned());
+	}
+	
+	public void blindDrawFromDeck() {
+		Card card = game.getDeck().drawFromDeck();
+		card.setOwner(this);
+		cardPublic.add(card);
+		
+		game.addView(card);
+		
+		
+		this.printMessage("Opponent drew", "from the deck", null, false);
 	}
 	
 	public void blindTurnInPublic(char suit, int face) {
@@ -114,10 +162,10 @@ public class CardPlayerHand {
 			}
 		}
 		if (cardToTurn != null) {
-			cardToTurn.setTurned();
+			cardToTurn.setTurned(!cardToTurn.getTurned());
 			String turned = cardToTurn.getTurned() ? "down" : "up";
 			
-			game.printMessage("PLAYER turned "+suit+face+" face "+turned+"\n");
+			this.printMessage("Opponent turned", turned, cardToTurn, true);
 		}
 	}
 	
@@ -140,6 +188,19 @@ public class CardPlayerHand {
 			cards.add(new Card(this.game, suit, face, turned));
 		}
 		this.dealCards(cards);
+	}
+	
+	public void blindAddDeck(String[] cardStrings) {
+		List<Card> cards = new LinkedList<Card>();
+		for (String str : cardStrings) {
+			boolean turned = str.charAt(0) == '1' ? true : false;
+			char suit = str.charAt(1);
+			int face = Integer.parseInt(str.substring(2));
+			cards.add(new Card(this.game, suit, face, turned));
+		}
+		game.setDeck(new CardDeck(game.getApplicationContext(),cards));
+		game.getDeck().setOwner(this);
+		game.addView(game.getDeck());
 	}
 	
 	public void stackCards(){
@@ -198,7 +259,15 @@ public class CardPlayerHand {
 	}
 	
 	public void moveCard(Card card) {
-		//TODO: Delete if unused
+		if (inStackZone(card.getX(), card.getY())) {
+			//TODO: Add color filter to stack zone??
+			game.getDeck().toggleHighlight(false);
+		} else if (inCardDeck(card.getX(), card.getY())) {
+			game.getDeck().toggleHighlight(true);
+		} else {
+			game.getDeck().toggleHighlight(false);
+		}
+		
 	}
 	
 	public void turnCard(Card card) {
@@ -219,6 +288,12 @@ public class CardPlayerHand {
 	public void sortCards(CardSortingRule sorting) {
 		Collections.sort(cardStack, new CardComparator(sorting));
 		stackCards();
+	}
+	
+	private void printMessage(String start, String end, Card c, boolean showValue) {
+		String value = showValue ? ""+c.getSuit()+c.getFace() : "a card";
+		String formatted = String.format("%s %s %s\n", start, value, end);
+		game.printMessage(formatted);
 	}
 	
 }

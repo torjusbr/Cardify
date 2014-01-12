@@ -141,19 +141,14 @@ public class Card extends ImageView implements OnTouchListener {
 		return this.turned ? "1"+this.suit+this.face : "0"+this.suit+this.face;
 	}
 	
-	public void setTurned() {
-		turned = turned ? false : true;
+	public void setTurned(boolean turned) {
+		this.turned = turned;
 		updateImageResource();
 	}
 	
 	public boolean getTurned() {
 		return this.turned;
 	}
-	
-	//public void takeCardFromDeck(int x, int y) {
-	//	System.out.println("TAKECARDFROMDECK");
-		//playerHand.drawFromDeck(this);
-	//}
 
 }
 
