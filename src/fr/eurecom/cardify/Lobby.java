@@ -5,9 +5,11 @@ import java.util.Set;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -24,8 +26,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 import fr.eurecom.cardify.R.drawable;
 import fr.eurecom.messaging.Client;
@@ -41,6 +45,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private WifiP2pDeviceList peers;
 	private Client client;
 	private ProgressDialog progressDialog;
+	private int initCards;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		disconnectFromDevices();
 		peers = new WifiP2pDeviceList();
 		progressDialog = new ProgressDialog(this);
+		initCards = 0;
 	}
 
 	protected void setUpWiFiDirect() {
@@ -78,7 +84,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void printPeers() {
 		Log.d(getLocalClassName(), "Lobby:printPeers(): " + peers.getDeviceList().size());
-		
+		((Button) findViewById(R.id.lobby_refreshPeersBtn)).clearAnimation();
 		for (WifiP2pDevice device : peers.getDeviceList()) {
 			Log.d(getLocalClassName(), "Peer from printPeers(): " + device.deviceName);
 			
@@ -164,7 +170,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			@Override
 			public void onSuccess() {
 				Log.d("Lobby", "Done searching for peers");
-				//((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
+					
 			}
 			
 			@Override
@@ -201,12 +207,58 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		//((Button) view).setClickable(false);
 		resetPeerList();
 		findPeers();
+		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely));
 	}
 	
 	// Start a new game as host
 	public void startGame(View view) {
+		showCardHandSizeSelector();
+		/*
+		 * This must be done after selecting number of cards
 		client.broadcastStartGame();
-		startGameActivity(this.client.getReceivers(), true);
+		*/
+//		startGameActivity(this.client.getReceivers(), true);
+	}
+	
+	private void showCardHandSizeSelector() {
+		int maxHandSize = (int) Math.floor(52/(client.getReceivers().size()+1));
+		
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+		alert.setTitle("Select initial card hand: ");
+
+		final NumberPicker np = new NumberPicker(this);
+		
+		String[] numbers = new String[maxHandSize];
+		
+		for (int i = 0; i < maxHandSize; i++) {
+			numbers[i] = Integer.toString(i+1);
+		}
+		
+		np.setMinValue(1);
+		np.setMaxValue(numbers.length);
+		np.setWrapSelectorWheel(false);
+		np.setDisplayedValues(numbers);
+		np.setValue(maxHandSize/2);
+
+		alert.setPositiveButton("Start game",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						Log.e("Lobby", "Numberpickers value is: " + np.getValue());
+						initCards = np.getValue();
+						client.broadcastStartGame();
+					}
+				});
+
+		alert.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Cancel.
+					}
+				});
+		alert.setView(np);
+		alert.show();
+
 	}
 	
 	public void startGameActivity(Set<InetAddress> receivers, boolean isHost){
@@ -219,6 +271,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		intent.putExtra("isSolitaire", false);
 		intent.putExtra("receivers", addresses);
 		intent.putExtra("isHost", isHost);
+		if (isHost) {
+			intent.putExtra("cardsPerPlayer", initCards);
+		}
 		this.startActivity(intent);
 	}
 	
@@ -248,6 +303,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
 			startButton.setVisibility(Button.VISIBLE);
 			this.client = new Client(this);
+			this.client.changeToHost();
 		}
 	}
 	

@@ -12,4 +12,5 @@ public enum Action {
 	ILLEGAL_ACTION,
 	ACK,
 	REGISTER,
+	GAME_INITIALIZED
 }

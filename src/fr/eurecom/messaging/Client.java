@@ -19,6 +19,7 @@ public class Client {
 	private Receiver receiver;
 	private Sender sender;
 	private boolean isHost;
+	private int peersInitialized;
 	
 	public Client(Activity activity) {
 		this.activity = activity;
@@ -28,6 +29,7 @@ public class Client {
 		receivers = new HashSet<InetAddress>();
 		this.sender = new Sender();
 		this.isHost = false;
+		this.peersInitialized = 0;
 	}
 	
 	public void disconnect(){
@@ -89,8 +91,14 @@ public class Client {
 				cards += deck.pop().toString() + ";";
 			}
 			Message message = new Message(Action.INITIAL_CARDS, cards);
+			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
+			
 			this.sender.send(message, receiver);
-		}
+		} 
+	}
+	
+	public void publishGameInitialized() {
+		sendMessage(Action.GAME_INITIALIZED, "");
 	}
 	
 	public void pushRemainingDeck(CardDeck deck) {
@@ -125,7 +133,12 @@ public class Client {
 	
 	
 	public void handleMessage(Message message) {
-		if (this.activity instanceof Lobby) {
+		Log.e("Client", "handleMessage " + message.about);
+		if(message.what == Action.GAME_INITIALIZED) {
+			Log.e("handleMessage", "Game initialized" + message.getOriginatorAddr());
+			handleGameInitialized(message);
+		}
+		else if (this.activity instanceof Lobby) {
 			handlePreGameMessage(message);
 		} else if (this.activity instanceof Game){
 			handleInGameMessage(message);
@@ -156,6 +169,20 @@ public class Client {
 		 * Start new game and set local game variable in this interpreter to game instance
 		 */
 		((Lobby) activity).startGameActivity(receivers);
+	}
+	
+	private void handleGameInitialized(Message message) {
+		if (isHost) {
+			peersInitialized++;
+			Log.e("HORE", "Number of peers initialized: " + peersInitialized);
+			if (peersInitialized == receivers.size()) {
+				((Lobby) activity).startGameActivity(receivers, true);				
+			}
+		} 
+	}
+	
+	public void broadcastGameInitialized() {
+		sendMessage(Action.GAME_INITIALIZED, "");
 	}
 	
 	private void handleInGameMessage(Message message){
@@ -223,6 +250,7 @@ public class Client {
 		Log.e("Client:handleInitialCards", "Cards: " + message.about);
 		String[] cards = message.about.split(";");
 		((Game) activity).getPlayerHand().blindDealCards(cards);
+		((Game) activity).dismissProgressDialog();
 	}
 	
 	private void handleRemainingDeck(Message message) {

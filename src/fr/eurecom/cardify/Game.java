@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Point;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
@@ -33,18 +35,32 @@ public class Game extends Activity {
 	private Client client;
 	private TextView messageStream;
 	private WifiP2pDevice device;
+	private ProgressDialog progressDialog;
+	private int cardsPerPlayer;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
-
+		
 		//Keeps screen on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
+		progressDialog = new ProgressDialog(this);
 		
 		if((Boolean) getIntent().getExtras().get("isSolitaire")) {
 			initSolitaire();
 		} else {
+			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
+			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
+			
+			if (!isHost) {
+				showProgressDialog("Loading...", "Waiting for all players");
+			} else {
+				cardsPerPlayer = getIntent().getExtras().getInt("cardsPerPlayer");
+				Log.e("Game", "cardsPerPlayer is: " + cardsPerPlayer);
+			}
+			
 			messageStream = (TextView) findViewById(R.id.messageStream);
 			messageStream.setMovementMethod(new ScrollingMovementMethod());
 			// If client, we receive cards from host at a later stage
@@ -52,12 +68,12 @@ public class Game extends Activity {
 			playerHand = new CardPlayerHand(this);
 			
 			// Set up client
-			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
-			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
 			device = new WifiP2pDevice();
 			Log.d("Game", "Device name is ");
 			this.client = new Client(this);
-			if (isHost) client.changeToHost();
+			if (isHost) {
+				client.changeToHost();
+			} 
 			
 			for (String inetAddr : receiverAddresses){
 				try {
@@ -71,7 +87,23 @@ public class Game extends Activity {
 
 			if (client.isHost()){
 				initGame();
+			} else {
+				Log.e("Game", "Notifying game is initialized");
+				client.publishGameInitialized();
 			}
+		}
+	}
+	
+	private void showProgressDialog(String title, String message) {
+		this.progressDialog.setTitle(title);
+		this.progressDialog.setMessage(message);
+		this.progressDialog.setCancelable(false);
+		this.progressDialog.show();
+	}
+	
+	public void dismissProgressDialog() {
+		if (progressDialog.isShowing()) {
+			progressDialog.dismiss();
 		}
 	}
 	
@@ -96,7 +128,6 @@ public class Game extends Activity {
 		deck.setOwner(playerHand);
 		deck.shuffle();
 		
-		int cardsPerPlayer = 6;
 		playerHand.dealCards(deck.draw(cardsPerPlayer));
 		
 		addView(deck);

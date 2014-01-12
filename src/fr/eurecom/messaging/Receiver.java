@@ -30,7 +30,7 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> { //implements
 	@Override
 	protected void onProgressUpdate(Void... values) {
 		super.onProgressUpdate(values);
-		
+		Log.d("Receiver", "ReceiveMessage received: " + json.toString());
 		receiveMessage(json, sender.getInetAddress());
 	}
 	
@@ -68,6 +68,7 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> { //implements
 	
 	
 	private void receiveMessage(JSONObject json, InetAddress sender){
+		Log.e("Receiver", "ReceiveMessage: " + json.toString());
 		try {
 			Action action = Action.values()[json.getInt("what")];
 			String subject = json.getString("about");
