@@ -31,7 +31,7 @@ public class CardSolitaireHand extends CardPlayerHand {
 	
 	@Override
 	public void turnCard(Card card) {
-		//Avoid publishing
+		//Avoid publishing when turning card
 	}
 	
 	

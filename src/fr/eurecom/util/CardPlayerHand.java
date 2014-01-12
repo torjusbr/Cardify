@@ -33,6 +33,12 @@ public class CardPlayerHand {
 		stackCards();
 	}
 	
+	public void drawFromDeck(Card card) {
+		game.addView(card);
+		card.setOwner(this);
+		cardPublic.add(card);
+	}
+	
 	public void addToStack(Card card){
 		cardStack.remove(card);
 		int pos = 0;
@@ -155,7 +161,7 @@ public class CardPlayerHand {
 	}
 	
 	public void takeCard(Card card) {
-		
+		//TODO: Delete if unused
 	}
 	
 	public void dropCard(Card card){
@@ -168,7 +174,7 @@ public class CardPlayerHand {
 	}
 	
 	public void moveCard(Card card) {
-		
+		//TODO: Delete if unused
 	}
 	
 	public void turnCard(Card card) {
