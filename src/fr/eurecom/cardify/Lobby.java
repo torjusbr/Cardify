@@ -82,9 +82,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		for (WifiP2pDevice device : peers.getDeviceList()) {
 			Log.d(getLocalClassName(), "Peer from printPeers(): " + device.deviceName);
 			
-			if (device.status == WifiP2pDevice.CONNECTED)
+			if (device.status == WifiP2pDevice.CONNECTED) {
 				addToListOfConnectedPeers(device);
-			else {
+			} else {
 				addToListOfAvailablePeers(device);
 			}
 		}
@@ -272,6 +272,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		this.client = new Client(this);
 		this.client.addReceiver(info.groupOwnerAddress);
 		this.client.registerAtHost();
+		showProgressDialog("Waiting for host", "The host must start the game");
 	}
 	
 	private void cancelConnect() {
