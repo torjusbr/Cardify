@@ -37,4 +37,12 @@ public class MainMenu extends Activity {
     	Intent intent = new Intent(this,Lobby.class);
     	startActivity(intent);
     }
+    
+    public void startSolitaire(View view) {
+		Intent intent = new Intent(this, Game.class);
+		intent.putExtra("isSolitaire", true);
+		this.startActivity(intent);
+	}
+    
+    
 }

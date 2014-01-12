@@ -105,8 +105,10 @@ public class Game extends Activity {
 		this.deck = new CardDeck(this);
 		deck.shuffle();
 		
+		addView(deck);
+		
 		this.solitaireHand = new CardSolitaireHand(this);
-		solitaireHand.dealCards(deck.draw(52));
+		solitaireHand.dealCards(deck.draw(10));
 	}
 	
 	public void addView(View v){

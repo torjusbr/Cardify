@@ -32,12 +32,22 @@
         android:textSize="52sp" />
 
     <Button
-        android:id="@+id/helpButton"
+        android:id="@+id/solitaireButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/lobbyButton"
         android:layout_alignRight="@+id/lobbyButton"
         android:layout_below="@+id/lobbyButton"
+        android:onClick="startSolitaire"
+        android:text="Solitaire" />
+
+    <Button
+        android:id="@+id/helpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/solitaireButton"
+        android:layout_alignRight="@+id/solitaireButton"
+        android:layout_below="@+id/solitaireButton"
         android:text="Help" />
 
     <Button
