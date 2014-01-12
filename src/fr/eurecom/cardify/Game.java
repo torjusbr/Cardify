@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Point;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fr.eurecom.messaging.Client;
@@ -30,11 +32,15 @@ public class Game extends Activity {
 	private CardSolitaireHand solitaireHand;
 	private Client client;
 	private TextView messageStream;
+	private WifiP2pDevice device;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
+
+		//Keeps screen on
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
 		if((Boolean) getIntent().getExtras().get("isSolitaire")) {
 			initSolitaire();
@@ -48,6 +54,7 @@ public class Game extends Activity {
 			// Set up client
 			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
 			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
+			device = new WifiP2pDevice();
 			Log.d("Game", "Device name is ");
 			this.client = new Client(this);
 			if (isHost) client.changeToHost();

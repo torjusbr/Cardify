@@ -243,7 +243,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 				setUpClient(info);
 			}
 		}
-		
 	}
 	
 	// Create host if not already done
