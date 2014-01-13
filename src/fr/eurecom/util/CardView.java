@@ -15,6 +15,7 @@ public class CardView extends ImageView implements OnTouchListener{
 	
 	public static int height = 208;
 	public static int width = 150;
+	//TODO: fix height/width
 	private long lastDown;
 	private Context context;
 	private Point anchorPoint = new Point();
@@ -113,7 +114,8 @@ public class CardView extends ImageView implements OnTouchListener{
 	}
 	
 	private String getResourceString() {
-		return card.getTurned() ? "drawable/back_blue" : "drawable/"+card.getSuit()+card.getFace();
+		return card.getTurned() ? "drawable/back_blue" : "drawable/cards"+card.getSuit()+card.getFace();
+		//TODO: May have to scale cards on big screens
 	}
 	
 	private static int getImageResource(Context context, String string) {
