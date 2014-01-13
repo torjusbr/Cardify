@@ -83,6 +83,10 @@ public class Client {
 		sendMessage(Action.DREW_CARD_FROM_DECK, "");
 	}
 	
+	public void publishDisconnect() {
+		sendMessage(Action.DISCONNECT, "");
+	}
+	
 	public void pushInitialCards(CardDeck deck, int n) {
 		for (InetAddress receiver : receivers){
 			String cards = "";
@@ -133,11 +137,10 @@ public class Client {
 	
 	
 	public void handleMessage(Message message) {
-		Log.e("Client", "handleMessage " + message.about);
 		if(message.what == Action.GAME_INITIALIZED) {
 			Log.e("handleMessage", "Game initialized" + message.getOriginatorAddr());
 			handleGameInitialized(message);
-		}
+		} 
 		else if (this.activity instanceof Lobby) {
 			handlePreGameMessage(message);
 		} else if (this.activity instanceof Game){
@@ -152,6 +155,9 @@ public class Client {
 			return;
 		case REGISTER:
 			handleRegister(message);
+			return;
+		case DISCONNECT:
+			handlePreGameDisconnect(message);
 			return;
 		default:
 			return;
@@ -210,9 +216,41 @@ public class Client {
 		case REMAINING_DECK:
 			handleRemainingDeck(message);
 			return;
+		case DISCONNECT:
+			handleInGameDisconnect(message);
+			return;
 		default:
 			return;
 		}
+	}
+	
+	private void handleInGameDisconnect(Message message) {
+		if (isHost) {
+			//TODO: What should the host do when someone disconnects from the game?
+			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
+			Log.e("Client", "Stack contains ? " + receivers.contains(message.getOriginatorAddr()));
+			receivers.remove(message.getOriginatorAddr());
+			if (receivers.size() == 0) {
+				((Game) activity).exitGame();
+			}
+		} else {
+			((Game) activity).exitGame();
+		}
+	}
+	
+	//TODO: Dette må fikses!
+	private void handlePreGameDisconnect(Message message) {
+		if (isHost) {
+			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
+			Log.e("Client", "Stack contains ? " + receivers.contains(message.getOriginatorAddr()));
+			receivers.remove(message.getOriginatorAddr());
+			if (receivers.size() > 0) {
+				Log.e("Client", "Disconnect. Receivers > 0");
+				return;
+			} 
+		}
+		Log.e("Client", "Other device disconnected");
+		((Lobby) activity).resetLobby();
 	}
 	
 	private void handleAddedCardToPublicZone(Message message) {

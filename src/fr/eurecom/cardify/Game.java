@@ -6,10 +6,14 @@ import java.net.UnknownHostException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.graphics.Point;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -20,7 +24,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
@@ -38,6 +41,10 @@ public class Game extends Activity {
 	private ProgressDialog progressDialog;
 	private int cardsPerPlayer;
 	
+	//TODO: Maybe implementing superclass with this:
+	private WifiP2pManager mManager;
+	private Channel mChannel;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,6 +58,8 @@ public class Game extends Activity {
 		if((Boolean) getIntent().getExtras().get("isSolitaire")) {
 			initSolitaire();
 		} else {
+			mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+			mChannel = mManager.initialize(this, getMainLooper(), null);
 			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
 			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
 			
@@ -94,6 +103,25 @@ public class Game extends Activity {
 		}
 	}
 	
+	//TODO: This must also be in the superclass if implemented
+	public void disconnectFromDevices() {
+		mManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
+			
+			@Override
+			public void onSuccess() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onFailure(int reason) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+	
+	//TODO: This must also be in the superclass if implemented
 	private void showProgressDialog(String title, String message) {
 		this.progressDialog.setTitle(title);
 		this.progressDialog.setMessage(message);
@@ -160,7 +188,7 @@ public class Game extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		//TODO: Special dialog for host?
+		//TODO: Special dialog for host? Nope
 		new AlertDialog.Builder(this)
 			.setTitle("Are you sure you want to exit?")
 			.setMessage("This game will be abandoned")
@@ -169,8 +197,8 @@ public class Game extends Activity {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					Game.super.onBackPressed();
-					
+					client.publishDisconnect();
+					exitGame();
 				}
 			}).create().show();
 	}
@@ -193,6 +221,13 @@ public class Game extends Activity {
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+		
+	public void exitGame() {
+		client.disconnect();
+		disconnectFromDevices();
+		finish();
+		startActivity(new Intent(Game.this, MainMenu.class));
 	}
 		
 	public Client getClient() {
