@@ -229,7 +229,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void showCardHandSizeSelector() {
-		int maxHandSize = (int) Math.floor(52/(client.getReceivers().size()+1)) + 1;
+		int maxHandSize = (int) Math.floor(52/(client.getReceivers().size()+1));
 		
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -237,14 +237,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 
 		final NumberPicker np = new NumberPicker(this);
 		
-		String[] numbers = new String[maxHandSize];
+		String[] numbers = new String[maxHandSize+1];
 		
-		for (int i = 0; i < maxHandSize; i++) {
+		for (int i = 0; i < maxHandSize+1; i++) {
 			numbers[i] = Integer.toString(i);
 		}
 		
 		np.setMinValue(0);
-		np.setMaxValue(numbers.length);
+		np.setMaxValue(maxHandSize);
 		np.setWrapSelectorWheel(false);
 		np.setDisplayedValues(numbers);
 		np.setValue(0);
