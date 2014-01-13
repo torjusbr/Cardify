@@ -285,16 +285,18 @@ public class Client {
 	}
 	
 	private void handleInitialCards(Message message) {
-		Log.e("Client:handleInitialCards", "Cards: " + message.about);
-		String[] cards = message.about.split(";");
-		((Game) activity).getPlayerHand().blindDealCards(cards);
-		((Game) activity).dismissProgressDialog();
+		Log.e("Client:handleInitialCards", "Cards: " + message.about + " length: " + message.about.length());
+		if (message.about.length() > 0) {
+			String[] cards = message.about.split(";");
+			((Game) activity).getPlayerHand().blindDealCards(cards);
+		}
 	}
 	
 	private void handleRemainingDeck(Message message) {
 		Log.e("Client:handleRemainingDeck", "Cards: " +message.about);
 		String[] cards = message.about.split(";");
 		((Game) activity).getPlayerHand().blindAddDeck(cards);
+		((Game) activity).dismissProgressDialog();
 	}
 	
 	private void handleAddCardToDeck(Message message) {
