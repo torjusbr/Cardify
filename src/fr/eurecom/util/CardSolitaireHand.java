@@ -7,52 +7,53 @@ import fr.eurecom.cardify.Game;
 
 public class CardSolitaireHand extends CardPlayerHand {
 
-	public List<Card> cardHeap;
+	public List<CardView> cardHeap;
 	
 	public CardSolitaireHand(Game game) {
 		super(game);
-		cardHeap = new LinkedList<Card>();
+		cardHeap = new LinkedList<CardView>();
 	}
 	
 	@Override
-	public void addToPublic(Card card) {
-		if (cardStack.remove(card)) {
-			cardHeap.add(card);
+	public void addToPublic(CardView view) {
+		if (cardStack.remove(view)) {
+			cardHeap.add(view);
 			stackCards();
 		}
 	}
 	
 	@Override
-	public void removeFromPublic(Card card) {
-		if (cardHeap.remove(card)) {
-			cardStack.add(card);
+	public void removeFromPublic(CardView view) {
+		if (cardHeap.remove(view)) {
+			cardStack.add(view);
+			stackCards();
 		}
 	}
 	
 	@Override
-	public void turnCard(Card card) {
+	public void turnCard(CardView view) {
 		//Avoid publishing when turning card
 	}
 	
 	@Override
-	protected void addToDeck(Card card) {
-		game.removeView(card);
-		card.setOwner(null);
-		
-		if (!cardStack.remove(card)) {
-			cardPublic.remove(card);
+	protected void addToDeck(CardView view) {
+		if (!cardPublic.remove(view)) {
+			cardStack.remove(view);
 			stackCards();
 		}
 		
-		game.getDeck().addCard(card);
+		game.getDeck().addCard(view.getCard());
 		game.getDeck().setColorFilter(null);
+		
+		removeCardGraphics(view);
+		
+		System.out.println("VIEW:"+view.getCard().getSuit());
 	}
 	
 	@Override
 	public void drawFromDeck(Card card) {
-		game.addView(card);
-		card.setOwner(this);
-		cardPublic.add(card);
+		CardView view = addCardGraphics(card);
+		cardPublic.add(view);
 	}
 	
 	

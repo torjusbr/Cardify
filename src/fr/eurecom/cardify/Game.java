@@ -11,6 +11,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.graphics.Point;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
+import android.os.Debug;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Display;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
@@ -141,7 +141,7 @@ public class Game extends Activity {
 		deck.shuffle();
 		
 		this.solitaireHand = new CardSolitaireHand(this);
-		solitaireHand.dealCards(deck.draw(10));
+		solitaireHand.dealCards(deck.draw(1));
 		deck.setOwner(solitaireHand);
 		
 		addView(deck);
@@ -161,6 +161,13 @@ public class Game extends Activity {
 	@Override
 	public void onBackPressed() {
 		//TODO: Special dialog for host?
+		
+		long t = Runtime.getRuntime().totalMemory() / (1024*1024);
+		long f = Runtime.getRuntime().freeMemory() / (1024*1024);
+		long l = Runtime.getRuntime().maxMemory() / (1024*1024);
+		long n = Debug.getNativeHeapAllocatedSize() / (1024*1024);
+		System.out.println(String.format("TOTAL: %d MB -- FREE: %d MB -- MAX: %d MB -- NATIVE: %d MB", t, f, l, n));
+		
 		new AlertDialog.Builder(this)
 			.setTitle("Are you sure you want to exit?")
 			.setMessage("This game will be abandoned")

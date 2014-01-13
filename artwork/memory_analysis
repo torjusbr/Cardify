@@ -1,0 +1,48 @@
+MEMORY ANALYSIS:
+
+solitaire 10xstack, 52x deck: ~150MB
+solitaire 20xstack, 52x deck: ~150MB 
+
+==> Open cards does not matter
+
+solitaire 13xstack, 13xdeck: ~50MB
+
+
+NEW:
+
+solitaire 10xstack, 52x deck: ~44MB
+solitaire 20xstack, 52x deck: ~68MB
+
+solitaire 13xstack, 13xdeck: ~50MB
+solitaire 0xstack, 13xdeck:  ~13MB
+
+WITH GARBAGE COLLECTION:
+
+solitare 13x deck
+
+- START: 12 in deck, 1 face up on screen: 				25MB
+- 12 in deck, 1 face down on screen (turned card): 		30MB
+- No matter how many turns after that:					30MB
+
+ISSUE: Scrap image when turning card
+
+- START: 12 in deck, 1 face up on screen:				25MB
+- 1 face up on screen, 12 face down (drew all cards)	27MB
+- 13 face up on screen (turned all cards):				56MB
+- 13 in deck (added all cards to deck):					25MB
+
+ISSUE: One card is never deallocated
+
+- 0 in deck, 13 face up on screen: 54MB
+
+WIFI DIRECT:
+
+- START 	13 cards total, 4 to each player, 5 in deck	8MB
+- THIS 		Add card to public							8MB
+- OPPONENT 	Took card from public						8MB		ISSUE: Does not deallocate when opponent takes card
+- THIS		Drew 5 cards								8MB		NOTE: seems like previous card was deallocated now
+- OPPONENT 	Turned 5 cards								9MB		
+- THIS		Add 3 cards to public						9MB
+- OPPONENT 	Add 5 cards to public						11MB
+- OPPONENT 	Add all cards to deck 						11MB 	ISSUE: No deallocation yet	
+- END 		All cards on screen							13MB	
