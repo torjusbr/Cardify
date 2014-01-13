@@ -114,7 +114,7 @@ public class CardView extends ImageView implements OnTouchListener{
 	}
 	
 	private String getResourceString() {
-		return card.getTurned() ? "drawable/back_blue" : "drawable/cards"+card.getSuit()+card.getFace();
+		return card.getTurned() ? "drawable/back_blue" : "drawable/cards/"+card.getSuit()+card.getFace();
 		//TODO: May have to scale cards on big screens
 	}
 	
