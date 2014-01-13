@@ -40,6 +40,7 @@ public class Game extends Activity {
 	private WifiP2pDevice device;
 	private ProgressDialog progressDialog;
 	private int cardsPerPlayer;
+	private boolean isSolitaire;
 	
 	//TODO: Maybe implementing superclass with this:
 	private WifiP2pManager mManager;
@@ -56,8 +57,11 @@ public class Game extends Activity {
 		progressDialog = new ProgressDialog(this);
 		
 		if((Boolean) getIntent().getExtras().get("isSolitaire")) {
+			isSolitaire = true;
 			initSolitaire();
 		} else {
+			isSolitaire = false;
+			
 			mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 			mChannel = mManager.initialize(this, getMainLooper(), null);
 			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
@@ -197,7 +201,6 @@ public class Game extends Activity {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					client.publishDisconnect();
 					exitGame();
 				}
 			}).create().show();
@@ -222,12 +225,26 @@ public class Game extends Activity {
 				return super.onOptionsItemSelected(item);
 		}
 	}
-		
+	
 	public void exitGame() {
+		if (isSolitaire) {
+			exitSolitaire();
+		} else {
+			exitMultiplayerGame();
+		}
+	}
+		
+	public void exitMultiplayerGame() {
+		client.publishDisconnect();
 		client.disconnect();
 		disconnectFromDevices();
 		finish();
 		startActivity(new Intent(Game.this, MainMenu.class));
+	}
+	
+	private void exitSolitaire() {
+		finish();
+		onBackPressed();
 	}
 		
 	public Client getClient() {
