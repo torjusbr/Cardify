@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -51,11 +52,16 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lobby);
+		
+		//Keeps screen on
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 		setUpWiFiDirect();
 		disconnectFromDevices();
 		peers = new WifiP2pDeviceList();
-		progressDialog = new ProgressDialog(this);
 		initCards = 0;
+		progressDialog = new ProgressDialog(this);
+		resetLobby();
 	}
 
 	protected void setUpWiFiDirect() {
@@ -70,8 +76,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 	}
 
-	//TODO: Stupid
-	private void resetPeerList() {
+	public void resetPeerList() {
 		((LinearLayout) findViewById(R.id.lobby_connectedPeersList)).removeAllViews();
 		((LinearLayout) findViewById(R.id.lobby_availablePeersList)).removeAllViews();
 	}
@@ -116,6 +121,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		view.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				disconnectFromDevices();
+				client.publishDisconnect();
+				resetLobby();
 			}
 		});
 		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -160,9 +167,10 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void disconnectFromDevices() {
 		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
-		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-		this.client = null;
+//		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+//		this.client.publishDisconnect();
 	}
+	
 
 	private void findPeers() {
 		mChannel = mManager.initialize(this, getMainLooper(), null);
@@ -221,7 +229,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void showCardHandSizeSelector() {
-		int maxHandSize = (int) Math.floor(52/(client.getReceivers().size()+1));
+		int maxHandSize = (int) Math.floor(52/(client.getReceivers().size()+1)) + 1;
 		
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -232,14 +240,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		String[] numbers = new String[maxHandSize];
 		
 		for (int i = 0; i < maxHandSize; i++) {
-			numbers[i] = Integer.toString(i+1);
+			numbers[i] = Integer.toString(i);
 		}
 		
-		np.setMinValue(1);
+		np.setMinValue(0);
 		np.setMaxValue(numbers.length);
 		np.setWrapSelectorWheel(false);
 		np.setDisplayedValues(numbers);
-		np.setValue(maxHandSize/2);
+		np.setValue(0);
 
 		alert.setPositiveButton("Start game",
 				new DialogInterface.OnClickListener() {
@@ -274,11 +282,20 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		if (isHost) {
 			intent.putExtra("cardsPerPlayer", initCards);
 		}
+		resetLobby();
+		
 		this.startActivity(intent);
 	}
 	
 	public void startGameActivity(Set<InetAddress> receivers){
 		startGameActivity(receivers, false);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		finish();
 	}
 	
 	// Every time new connection is available
@@ -312,8 +329,31 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		startButton.setVisibility(Button.INVISIBLE);
 	}
 	
-	public void removeClient() {
+	private void removeClient() {
 		this.client = null;
+	}
+	
+	private void disconnectClient() {
+		if (this.client != null) {
+			client.disconnect();
+			Log.e("Lobby", "Client is not null");
+		} else {
+			Log.e("Lobby", "Client is null");
+		}
+	}
+	
+	public void resetLobby() {
+		Log.e("Lobby", "Resetting lobby");
+	
+		disconnectClient();
+
+		removeStartButton();
+		removeClient();
+		resetPeerList();
+		groupOwnerIp = "";
+		peers = new WifiP2pDeviceList();
+		dismissProgressDialog();
+		initCards = 0;
 	}
 	
 	// Create client and register at host
