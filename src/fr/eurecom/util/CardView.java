@@ -1,5 +1,6 @@
 package fr.eurecom.util;
 
+import fr.eurecom.cardify.Game;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.Log;
@@ -13,8 +14,8 @@ import android.widget.ImageView;
 
 public class CardView extends ImageView implements OnTouchListener{
 	
-	public static int height = 208;
-	public static int width = 150;
+	//public static int height = 208;
+	//public static int width = 150;
 	//TODO: fix height/width
 	private long lastDown;
 	private Context context;
@@ -32,7 +33,7 @@ public class CardView extends ImageView implements OnTouchListener{
 		this.context = context;
 		this.card = card;
 		
-		this.setLayoutParams(new LayoutParams(width, height));
+		//this.setLayoutParams(new LayoutParams(width, height));
 		this.setOnTouchListener(this);
 		this.updateGraphics();
 		
@@ -75,13 +76,13 @@ public class CardView extends ImageView implements OnTouchListener{
                 float posX = x-anchorPoint.x;
                 float posY = y-anchorPoint.y;
                 
-                if(posX < 0 || (posX+width) > screenSize.x) {
-                	if(posY > 0 && (posY+height) < screenSize.y) {
+                if(posX < 0 || (posX+getWidth()) > screenSize.x) {
+                	if(posY > 0 && (posY+getHeight()) < screenSize.y) {
                 		v.setY(y-(anchorPoint.y));
                 		playerHand.moveCard(this);
                 	}
-                } else if(posY < 0 || (posY+height) > screenSize.y) {
-                	if(posX > 0 && (posX+width) < screenSize.x) {
+                } else if(posY < 0 || (posY+getHeight()) > screenSize.y) {
+                	if(posX > 0 && (posX+getWidth()) < screenSize.x) {
                 		v.setX(x-(anchorPoint.x));
                 		playerHand.moveCard(this);
                 	}
@@ -114,7 +115,7 @@ public class CardView extends ImageView implements OnTouchListener{
 	}
 	
 	private String getResourceString() {
-		return card.getTurned() ? "drawable/back_blue" : "drawable/cards/"+card.getSuit()+card.getFace();
+		return card.getTurned() ? "drawable/back_blue" : "drawable/"+card.getSuit()+card.getFace();
 		//TODO: May have to scale cards on big screens
 	}
 	

@@ -177,13 +177,15 @@ public class CardPlayerHand {
 	public void stackCards(){
 		if (cardStack.isEmpty()) return;
 		
+		int height = cardStack.get(0).getHeight();
+		int width = cardStack.get(0).getWidth();
 		int maximumStackWidth = displaySize.x - 10; //5px free on each side of stack
-		double pixelsBetweenCards = cardStack.size() != 1 ? Math.min(CardView.width/2, (maximumStackWidth - CardView.width)/(cardStack.size() - 1)) : 0;
-		int y = displaySize.y - CardView.height;
+		double pixelsBetweenCards = cardStack.size() != 1 ? Math.min(width/2, (maximumStackWidth - width)/(cardStack.size() - 1)) : 0;
+		int y = displaySize.y - height;
 		int x = 0;
 		
-		if (pixelsBetweenCards <= CardView.width/2) {
-			x = (int) Math.round(((displaySize.x - ((cardStack.size() - 1)*pixelsBetweenCards + CardView.width))/2));
+		if (pixelsBetweenCards <= width/2) {
+			x = (int) Math.round(((displaySize.x - ((cardStack.size() - 1)*pixelsBetweenCards + width))/2));
 		} else {
 			x = 5;
 		}
@@ -198,8 +200,9 @@ public class CardPlayerHand {
 	}
 	
 	public boolean inStackZone(float x, float y) {
+		int height = cardStack.get(0).getHeight();
 		if (x < 0 || x > displaySize.x) return false;
-		if (y < displaySize.y - 1.75*CardView.height || y > displaySize.y) return false;
+		if (y < displaySize.y - 1.75*height || y > displaySize.y) return false;
 		return true;
 	}
 	
@@ -278,10 +281,10 @@ public class CardPlayerHand {
 	}
 	
 	private void animateCardIntoView(CardView view) {
-		view.setX(displaySize.x/2 - CardView.width/2);
-		view.setY(0 - CardView.height);
+		view.setX(displaySize.x/2 - view.getWidth()/2);
+		view.setY(0 - view.getHeight());
 		
-		int yTranslation = (displaySize.y/2 - CardView.height/2);
+		int yTranslation = (displaySize.y/2 - view.getHeight()/2);
 		
 		view.animate().translationY(yTranslation).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
 	}

@@ -4,18 +4,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import fr.eurecom.cardify.Game;
+
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Point;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
 public class CardDeck extends ImageView implements OnTouchListener {
@@ -24,21 +22,15 @@ public class CardDeck extends ImageView implements OnTouchListener {
 	
 	private List<Card> cards;
 	private Point anchorPoint = new Point();
-	private Point screenSize;
 	private CardPlayerHand playerHand;
 	private final ColorFilter highlightFilter = new LightingColorFilter(Color.DKGRAY, 1);
-	private final int screenClass = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK; 
-	
 	private long lastDown;
 	
 	public CardDeck(Context context){
 		super(context);
 		
-		//TODO: Fix layout params based on resolution or make different resolutions of deck.png
-		this.setDeckSize();
-		
 		this.cards = new LinkedList<Card>();
-		
+	
 		for (char suit : suits){
 			for (int face : faces){
 				cards.add(new Card(suit, face, false));
@@ -46,15 +38,10 @@ public class CardDeck extends ImageView implements OnTouchListener {
 		}
 		
 		this.setOnTouchListener(this);
-		this.setImageResource(context.getResources().getIdentifier("drawable/deck", null, context.getPackageName()));
+		this.setImage(context);
 		
-		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		screenSize = new Point();
-		display.getSize(screenSize);
-		
-		this.setX(screenSize.x/4);
-		this.setY(screenSize.y/4);
+		this.setX(Game.screenSize.x/4);
+		this.setY(Game.screenSize.y/4);
 		this.toggleEmpty();
 	}
 	
@@ -62,16 +49,17 @@ public class CardDeck extends ImageView implements OnTouchListener {
 		super(context);
 		
 		this.cards = receivedCards;
+		
 		this.setOnTouchListener(this);
+		this.setImage(context);
+		
+		this.setX(Game.screenSize.x/4);
+		this.setY(Game.screenSize.y/4);
+		this.toggleEmpty();
+	}
+	
+	private void setImage(Context context) {
 		this.setImageResource(context.getResources().getIdentifier("drawable/deck", null, context.getPackageName()));
-		
-		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		screenSize = new Point();
-		display.getSize(screenSize);
-		
-		this.setX(screenSize.x/4);
-		this.setY(screenSize.y/4);
 	}
 	
 	public void setOwner(CardPlayerHand owner) {
@@ -111,6 +99,7 @@ public class CardDeck extends ImageView implements OnTouchListener {
 	public Card drawFromDeck() {
 		Card c = pop();
 		//TODO: Set position elsewhere
+		//TODO: When no cards in stack, not stacking
 		//c.setX(this.getX() + this.getWidth());
 		//c.setY(this.getY());
 		c.setTurned(true);
@@ -149,12 +138,12 @@ public class CardDeck extends ImageView implements OnTouchListener {
             float posX = x-anchorPoint.x;
             float posY = y-anchorPoint.y;
             
-            if(posX < 0 || (posX+getWidth()) > screenSize.x) {
-            	if(posY > 0 && (posY+getHeight()) < screenSize.y - CardView.height) {
+            if(posX < 0 || (posX+getWidth()) > Game.screenSize.x) {
+            	if(posY > 0 && (posY+getHeight()) < Game.screenSize.y - getHeight()) {
             		v.setY(y-(anchorPoint.y));
             	}
-            } else if(posY < 0 || (posY+getHeight()) > screenSize.y - CardView.width) {
-            	if(posX > 0 && (posX+getWidth()) < screenSize.x) {
+            } else if(posY < 0 || (posY+getHeight()) > Game.screenSize.y - getWidth()) {
+            	if(posX > 0 && (posX+getWidth()) < Game.screenSize.x) {
             		v.setX(x-(anchorPoint.x));
             	}
             } else {
@@ -189,30 +178,5 @@ public class CardDeck extends ImageView implements OnTouchListener {
 	
 	public List<Card> getCards() {
 		return cards;
-	}
-	
-	private void setDeckSize() {
-		switch (screenClass) {
-		case Configuration.SCREENLAYOUT_SIZE_SMALL:
-			System.out.println("smallscreen");
-			this.setLayoutParams(new LayoutParams(50, 69));
-			break;
-		case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-			System.out.println("normal screen "+this.getScaleX()+"-"+getScaleY()+"-"+this.getHeight()+this.getWidth());
-			
-			this.setLayoutParams(new LayoutParams(150, 208));
-			break;
-		case Configuration.SCREENLAYOUT_SIZE_LARGE:
-			System.out.println("large screen");
-			this.setLayoutParams(new LayoutParams(92, 127));
-			break;
-		case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-			System.out.println("xlarge screen");
-			this.setLayoutParams(new LayoutParams(150, 208));
-			break;
-		default:
-			System.out.println("undefinedscreen");
-			break;
-		}
 	}
 }

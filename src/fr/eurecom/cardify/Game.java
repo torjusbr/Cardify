@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Configuration;
 import android.content.Intent;
 import android.graphics.Point;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -43,6 +44,9 @@ public class Game extends Activity {
 	private int cardsPerPlayer;
 	private boolean isSolitaire;
 	
+	public static boolean isTablet;
+	public static Point screenSize;
+	
 	//TODO: Maybe implementing superclass with this:
 	private WifiP2pManager mManager;
 	private Channel mChannel;
@@ -51,6 +55,12 @@ public class Game extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
+		
+		isTablet = (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE;
+		WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		screenSize = new Point();
+		display.getSize(screenSize);
 		
 		//Keeps screen on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
