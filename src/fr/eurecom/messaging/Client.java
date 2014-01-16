@@ -53,7 +53,6 @@ public class Client implements Handler.Callback {
 	}
 	
 	public void disconnect(){
-
 		receivingThread.stopThread();
 	}
 	

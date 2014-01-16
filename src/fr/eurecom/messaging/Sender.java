@@ -47,7 +47,7 @@ public class Sender {
 		            try {
 		                socket.close();
 		            } catch (IOException e) {
-		                //catch logic
+		               Log.e("Sender", e.getMessage());
 		            }
 		        }
 		    }
