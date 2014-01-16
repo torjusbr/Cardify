@@ -120,8 +120,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		view.setText(String.format("Disconnect from %s", device.deviceName));
 		view.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				disconnectFromDevices();
 				client.publishDisconnect();
+				disconnectFromDevices();
 				resetLobby();
 			}
 		});
@@ -138,7 +138,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
-		timerDelayRemoveDialog(15000, progressDialog);
+		timerDelayRemoveDialog(30000, progressDialog);
 	}
 	
 	private void showProgressDialog(String title, String message) {
@@ -335,8 +335,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void disconnectClient() {
 		if (this.client != null) {
-			client.disconnect();
 			Log.e("Lobby", "Client is not null");
+			client.disconnect();
 		} else {
 			Log.e("Lobby", "Client is null");
 		}

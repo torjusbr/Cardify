@@ -43,7 +43,7 @@ public class Game extends Activity {
 	private int cardsPerPlayer;
 	private boolean isSolitaire;
 	
-	//TODO: Maybe implementing superclass with this:
+	//TODO: Maybe implementing superclass with this.:
 	private WifiP2pManager mManager;
 	private Channel mChannel;
 	

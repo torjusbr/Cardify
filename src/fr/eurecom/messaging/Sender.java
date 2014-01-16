@@ -14,9 +14,8 @@ import android.util.Log;
 
 public class Sender {
 	
-	public void send(Message message, InetAddress receiver) {
+	public void send(GameMessage message, InetAddress receiver) {
 		
-		//Hack
 	    if (android.os.Build.VERSION.SDK_INT > 9) {
 	        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 	        StrictMode.setThreadPolicy(policy);
@@ -54,7 +53,7 @@ public class Sender {
 		}
 	}
 	
-	private String serialize(Message message) {
+	private String serialize(GameMessage message) {
 		JSONObject json = new JSONObject();
 		try {
 			json.put("what", message.what.ordinal());

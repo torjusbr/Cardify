@@ -1,11 +1,15 @@
 package fr.eurecom.messaging;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.cardify.Lobby;
@@ -16,25 +20,74 @@ public class Client {
 
 	private Activity activity;
 	private Set<InetAddress> receivers;
-	private Receiver receiver;
+//	private Receiver receiver;
 	private Sender sender;
 	private boolean isHost;
 	private int peersInitialized;
+	private MessageListener receivingThread;
+	private Handler handler;
 	
 	public Client(Activity activity) {
 		this.activity = activity;
-		this.receiver = new Receiver(this);
-		receiver.execute();
+//		Old way
+//		this.receiver = new Receiver(this);
+		
+//		New way
+		handler = createHandler();
+		try {
+			receivingThread = new MessageListener(this);
+			receivingThread.start();
+		} catch (IOException e) {
+			Log.e("Client", "Constructor error: __" + e.getMessage());
+		}
+		
+		
+
+//		receiver.execute();
 		//receiver.run();
 		receivers = new HashSet<InetAddress>();
 		this.sender = new Sender();
 		this.isHost = false;
 		this.peersInitialized = 0;
+		
+	}
+	
+	public void handleThreadMessage(GameMessage gameMessage, int what) {
+		Log.d("HandleThreadMessage", "Mottatt melding fra en annen tråd:");
+		
+		Message completeMessage = handler.obtainMessage(what, gameMessage);
+		completeMessage.sendToTarget();
+	}
+	
+	private Handler createHandler() {
+		return new Handler(Looper.getMainLooper()) {
+			
+			//Kjøres hver gang det er en message i stacken.
+			@Override
+			public void handleMessage(Message msg) {
+				
+				//TODO: Her gjøres handleGameMessage. What må gjøres om
+				if (msg.what == Config.GAME_MESSAGE_INT) {
+					Log.d("Client", "Got message ");
+					GameMessage gameMessage = (GameMessage) msg.obj;
+					Log.d("Client", "Message is " + gameMessage.about);
+					handleGameMessage(gameMessage);
+				} else {
+					Log.d("Client", "Got a message that's game_message_int" + msg.obj.toString());
+					super.handleMessage(msg);
+				}
+			}
+		};
 	}
 	
 	public void disconnect(){
-		receiver.stopListening();
+//		Old
+		//receiver.stopListening();
+//		New:
+		receivingThread.stopThread();
+		receivingThread.interrupt();
 	}
+	
 	
 	public void changeToHost(){
 		this.isHost = true;
@@ -94,7 +147,7 @@ public class Client {
 				if (deck.peak() == null) break;
 				cards += deck.pop().toString() + ";";
 			}
-			Message message = new Message(Action.INITIAL_CARDS, cards);
+			GameMessage message = new GameMessage(Action.INITIAL_CARDS, cards);
 			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
 			
 			this.sender.send(message, receiver);
@@ -113,7 +166,7 @@ public class Client {
 			cardStringBuilder.append(";");
 		}
 		for (InetAddress receiver : receivers) {
-			Message message = new Message(Action.REMAINING_DECK,cardStringBuilder.toString());
+			GameMessage message = new GameMessage(Action.REMAINING_DECK,cardStringBuilder.toString());
 			this.sender.send(message, receiver);
 		}
 		
@@ -121,13 +174,13 @@ public class Client {
 	
 	
 	private void sendMessage(Action what, String about) {
-		Message message = new Message(what, about);
+		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
 			this.sender.send(message, receiver);
 		}
 	}
 	
-	private void broadcastChange(Message message){
+	private void broadcastChange(GameMessage message){
 		for (InetAddress receiver : receivers){
 			if (!receiver.equals(message.getOriginatorAddr())){
 				this.sender.send(message, receiver);
@@ -136,9 +189,9 @@ public class Client {
 	}
 	
 	
-	public void handleMessage(Message message) {
+	public void handleGameMessage(GameMessage message) {
 		if(message.what == Action.GAME_INITIALIZED) {
-			Log.e("handleMessage", "Game initialized" + message.getOriginatorAddr());
+			Log.e("handleGameMessage", "Game initialized" + message.getOriginatorAddr());
 			handleGameInitialized(message);
 		} 
 		else if (this.activity instanceof Lobby) {
@@ -148,7 +201,7 @@ public class Client {
 		}
 	}
 	
-	private void handlePreGameMessage(Message message){
+	private void handlePreGameMessage(GameMessage message){
 		switch (message.what){
 		case GAME_STARTED:
 			handleGameStarted(message);
@@ -164,12 +217,12 @@ public class Client {
 		}
 	}
 	
-	private void handleRegister(Message message) {
+	private void handleRegister(GameMessage message) {
 		addReceiver(message.getOriginatorAddr());
 		((Lobby) activity).dismissProgressDialog();
 	}
 	
-	private void handleGameStarted(Message message) {
+	private void handleGameStarted(GameMessage message) {
 		//TODO:
 		/*
 		 * Start new game and set local game variable in this interpreter to game instance
@@ -177,7 +230,7 @@ public class Client {
 		((Lobby) activity).startGameActivity(receivers);
 	}
 	
-	private void handleGameInitialized(Message message) {
+	private void handleGameInitialized(GameMessage message) {
 		if (isHost) {
 			peersInitialized++;
 			Log.e("HORE", "Number of peers initialized: " + peersInitialized);
@@ -191,7 +244,7 @@ public class Client {
 		sendMessage(Action.GAME_INITIALIZED, "");
 	}
 	
-	private void handleInGameMessage(Message message){
+	private void handleInGameMessage(GameMessage message){
 		switch (message.what) {
 		case ADDED_CARD_TO_PUBLIC_ZONE:
 			handleAddedCardToPublicZone(message);
@@ -224,7 +277,7 @@ public class Client {
 		}
 	}
 	
-	private void handleInGameDisconnect(Message message) {
+	private void handleInGameDisconnect(GameMessage message) {
 		if (isHost) {
 			//TODO: What should the host do when someone disconnects from the game?
 			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
@@ -239,7 +292,7 @@ public class Client {
 	}
 	
 	//TODO: Dette må fikses!
-	private void handlePreGameDisconnect(Message message) {
+	private void handlePreGameDisconnect(GameMessage message) {
 		if (isHost) {
 			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
 			Log.e("Client", "Stack contains ? " + receivers.contains(message.getOriginatorAddr()));
@@ -253,7 +306,7 @@ public class Client {
 		((Lobby) activity).resetLobby();
 	}
 	
-	private void handleAddedCardToPublicZone(Message message) {
+	private void handleAddedCardToPublicZone(GameMessage message) {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		boolean turned = message.about.charAt(0) == '1' ? true : false;
 		char suit = message.about.charAt(1);
@@ -264,7 +317,7 @@ public class Client {
 		}
 	}
 	
-	private void handleRemovedCardFromPublicZone(Message message) {
+	private void handleRemovedCardFromPublicZone(GameMessage message) {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
@@ -274,7 +327,7 @@ public class Client {
 		}
 	}
 	
-	private void handleTurnedCardInPublicZone(Message message) {
+	private void handleTurnedCardInPublicZone(GameMessage message) {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
@@ -284,7 +337,7 @@ public class Client {
 		}
 	}
 	
-	private void handleInitialCards(Message message) {
+	private void handleInitialCards(GameMessage message) {
 		Log.e("Client:handleInitialCards", "Cards: " + message.about + " length: " + message.about.length());
 		if (message.about.length() > 0) {
 			String[] cards = message.about.split(";");
@@ -292,14 +345,14 @@ public class Client {
 		}
 	}
 	
-	private void handleRemainingDeck(Message message) {
+	private void handleRemainingDeck(GameMessage message) {
 		Log.e("Client:handleRemainingDeck", "Cards: " +message.about);
 		String[] cards = message.about.split(";");
 		((Game) activity).getPlayerHand().blindAddDeck(cards);
 		((Game) activity).dismissProgressDialog();
 	}
 	
-	private void handleAddCardToDeck(Message message) {
+	private void handleAddCardToDeck(GameMessage message) {
 		Log.e("Client:handleAddCardToDeck", "Cards: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
@@ -310,7 +363,7 @@ public class Client {
 		}
 	}
 	
-	private void handleDrawCardFromDeck(Message message) {
+	private void handleDrawCardFromDeck(GameMessage message) {
 		Log.e("Client:handleDrawCardFromDeck","no message");
 		((Game) activity).getPlayerHand().blindDrawFromDeck();
 		if (isHost) { 
