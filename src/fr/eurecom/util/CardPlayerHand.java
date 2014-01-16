@@ -337,7 +337,7 @@ public class CardPlayerHand {
 		view.setX(displaySize.x/2 - view.getWidth()/2);
 		view.setY(0 - view.getHeight());
 		
-		int yTranslation = (displaySize.y/2 - view.getHeight()/2);
+		int yTranslation = (displaySize.y/2 - view.getHeight());
 		
 		view.animate().translationY(yTranslation).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
 	}
