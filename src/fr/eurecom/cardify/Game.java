@@ -46,6 +46,7 @@ public class Game extends Activity {
 	public static Point screenSize;
 	
 	//TODO: Maybe implementing superclass with this:
+
 	private WifiP2pManager mManager;
 	private Channel mChannel;
 	
