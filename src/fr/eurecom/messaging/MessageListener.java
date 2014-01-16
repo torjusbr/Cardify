@@ -45,7 +45,9 @@ public class MessageListener extends Thread {
 			getThreadGroup().interrupt();
 			shutdownAndAwaitTermination(pool);
 		} catch (IOException ex) {
-			pool.shutdown();
+			Log.e("MessageListener", "Thread stopping listening");
+			getThreadGroup().interrupt();
+			shutdownAndAwaitTermination(pool);
 		}
 	}
 	
@@ -64,10 +66,10 @@ public class MessageListener extends Thread {
 		
 		try {
 			// Wait a while for existing tasks to terminate
-			if (!pool.awaitTermination(5, TimeUnit.SECONDS)) {
+			if (!pool.awaitTermination(50, TimeUnit.MILLISECONDS)) {
 				pool.shutdownNow(); // Cancel currently executing tasks
 				// Wait a while for tasks to respond to being cancelled
-				if (!pool.awaitTermination(5, TimeUnit.SECONDS))
+				if (!pool.awaitTermination(50, TimeUnit.MILLISECONDS))
 					System.err.println("Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
