@@ -32,11 +32,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="fr.eurecom.cardify.HostGame"
-            android:label="@string/title_activity_host_game"
-            android:screenOrientation="landscape" >
-        </activity>
-        <activity
             android:name="fr.eurecom.cardify.Game"
             android:label="@string/title_activity_game"
             android:screenOrientation="landscape" >

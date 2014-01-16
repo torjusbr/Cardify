@@ -243,7 +243,8 @@ public class CardPlayerHand {
 		if(inStackZone(view.getX(), view.getY())) {
 			if (cardPublic.remove(view)) {
 				addToStackFromPublic(view);
-			} else {
+			} else if (cardStack.remove(view)){
+				cardStack.add(getPositionInStack(view.getX()),view);
 				stackCards();
 			}
 		} else if (inCardDeck(view.getX(), view.getY())) {
