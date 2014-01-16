@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:splitMotionEvents="false"
-    android:background="@color/green"
+    android:background="@drawable/background_tiled"
     tools:context=".Game" >
 
     <View

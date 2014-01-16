@@ -102,7 +102,7 @@ public class CardDeck extends ImageView {
 	}
 	
 	public boolean toggleEmpty() {
-		if (cards.isEmpty()) {
+		if (cards.isEmpty() || cards == null) {
 			this.setAlpha((float)0.2);
 			return true;
 		} else {

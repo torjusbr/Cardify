@@ -10,9 +10,8 @@
     <string name="S_H_D_C_ACE_HIGH">By suit, ace high</string>
     <string name="S_H_D_C_ACE_LOW">By suit, ace low</string>
     
-    <string name="title_activity_host_game">HostGame</string>
     <string name="title_activity_game">Game</string>
-    <string name="title_activity_lobby">Lobby</string>
+    <string name="title_activity_lobby">Multiplayer</string>
     
     <string name="lobby_available_peers">Available players</string>
     <string name="lobby_connected_peers">Connected players</string>

@@ -24,11 +24,6 @@ public class MainMenu extends Activity {
         return true;
     }
     
-    public void hostGame(View view) {
-    	Intent intent = new Intent(this,HostGame.class);
-    	startActivity(intent);
-    }
-    
     public void joinGame(View view) {
     	
     }
