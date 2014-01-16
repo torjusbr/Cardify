@@ -45,6 +45,7 @@ public class CardDeck extends ImageView {
 		
 		this.setX(Game.screenSize.x/4);
 		this.setY(Game.screenSize.y/4);
+		this.toggleEmpty();
 	}
 	
 	private void setImage(Context context) {

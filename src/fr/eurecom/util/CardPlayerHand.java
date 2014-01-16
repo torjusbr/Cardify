@@ -122,7 +122,7 @@ public class CardPlayerHand {
 		Card top = game.getDeck().peek();
 		CardView view;
 		
-		if (suit == top.getSuit() && face == top.getFace()) { //from deck
+		if (top != null && suit == top.getSuit() && face == top.getFace()) { //from deck
 			view = addCardGraphics(game.getDeck().drawFromDeck());
 			this.printMessage("Opponent drew", "from the deck to the table", view.getCard(), false);
 		} else { //from opponents stack
@@ -161,7 +161,6 @@ public class CardPlayerHand {
 	public void blindAddDeck(String[] cardStrings) {
 		if (cardStrings == null) {
 			game.setDeck(new CardDeck(game.getApplicationContext(), new LinkedList<Card>()));
-			game.getDeck().toggleEmpty();
 		} else {
 			game.setDeck(new CardDeck(game.getApplicationContext(),getCardListFromStrings(cardStrings)));
 		}
@@ -183,7 +182,6 @@ public class CardPlayerHand {
 	private List<Card> getCardListFromStrings(String[] strings) {
 		List<Card> cards = new LinkedList<Card>();
 		for (String str : strings) {
-			System.out.println("STRING: "+str);
 			boolean turned = str.charAt(0) == '1' ? true : false;
 			char suit = str.charAt(1);
 			int face = Integer.parseInt(str.substring(2));
