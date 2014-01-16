@@ -8,7 +8,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import fr.eurecom.cardify.Game;
@@ -16,11 +15,10 @@ import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
 import fr.eurecom.util.CardDeck;
 
-public class Client {
+public class Client implements Handler.Callback {
 
 	private Activity activity;
 	private Set<InetAddress> receivers;
-//	private Receiver receiver;
 	private Sender sender;
 	private boolean isHost;
 	private int peersInitialized;
@@ -29,13 +27,10 @@ public class Client {
 	
 	public Client(Activity activity) {
 		this.activity = activity;
-//		Old way
-//		this.receiver = new Receiver(this);
-		
-//		New way
-		handler = createHandler();
+
+		handler = new Handler(this);
 		try {
-			receivingThread = new MessageListener(this);
+			receivingThread = new MessageListener(handler);
 			receivingThread.start();
 		} catch (IOException e) {
 			Log.e("Client", "Constructor error: __" + e.getMessage());
@@ -43,8 +38,6 @@ public class Client {
 		
 		
 
-//		receiver.execute();
-		//receiver.run();
 		receivers = new HashSet<InetAddress>();
 		this.sender = new Sender();
 		this.isHost = false;
@@ -59,33 +52,9 @@ public class Client {
 		completeMessage.sendToTarget();
 	}
 	
-	private Handler createHandler() {
-		return new Handler(Looper.getMainLooper()) {
-			
-			//Kjøres hver gang det er en message i stacken.
-			@Override
-			public void handleMessage(Message msg) {
-				
-				//TODO: Her gjøres handleGameMessage. What må gjøres om
-				if (msg.what == Config.GAME_MESSAGE_INT) {
-					Log.d("Client", "Got message ");
-					GameMessage gameMessage = (GameMessage) msg.obj;
-					Log.d("Client", "Message is " + gameMessage.about);
-					handleGameMessage(gameMessage);
-				} else {
-					Log.d("Client", "Got a message that's game_message_int" + msg.obj.toString());
-					super.handleMessage(msg);
-				}
-			}
-		};
-	}
-	
 	public void disconnect(){
-//		Old
-		//receiver.stopListening();
-//		New:
+
 		receivingThread.stopThread();
-		receivingThread.interrupt();
 	}
 	
 	
@@ -371,6 +340,18 @@ public class Client {
 		if (isHost) { 
 			broadcastChange(message);
 		}
+	}
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		//TODO: Her gjøres handleGameMessage. What må gjøres om
+		if (msg.what == Config.GAME_MESSAGE_INT) {
+			Log.d("Client", "Got message ");
+			GameMessage gameMessage = (GameMessage) msg.obj;
+			Log.d("Client", "Message is " + gameMessage.about);
+			handleGameMessage(gameMessage);
+		} 
+		return true;
 	}
 
 }

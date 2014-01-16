@@ -7,26 +7,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import android.os.Handler;
 import android.util.Log;
 
 public class MessageListener extends Thread {
 
 	private final ServerSocket socket;
 	private final ExecutorService pool;
-	private Client client;
+	private Handler handler;
 	
 	private volatile boolean running;
 	
-	
-
-	public MessageListener(Client client)
+	public MessageListener(Handler handler)
 			throws IOException {
 		Log.d("NewReceiver", "Constructor");
-		this.client = client;
+		this.handler = handler;
 		this.socket = new ServerSocket(Config.PORT);
 		
-		//Kanskje bruke newFixedThreadPool i stedet
-		pool = Executors.newCachedThreadPool();
+		pool = Executors.newFixedThreadPool(2);
 		Log.d("NewReceiver", "Listening Thread started");
 		this.running = true;
 	}
@@ -38,7 +36,7 @@ public class MessageListener extends Thread {
 			while (this.running && !isInterrupted()) {
 				Socket tempSocket = socket.accept();
 				Log.d("NewReceiver", "running ? " + this.running);
-				pool.execute(new MessageReceiver(tempSocket, client));
+				pool.execute(new MessageReceiver(tempSocket, handler));
 			}
 			Log.e("MessageListener", "Thread stopping listening");
 			socket.close();
@@ -50,6 +48,8 @@ public class MessageListener extends Thread {
 			shutdownAndAwaitTermination(pool);
 		}
 	}
+	
+	
 	
 	public void stopThread() {
 		this.running = false;

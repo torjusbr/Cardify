@@ -9,16 +9,18 @@ import java.net.Socket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 public class MessageReceiver implements Runnable {
 	private final Socket sender;
 	private JSONObject json;
-	private Client client;
+	private Handler handler;
 
-	public MessageReceiver(Socket sender, Client client) throws IOException {
+	public MessageReceiver(Socket sender, Handler handler) throws IOException {
 		this.sender = sender;
-		this.client = client;
+		this.handler = handler;
 		Log.e("SocketHandler", "Received message, started new thread");
 	}
 
@@ -47,9 +49,16 @@ public class MessageReceiver implements Runnable {
 			GameMessage gameMessage = new GameMessage(action, subject);
 			gameMessage.setOriginatorAddr(sender);
 			
-			client.handleThreadMessage(gameMessage, Config.GAME_MESSAGE_INT);
+			handleThreadMessage(gameMessage, Config.GAME_MESSAGE_INT);
 		} catch (JSONException e){
 			Log.e("ClientInterpreter:receiveMessage", e.getMessage());
 		}
+	}
+	
+	public void handleThreadMessage(GameMessage gameMessage, int what) {
+		Log.d("HandleThreadMessage", "Mottatt melding fra en annen tråd:");
+		
+		Message completeMessage = handler.obtainMessage(what, gameMessage);
+		completeMessage.sendToTarget();
 	}
 }
