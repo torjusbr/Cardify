@@ -193,8 +193,7 @@ public class Client {
 		if(message.what == Action.GAME_INITIALIZED) {
 			Log.e("handleGameMessage", "Game initialized" + message.getOriginatorAddr());
 			handleGameInitialized(message);
-		} 
-		else if (this.activity instanceof Lobby) {
+		} else if (this.activity instanceof Lobby) {
 			handlePreGameMessage(message);
 		} else if (this.activity instanceof Game){
 			handleInGameMessage(message);
