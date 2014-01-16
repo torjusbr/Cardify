@@ -2,21 +2,21 @@ package fr.eurecom.messaging;
 
 import java.net.InetAddress;
 
-public class Message {
+public class GameMessage {
 	
 	public final Action what;
 	public final String about;
 	private InetAddress originatorAddr;
 	private String originatorName; 
 	
-	public Message(Action what, String about) {
+	public GameMessage(Action what, String about) {
 		this.what = what;
 		this.about = about;
 		this.originatorAddr = null;
 		this.originatorName = null;
 	}
 	
-	public Message(Action what, String about, String originatorName){
+	public GameMessage(Action what, String about, String originatorName){
 		this(what, about);
 		this.originatorName = originatorName;
 	}

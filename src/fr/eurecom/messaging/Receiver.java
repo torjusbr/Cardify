@@ -72,9 +72,9 @@ public class Receiver extends AsyncTask<String, Void, JSONObject> { //implements
 		try {
 			Action action = Action.values()[json.getInt("what")];
 			String subject = json.getString("about");
-			Message message = new Message(action, subject);
+			GameMessage message = new GameMessage(action, subject);
 			message.setOriginatorAddr(sender);
-			client.handleMessage(message);
+			client.handleGameMessage(message);
 		} catch (JSONException e){
 			Log.e("ClientInterpreter:receiveMessage", e.getMessage());
 		}
