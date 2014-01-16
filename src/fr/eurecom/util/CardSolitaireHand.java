@@ -1,33 +1,11 @@
 package fr.eurecom.util;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import fr.eurecom.cardify.Game;
 
 public class CardSolitaireHand extends CardPlayerHand {
-
-	public List<CardView> cardHeap;
 	
 	public CardSolitaireHand(Game game) {
 		super(game);
-		cardHeap = new LinkedList<CardView>();
-	}
-	
-	@Override
-	public void addToPublic(CardView view) {
-		if (cardStack.remove(view)) {
-			cardHeap.add(view);
-			stackCards();
-		}
-	}
-	
-	@Override
-	public void removeFromPublic(CardView view) {
-		if (cardHeap.remove(view)) {
-			cardStack.add(view);
-			stackCards();
-		}
 	}
 	
 	@Override
@@ -36,25 +14,41 @@ public class CardSolitaireHand extends CardPlayerHand {
 	}
 	
 	@Override
-	protected void addToDeck(CardView view) {
-		if (!cardPublic.remove(view)) {
-			cardStack.remove(view);
-			stackCards();
-		}
-		
+	protected void addToDeckFromStack(CardView view) {
 		game.getDeck().addCard(view.getCard());
-		game.getDeck().setColorFilter(null);
-		
+		game.getDeck().toggleHighlight(false);
+		stackCards();
 		removeCardGraphics(view);
-		
-		System.out.println("VIEW:"+view.getCard().getSuit());
 	}
 	
 	@Override
-	public void drawFromDeck(Card card) {
-		CardView view = addCardGraphics(card);
+	protected void addToDeckFromPublic(CardView view) {
+		game.getDeck().addCard(view.getCard());
+		game.getDeck().toggleHighlight(false);
+		removeCardGraphics(view);
+	}
+	
+	@Override
+	protected void addToPublicFromDeck(CardView view) {
 		cardPublic.add(view);
 	}
 	
+	@Override
+	protected void addToPublicFromStack(CardView view) {
+		cardPublic.add(view);
+		stackCards();
+	}
+	
+	@Override
+	protected void addToStackFromDeck(CardView view) {
+		cardStack.add(view);
+		stackCards();
+	}
+	
+	@Override
+	protected void addToStackFromPublic(CardView view) {
+		cardStack.add(view);
+		stackCards();
+	}
 	
 }

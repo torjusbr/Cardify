@@ -63,6 +63,10 @@ public class Client {
 		sendMessage(Action.GAME_STARTED, "");
 	}
 	
+	public void publishDrawFromDeckToStack(Card card) {
+		sendMessage(Action.DREW_FROM_DECK_TO_STACK, card.toString());
+	}
+	
 	public void publishTakeCardFromPublicZone(Card card) {
 		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
 	}
@@ -79,10 +83,6 @@ public class Client {
 		sendMessage(Action.ADDED_CARD_TO_DECK, card.toString());
 	}
 	
-	public void publishDrawFromDeck(Card card) {
-		sendMessage(Action.DREW_CARD_FROM_DECK, "");
-	}
-	
 	public void publishDisconnect() {
 		sendMessage(Action.DISCONNECT, "");
 	}
@@ -91,7 +91,7 @@ public class Client {
 		for (InetAddress receiver : receivers){
 			String cards = "";
 			for (int i = 0; i < n; i++){
-				if (deck.peak() == null) break;
+				if (deck.peek() == null) break;
 				cards += deck.pop().toString() + ";";
 			}
 			Message message = new Message(Action.INITIAL_CARDS, cards);
@@ -205,8 +205,8 @@ public class Client {
 		case ADDED_CARD_TO_DECK:
 			handleAddCardToDeck(message);
 			return;
-		case DREW_CARD_FROM_DECK:
-			handleDrawCardFromDeck(message);
+		case DREW_FROM_DECK_TO_STACK:
+			handleDrewFromDeckToStack(message);
 			return;
 		case ILLEGAL_ACTION:
 			return;
@@ -253,6 +253,14 @@ public class Client {
 		((Lobby) activity).resetLobby();
 	}
 	
+	private void handleDrewFromDeckToStack(Message message) {
+		Log.e("Client:handleDrewFromDeckToStack", "RUN: " + message.about);
+		((Game) activity).getPlayerHand().blindDrawFromDeckToStack();
+		if (isHost) {
+			broadcastChange(message);
+		}
+	}
+	
 	private void handleAddedCardToPublicZone(Message message) {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		boolean turned = message.about.charAt(0) == '1' ? true : false;
@@ -294,7 +302,7 @@ public class Client {
 	
 	private void handleRemainingDeck(Message message) {
 		Log.e("Client:handleRemainingDeck", "Cards: " +message.about);
-		String[] cards = message.about.split(";");
+		String[] cards = message.about.length() == 0 ? null : message.about.split(";");
 		((Game) activity).getPlayerHand().blindAddDeck(cards);
 		((Game) activity).dismissProgressDialog();
 	}
@@ -305,14 +313,6 @@ public class Client {
 		int face = Integer.parseInt(message.about.substring(2));
 		boolean turned = message.about.charAt(0) == '1' ? true : false;
 		((Game) activity).getPlayerHand().blindAddToDeck(suit, face, turned);
-		if (isHost) { 
-			broadcastChange(message);
-		}
-	}
-	
-	private void handleDrawCardFromDeck(Message message) {
-		Log.e("Client:handleDrawCardFromDeck","no message");
-		((Game) activity).getPlayerHand().blindDrawFromDeck();
 		if (isHost) { 
 			broadcastChange(message);
 		}

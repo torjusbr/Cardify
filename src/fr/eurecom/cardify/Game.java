@@ -12,11 +12,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.content.Intent;
 import android.graphics.Point;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
-import android.os.Debug;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Display;
@@ -32,6 +30,8 @@ import fr.eurecom.util.CardPlayerHand;
 import fr.eurecom.util.CardSolitaireHand;
 import fr.eurecom.util.CardSortingRule;
 
+//TODO: Get WiFi direct names
+
 public class Game extends Activity {
 
 	private CardDeck deck;
@@ -39,12 +39,10 @@ public class Game extends Activity {
 	private CardSolitaireHand solitaireHand;
 	private Client client;
 	private TextView messageStream;
-	private WifiP2pDevice device;
 	private ProgressDialog progressDialog;
 	private int cardsPerPlayer;
 	private boolean isSolitaire;
 	
-	public static boolean isTablet;
 	public static Point screenSize;
 	
 	//TODO: Maybe implementing superclass with this:
@@ -56,7 +54,6 @@ public class Game extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 		
-		isTablet = (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE;
 		WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		screenSize = new Point();
@@ -92,8 +89,6 @@ public class Game extends Activity {
 			playerHand = new CardPlayerHand(this);
 			
 			// Set up client
-			device = new WifiP2pDevice();
-			Log.d("Game", "Device name is ");
 			this.client = new Client(this);
 			if (isHost) {
 				client.changeToHost();
@@ -168,11 +163,10 @@ public class Game extends Activity {
 	private void initGame(){
 		//int numPlayers = client.getReceivers().size() + 1;
 		this.deck = new CardDeck(this);
-		deck.setOwner(playerHand);
 		deck.shuffle();
 		
 		playerHand.dealCards(deck.draw(cardsPerPlayer));
-		
+		playerHand.setGhost();
 		addView(deck);
 		
 		client.pushInitialCards(deck, cardsPerPlayer);
@@ -184,10 +178,9 @@ public class Game extends Activity {
 		deck.shuffle();
 		
 		this.solitaireHand = new CardSolitaireHand(this);
-		solitaireHand.dealCards(deck.draw(1));
-		deck.setOwner(solitaireHand);
-		
-		addView(deck);
+		solitaireHand.dealCards(deck.draw(5));
+		solitaireHand.setGhost();
+		addView(deck);		
 	}
 	
 	public void addView(View v){
@@ -203,12 +196,6 @@ public class Game extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		
-		long t = Runtime.getRuntime().totalMemory() / (1024*1024);
-		long f = Runtime.getRuntime().freeMemory() / (1024*1024);
-		long l = Runtime.getRuntime().maxMemory() / (1024*1024);
-		long n = Debug.getNativeHeapAllocatedSize() / (1024*1024);
-		System.out.println(String.format("TOTAL: %d MB -- FREE: %d MB -- MAX: %d MB -- NATIVE: %d MB", t, f, l, n));
 		
 		//TODO: Special dialog for host
 		new AlertDialog.Builder(this)
