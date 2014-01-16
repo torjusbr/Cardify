@@ -11,11 +11,6 @@ import android.widget.RelativeLayout;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.cardify.R;
 
-//TODO: window leaked on back press
-
-//TODO: card deck does not look empty if it starts empty
-//TODO: when writing in "how many cards to start with", no cards are dealt
-
 public class CardPlayerHand {
 
 	public List<CardView> cardStack;
