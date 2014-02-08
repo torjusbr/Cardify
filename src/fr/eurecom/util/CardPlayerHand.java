@@ -89,6 +89,11 @@ public class CardPlayerHand {
 		this.printMessage("You drew", "from the deck to your hand", view.getCard(), false);
 	}
 	
+	protected void broadcastPositionUpdate(CardView view) {
+		game.getClient().publishCardPositionUpdate(view.getCard(), getPosX(view), getPosY(view));
+	}
+	
+	
 	protected int getPositionInStack(float x) {
 		int pos = 0;
 		for (CardView v : cardStack) {
@@ -154,6 +159,14 @@ public class CardPlayerHand {
 			view.updateGraphics();
 			
 			this.printMessage("Opponent turned", turned, view.getCard(), true);
+		}
+	}
+	
+	public void blindMoveInPublic(char suit, int face, float x, float y) {
+		CardView view = getCardViewFromPublic(suit, face);
+		if (view != null) {
+			view.setX(displaySize.x * x);
+			view.setY(displaySize.y * y);
 		}
 	}
 	
