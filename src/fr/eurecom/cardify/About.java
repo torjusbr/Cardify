@@ -22,8 +22,6 @@ public class About extends Activity {
 	}
 	
 	public void goToMenu(View view) {
-		Intent intent = new Intent(this, MainMenu.class);
-		this.startActivity(intent);
+		super.onBackPressed();
 	}
-
 }
