@@ -3,32 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_tiled"
-    android:baselineAligned="false"
-    android:gravity="center_horizontal|center_vertical"
-    android:measureWithLargestChild="true"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".About" >
-
+    
     <TextView
-        android:id="@+id/about_headline"
+        android:id="@+id/headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="About"
+        android:text="@string/about_headline"
         android:textColor="#ffffff"
-        android:textSize="30dp" />
+        android:textSize="30sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/about_headline"
-        android:text="The card images are borrowed from the &apos;Vector Playing Cards&apos; project on Sorceforge, uploaded by user &apos;spyresca&apos;."
-        android:textColor="#ffffff" />
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_below="@+id/backButton"
+       android:text="@string/about_body"
+       android:textColor="#ffffff" />
+
+   <Button
+       android:id="@+id/backButton"
+       style="?android:attr/buttonStyleSmall"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_alignParentRight="true"
+       android:layout_alignParentTop="true"
+       android:background="@drawable/ic_action_remove"
+       android:onClick="goToMenu" />
 
 </RelativeLayout>
