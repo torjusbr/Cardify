@@ -91,9 +91,13 @@ public class Client implements Handler.Callback {
 	public void publishTakeCardFromPublicZone(Card card) {
 		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
 	}
+
+	public void publishPutCardInPublicZone(Card card, float x, float y) {
+		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toStringWithPosition(x, y));
+	}
 	
-	public void publishPutCardInPublicZone(Card card) {
-		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
+	public void publishCardPositionUpdate(Card card, float x, float y) {
+		sendMessage(Action.MOVED_CARD_IN_PUBLIC_ZONE, card.toStringWithPosition(x, y));
 	}
 	
 	public void publishTurnCardInPublicZone(Card card) {
@@ -222,6 +226,9 @@ public class Client implements Handler.Callback {
 		case TURNED_CARD_IN_PUBLIC_ZONE:
 			handleTurnedCardInPublicZone(message);
 			return;
+		case MOVED_CARD_IN_PUBLIC_ZONE:
+			handleMovedCardInPublicZone(message);
+			return;
 		case ADDED_CARD_TO_DECK:
 			handleAddCardToDeck(message);
 			return;
@@ -285,10 +292,19 @@ public class Client implements Handler.Callback {
 	private void handleAddedCardToPublicZone(GameMessage message) {
 
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
-		boolean turned = message.about.charAt(0) == '1' ? true : false;
-		char suit = message.about.charAt(1);
-		int face = Integer.parseInt(message.about.substring(2));
-		((Game) activity).getPlayerHand().blindAddToPublic(suit, face, turned);
+		
+		// 0s10@0.231,0.423 --> 0s10 and 0.231,0.423
+		String[] token = message.about.split("@");
+		
+		boolean turned = token[0].charAt(0) == '1' ? true : false;
+		char suit = token[0].charAt(1);
+		int face = Integer.parseInt(token[0].substring(2));
+		
+		String[] location = token[1].split(",");
+		float x = Float.parseFloat(location[0]);
+		float y = Float.parseFloat(location[1]);
+		
+		((Game) activity).getPlayerHand().blindAddToPublic(suit, face, turned, x, y);
 		if (isHost) { 
 			broadcastChange(message);
 		}
@@ -310,6 +326,25 @@ public class Client implements Handler.Callback {
 		int face = Integer.parseInt(message.about.substring(2));
 		((Game) activity).getPlayerHand().blindTurnInPublic(suit, face);
 		if (isHost) {
+			broadcastChange(message);
+		}
+	}
+	
+	private void handleMovedCardInPublicZone(GameMessage message) {
+		Log.e("Client:handleMovedCardInPublicZone", "RUN: " + message.about);
+		
+		// 0s10@0.231,0.423 --> 0s10 and 0.231,0.423
+		String[] token = message.about.split("@");
+
+		char suit = token[0].charAt(1);
+		int face = Integer.parseInt(token[0].substring(2));
+		
+		String[] location = token[1].split(",");
+		float x = Float.parseFloat(location[0]);
+		float y = Float.parseFloat(location[1]);
+		
+		((Game) activity).getPlayerHand().blindMoveInPublic(suit, face, x, y);
+		if (isHost) { 
 			broadcastChange(message);
 		}
 	}

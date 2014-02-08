@@ -51,4 +51,9 @@ public class CardSolitaireHand extends CardPlayerHand {
 		stackCards();
 	}
 	
+	@Override
+	protected void broadcastPositionUpdate(CardView view) {
+		return;
+	}
+	
 }

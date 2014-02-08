@@ -81,6 +81,7 @@ public class CardView extends ImageView implements OnTouchListener{
                 }
                 
                 playerHand.moveCard(this);
+                playerHand.broadcastPositionUpdate(this);
                 return true;
 				
 			case MotionEvent.ACTION_UP:

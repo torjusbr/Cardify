@@ -41,4 +41,10 @@ public class MainMenu extends Activity {
 		startActivity(intent);
 	}
 
+    
+    public void showAbout(View view) {
+    	Intent intent = new Intent(this, About.class);
+    	this.startActivity(intent);
+    }
+    
 }

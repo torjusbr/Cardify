@@ -19,8 +19,8 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
-        android:largeHeap="true" >
+        android:largeHeap="true"
+        android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         <activity
             android:name="fr.eurecom.cardify.MainMenu"
             android:label="@string/app_name"
@@ -38,8 +38,12 @@
         </activity>
         <activity
             android:name="fr.eurecom.cardify.Lobby"
-            android:label="@string/title_activity_lobby" 
+            android:label="@string/title_activity_lobby"
             android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="fr.eurecom.cardify.About"
+            android:label="@string/title_activity_about" >
         </activity>
     </application>
 
