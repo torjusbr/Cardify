@@ -20,7 +20,6 @@ public class Client {
 
 	private Activity activity;
 	private Set<InetAddress> receivers;
-//	private Receiver receiver;
 	private Sender sender;
 	private boolean isHost;
 	private int peersInitialized;
@@ -29,10 +28,6 @@ public class Client {
 	
 	public Client(Activity activity) {
 		this.activity = activity;
-//		Old way
-//		this.receiver = new Receiver(this);
-		
-//		New way
 		handler = createHandler();
 		try {
 			receivingThread = new MessageListener(this);
@@ -41,15 +36,10 @@ public class Client {
 			Log.e("Client", "Constructor error: __" + e.getMessage());
 		}
 		
-		
-
-//		receiver.execute();
-		//receiver.run();
 		receivers = new HashSet<InetAddress>();
 		this.sender = new Sender();
 		this.isHost = false;
 		this.peersInitialized = 0;
-		
 	}
 	
 	public void handleThreadMessage(GameMessage gameMessage, int what) {
@@ -99,9 +89,6 @@ public class Client {
 	
 	public void addReceiver(InetAddress receiver) {
 		receivers.add(receiver);
-		for (InetAddress r : receivers) {
-			Log.e("Receiver", r.toString());
-		}
 	}
 	
 	public void registerAtHost() {
@@ -169,15 +156,22 @@ public class Client {
 			GameMessage message = new GameMessage(Action.REMAINING_DECK,cardStringBuilder.toString());
 			this.sender.send(message, receiver);
 		}
-		
 	}
 	
+	private void pushDeviceName(String name, InetAddress target) {
+		sendSingleMessage(Action.DEVICE_NAME, name, target);
+	}
 	
 	private void sendMessage(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
 			this.sender.send(message, receiver);
 		}
+	}
+	
+	private void sendSingleMessage(Action what, String about, InetAddress receiver) {
+		GameMessage message = new GameMessage(what, about);
+		this.sender.send(message, receiver);
 	}
 	
 	private void broadcastChange(GameMessage message){
@@ -187,7 +181,6 @@ public class Client {
 			}
 		}
 	}
-	
 	
 	public void handleGameMessage(GameMessage message) {
 		if(message.what == Action.GAME_INITIALIZED) {
@@ -211,21 +204,27 @@ public class Client {
 		case DISCONNECT:
 			handlePreGameDisconnect(message);
 			return;
+		case DEVICE_NAME:
+			handleDeviceName(message);
+			return;
 		default:
 			return;
 		}
 	}
 	
 	private void handleRegister(GameMessage message) {
+		pushDeviceName(((Lobby) activity).getCurrentTargetDeviceName(), message.getOriginatorAddr());
+		
 		addReceiver(message.getOriginatorAddr());
 		((Lobby) activity).dismissProgressDialog();
 	}
 	
+	private void handleDeviceName(GameMessage message) {
+		((Lobby) activity).setThisDeviceName(message.about);
+	}
+	
 	private void handleGameStarted(GameMessage message) {
-		//TODO:
-		/*
-		 * Start new game and set local game variable in this interpreter to game instance
-		 */
+		// Start new game and set local game variable in this interpreter to game instance
 		((Lobby) activity).startGameActivity(receivers);
 	}
 	

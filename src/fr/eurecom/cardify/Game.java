@@ -9,11 +9,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.res.Configuration;
 import android.content.Intent;
 import android.graphics.Point;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
+import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -30,8 +32,6 @@ import fr.eurecom.util.CardPlayerHand;
 import fr.eurecom.util.CardSolitaireHand;
 import fr.eurecom.util.CardSortingRule;
 
-//TODO: Get WiFi direct names
-
 public class Game extends Activity {
 
 	private CardDeck deck;
@@ -42,13 +42,10 @@ public class Game extends Activity {
 	private ProgressDialog progressDialog;
 	private int cardsPerPlayer;
 	private boolean isSolitaire;
-	
 	public static Point screenSize;
-	
-	//TODO: Maybe implementing superclass with this:
-
 	private WifiP2pManager mManager;
 	private Channel mChannel;
+	private String deviceName;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +72,14 @@ public class Game extends Activity {
 			mChannel = mManager.initialize(this, getMainLooper(), null);
 			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
 			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
+			try {
+				deviceName = getIntent().getExtras().get("deviceName").toString();
+			} catch (Exception e) {
+				deviceName = "host";
+				//TODO: Set host device name
+			}
+			
+			System.out.println("DEVICE NAME: "+deviceName);
 			
 			if (!isHost) {
 				showProgressDialog("Loading...", "Waiting for all players");
@@ -114,25 +119,21 @@ public class Game extends Activity {
 		}
 	}
 	
-	//TODO: This must also be in the superclass if implemented
 	public void disconnectFromDevices() {
 		mManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
 			
 			@Override
 			public void onSuccess() {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void onFailure(int reason) {
-				// TODO Auto-generated method stub
 				
 			}
 		});
 	}
 	
-	//TODO: This must also be in the superclass if implemented
 	private void showProgressDialog(String title, String message) {
 		this.progressDialog.setTitle(title);
 		this.progressDialog.setMessage(message);
@@ -170,6 +171,12 @@ public class Game extends Activity {
 		playerHand.setGhost();
 		addView(deck);
 		
+		//TODO: push names to devices
+		//Will push peer names to devices
+		mManager.requestPeers(mChannel, new PeerListener());
+		//TODO: request name from device
+		
+		
 		client.pushInitialCards(deck, cardsPerPlayer);
 		client.pushRemainingDeck(deck);
 	}
@@ -198,7 +205,6 @@ public class Game extends Activity {
 	@Override
 	public void onBackPressed() {
 		
-		//TODO: Special dialog for host
 		new AlertDialog.Builder(this)
 			.setTitle("Are you sure you want to exit?")
 			.setMessage("This game will be abandoned")
@@ -271,5 +277,15 @@ public class Game extends Activity {
 	
 	public void setDeck(CardDeck deck) {
 		this.deck = deck;
+	}
+	
+	private class PeerListener implements PeerListListener {
+		@Override
+		public void onPeersAvailable(WifiP2pDeviceList peers) {
+			System.out.println("PEERS "+peers.toString());
+			for(WifiP2pDevice device : peers.getDeviceList()) {
+				System.out.println(device);
+			}
+		}
 	}
 }

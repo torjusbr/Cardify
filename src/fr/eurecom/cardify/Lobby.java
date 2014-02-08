@@ -47,6 +47,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private Client client;
 	private ProgressDialog progressDialog;
 	private int initCards;
+	private String currentTargetDeviceName;
+	private String thisDeviceName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -131,14 +133,22 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 		
 	private void connectToDevice(WifiP2pDevice device) {
-		
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
+		currentTargetDeviceName = device.deviceName;
 
-		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
+		config.groupOwnerIntent = 15; //Make this device host
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
 		timerDelayRemoveDialog(30000, progressDialog);
+	}
+	
+	public String getCurrentTargetDeviceName() {
+		return currentTargetDeviceName;
+	}
+	
+	public void setThisDeviceName(String name) {
+		thisDeviceName = name;
 	}
 	
 	private void showProgressDialog(String title, String message) {
@@ -183,9 +193,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			
 			@Override
 			public void onFailure(int reason) {
-				// TODO Auto-generated method stub
 				Log.d("Lobby", "Failed searching for peers" + " Reason is " + reason);
-				//((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 			}
 		});
 	}
@@ -212,7 +220,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	public void refreshPeers(View view) {
-		//((Button) view).setClickable(false);
 		resetPeerList();
 		findPeers();
 		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely));
@@ -266,7 +273,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 				});
 		alert.setView(np);
 		alert.show();
-
 	}
 	
 	public void startGameActivity(Set<InetAddress> receivers, boolean isHost){
@@ -279,6 +285,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		intent.putExtra("isSolitaire", false);
 		intent.putExtra("receivers", addresses);
 		intent.putExtra("isHost", isHost);
+		intent.putExtra("deviceName", thisDeviceName);
 		if (isHost) {
 			intent.putExtra("cardsPerPlayer", initCards);
 		}
@@ -293,7 +300,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		finish();
 	}
@@ -381,13 +387,11 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		@Override
 		public void onFailure(int reason) {
-			// TODO Auto-generated method stub
 			Log.d("Lobby", failureMessage + " Reason is " + reason);
 		}
 
 		@Override
 		public void onSuccess() {
-			// TODO Auto-generated method stub
 			Log.d("Lobby", successMessage);
 		}
 	}

@@ -7,18 +7,18 @@ public class GameMessage {
 	public final Action what;
 	public final String about;
 	private InetAddress originatorAddr;
-	private String originatorName; 
+	//private String originatorName; 
 	
 	public GameMessage(Action what, String about) {
 		this.what = what;
 		this.about = about;
 		this.originatorAddr = null;
-		this.originatorName = null;
+		//this.originatorName = null;
 	}
 	
 	public GameMessage(Action what, String about, String originatorName){
 		this(what, about);
-		this.originatorName = originatorName;
+//		this.originatorName = originatorName;
 	}
 	
 	public void setOriginatorAddr(InetAddress originator) {
@@ -29,12 +29,12 @@ public class GameMessage {
 		return this.originatorAddr;
 	}
 	
-	public void setOriginatorName(String originator) {
-		this.originatorName = originator;
-	}
-	
-	public String getOriginatorName(){
-		return this.originatorName;
-	}
+//	public void setOriginatorName(String originator) {
+//		this.originatorName = originator;
+//	}
+//	
+//	public String getOriginatorName(){
+//		return this.originatorName;
+//	}
 	
 }
