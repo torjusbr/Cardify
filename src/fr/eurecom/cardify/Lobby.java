@@ -76,6 +76,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+		
 	}
 
 	public void resetPeerList() {
@@ -137,7 +138,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		config.deviceAddress = device.deviceAddress;
 		currentTargetDeviceName = device.deviceName;
 
-		config.groupOwnerIntent = 15; //Make this device host
+		config.groupOwnerIntent = 15;
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
 		timerDelayRemoveDialog(30000, progressDialog);
@@ -177,8 +178,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void disconnectFromDevices() {
 		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
-//		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-//		this.client.publishDisconnect();
 	}
 	
 
@@ -228,11 +227,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	// Start a new game as host
 	public void startGame(View view) {
 		showCardHandSizeSelector();
-		/*
-		 * This must be done after selecting number of cards
-		client.broadcastStartGame();
-		*/
-//		startGameActivity(this.client.getReceivers(), true);
 	}
 	
 	private void showCardHandSizeSelector() {

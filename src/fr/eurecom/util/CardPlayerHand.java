@@ -64,14 +64,14 @@ public class CardPlayerHand {
 	
 	protected void addToPublicFromStack(CardView view) {
 		cardPublic.add(view);
-		game.getClient().publishPutCardInPublicZone(view.getCard());
+		game.getClient().publishPutCardInPublicZone(view.getCard(), getPosX(view), getPosY(view));
 		stackCards();
 		this.printMessage("You played", "", view.getCard(), !view.getCard().getTurned());
 	}
 	
 	protected void addToPublicFromDeck(CardView view) {
 		cardPublic.add(view);
-		game.getClient().publishPutCardInPublicZone(view.getCard());
+		game.getClient().publishPutCardInPublicZone(view.getCard(), getPosX(view), getPosY(view));
 		this.printMessage("You drew", "from the deck", view.getCard(), false);
 	}
 	
@@ -88,6 +88,11 @@ public class CardPlayerHand {
 		game.getClient().publishDrawFromDeckToStack(view.getCard());
 		this.printMessage("You drew", "from the deck to your hand", view.getCard(), false);
 	}
+	
+	protected void broadcastPositionUpdate(CardView view) {
+		game.getClient().publishCardPositionUpdate(view.getCard(), getPosX(view), getPosY(view));
+	}
+	
 	
 	protected int getPositionInStack(float x) {
 		int pos = 0;
@@ -117,8 +122,9 @@ public class CardPlayerHand {
 		game.getDeck().drawFromDeck();
 		this.printMessage("Opponent drew", "from the deck to his hand", null, false);
 	}
+
 	
-	public void blindAddToPublic(char suit, int face, boolean turned) {
+	public void blindAddToPublic(char suit, int face, boolean turned, float x, float y) {
 		Card top = game.getDeck().peek();
 		CardView view;
 		
@@ -131,8 +137,10 @@ public class CardPlayerHand {
 			this.printMessage("Opponent played", "", view.getCard(), !view.getCard().getTurned());
 		}
 		
+		view.setX(displaySize.x * x);
+		view.setY(displaySize.y * y);
 		cardPublic.add(view);
-		animateCardIntoView(view);
+		
 	}
 	
 	public void blindRemoveFromPublic(char suit, int face){
@@ -151,6 +159,14 @@ public class CardPlayerHand {
 			view.updateGraphics();
 			
 			this.printMessage("Opponent turned", turned, view.getCard(), true);
+		}
+	}
+	
+	public void blindMoveInPublic(char suit, int face, float x, float y) {
+		CardView view = getCardViewFromPublic(suit, face);
+		if (view != null) {
+			view.setX(displaySize.x * x);
+			view.setY(displaySize.y * y);
 		}
 	}
 	
@@ -362,6 +378,14 @@ public class CardPlayerHand {
 		
 		width = options.outWidth;
 		height = options.outHeight;
+	}
+	
+	private float getPosX(View view) {
+		return view.getX()/displaySize.x;
+	}
+	
+	private float getPosY(View view) {
+		return view.getY()/displaySize.y;
 	}
 
 }

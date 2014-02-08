@@ -8,7 +8,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import fr.eurecom.cardify.Game;
@@ -16,7 +15,7 @@ import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
 import fr.eurecom.util.CardDeck;
 
-public class Client {
+public class Client implements Handler.Callback {
 
 	private Activity activity;
 	private Set<InetAddress> receivers;
@@ -28,14 +27,14 @@ public class Client {
 	
 	public Client(Activity activity) {
 		this.activity = activity;
-		handler = createHandler();
+		handler = new Handler(this);
 		try {
-			receivingThread = new MessageListener(this);
+			receivingThread = new MessageListener(handler);
 			receivingThread.start();
 		} catch (IOException e) {
 			Log.e("Client", "Constructor error: __" + e.getMessage());
 		}
-		
+
 		receivers = new HashSet<InetAddress>();
 		this.sender = new Sender();
 		this.isHost = false;
@@ -49,33 +48,8 @@ public class Client {
 		completeMessage.sendToTarget();
 	}
 	
-	private Handler createHandler() {
-		return new Handler(Looper.getMainLooper()) {
-			
-			//Kjøres hver gang det er en message i stacken.
-			@Override
-			public void handleMessage(Message msg) {
-				
-				//TODO: Her gjøres handleGameMessage. What må gjøres om
-				if (msg.what == Config.GAME_MESSAGE_INT) {
-					Log.d("Client", "Got message ");
-					GameMessage gameMessage = (GameMessage) msg.obj;
-					Log.d("Client", "Message is " + gameMessage.about);
-					handleGameMessage(gameMessage);
-				} else {
-					Log.d("Client", "Got a message that's game_message_int" + msg.obj.toString());
-					super.handleMessage(msg);
-				}
-			}
-		};
-	}
-	
 	public void disconnect(){
-//		Old
-		//receiver.stopListening();
-//		New:
 		receivingThread.stopThread();
-		receivingThread.interrupt();
 	}
 	
 	
@@ -110,9 +84,13 @@ public class Client {
 	public void publishTakeCardFromPublicZone(Card card) {
 		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
 	}
+
+	public void publishPutCardInPublicZone(Card card, float x, float y) {
+		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toStringWithPosition(x, y));
+	}
 	
-	public void publishPutCardInPublicZone(Card card) {
-		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toString());
+	public void publishCardPositionUpdate(Card card, float x, float y) {
+		sendMessage(Action.MOVED_CARD_IN_PUBLIC_ZONE, card.toStringWithPosition(x, y));
 	}
 	
 	public void publishTurnCardInPublicZone(Card card) {
@@ -253,6 +231,9 @@ public class Client {
 		case TURNED_CARD_IN_PUBLIC_ZONE:
 			handleTurnedCardInPublicZone(message);
 			return;
+		case MOVED_CARD_IN_PUBLIC_ZONE:
+			handleMovedCardInPublicZone(message);
+			return;
 		case ADDED_CARD_TO_DECK:
 			handleAddCardToDeck(message);
 			return;
@@ -289,7 +270,6 @@ public class Client {
 		}
 	}
 	
-	//TODO: Dette må fikses!
 	private void handlePreGameDisconnect(GameMessage message) {
 		if (isHost) {
 			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
@@ -317,10 +297,19 @@ public class Client {
 	private void handleAddedCardToPublicZone(GameMessage message) {
 
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
-		boolean turned = message.about.charAt(0) == '1' ? true : false;
-		char suit = message.about.charAt(1);
-		int face = Integer.parseInt(message.about.substring(2));
-		((Game) activity).getPlayerHand().blindAddToPublic(suit, face, turned);
+		
+		// 0s10@0.231,0.423 --> 0s10 and 0.231,0.423
+		String[] token = message.about.split("@");
+		
+		boolean turned = token[0].charAt(0) == '1' ? true : false;
+		char suit = token[0].charAt(1);
+		int face = Integer.parseInt(token[0].substring(2));
+		
+		String[] location = token[1].split(",");
+		float x = Float.parseFloat(location[0]);
+		float y = Float.parseFloat(location[1]);
+		
+		((Game) activity).getPlayerHand().blindAddToPublic(suit, face, turned, x, y);
 		if (isHost) { 
 			broadcastChange(message);
 		}
@@ -342,6 +331,25 @@ public class Client {
 		int face = Integer.parseInt(message.about.substring(2));
 		((Game) activity).getPlayerHand().blindTurnInPublic(suit, face);
 		if (isHost) {
+			broadcastChange(message);
+		}
+	}
+	
+	private void handleMovedCardInPublicZone(GameMessage message) {
+		Log.e("Client:handleMovedCardInPublicZone", "RUN: " + message.about);
+		
+		// 0s10@0.231,0.423 --> 0s10 and 0.231,0.423
+		String[] token = message.about.split("@");
+
+		char suit = token[0].charAt(1);
+		int face = Integer.parseInt(token[0].substring(2));
+		
+		String[] location = token[1].split(",");
+		float x = Float.parseFloat(location[0]);
+		float y = Float.parseFloat(location[1]);
+		
+		((Game) activity).getPlayerHand().blindMoveInPublic(suit, face, x, y);
+		if (isHost) { 
 			broadcastChange(message);
 		}
 	}
@@ -370,6 +378,17 @@ public class Client {
 		if (isHost) { 
 			broadcastChange(message);
 		}
+	}
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		if (msg.what == Config.GAME_MESSAGE_INT) {
+			Log.d("Client", "Got message ");
+			GameMessage gameMessage = (GameMessage) msg.obj;
+			Log.d("Client", "Message is " + gameMessage.about);
+			handleGameMessage(gameMessage);
+		}
+		return true;
 	}
 
 }

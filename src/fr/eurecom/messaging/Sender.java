@@ -16,7 +16,6 @@ public class Sender {
 	
 	public void send(GameMessage message, InetAddress receiver) {
 		
-		//TODO: Gjør dette om til thread
 	    if (android.os.Build.VERSION.SDK_INT > 9) {
 	        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 	        StrictMode.setThreadPolicy(policy);
@@ -47,7 +46,7 @@ public class Sender {
 		            try {
 		                socket.close();
 		            } catch (IOException e) {
-		                //catch logic
+		               Log.e("Sender", e.getMessage());
 		            }
 		        }
 		    }

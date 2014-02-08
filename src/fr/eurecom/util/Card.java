@@ -25,6 +25,10 @@ public class Card {
 		return this.turned ? "1"+this.suit+this.face : "0"+this.suit+this.face;
 	}
 	
+	public String toStringWithPosition(float x, float y) {
+		return String.format("%s@%s,%s", this.toString(), x, y);
+	}
+	
 	public void turn() {
 		this.turned = !this.turned;
 	}

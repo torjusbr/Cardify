@@ -59,4 +59,14 @@
         android:layout_below="@+id/helpButton"
         android:text="Shop" />
 
+    <Button
+        android:id="@+id/aboutButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/ic_action_about"
+        android:onClick="showAbout" />
+
 </RelativeLayout>
