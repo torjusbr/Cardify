@@ -46,7 +46,7 @@ public class CardPlayerHand {
 		game.getDeck().toggleHighlight(false);
 
 		this.printMessage("You added", "to the deck", view.getCard(), !view.getCard().getTurned());
-		game.getClient().publishAddCardToDeck(view.getCard());
+		game.getClient().publishAddCardToDeck(view.getCard(), game.getDeviceName());
 
 		stackCards();
 		removeCardGraphics(view);
@@ -57,40 +57,40 @@ public class CardPlayerHand {
 		game.getDeck().toggleHighlight(false);
 		
 		this.printMessage("You added", "to the deck", view.getCard(), !view.getCard().getTurned());
-		game.getClient().publishAddCardToDeck(view.getCard());
+		game.getClient().publishAddCardToDeck(view.getCard(), game.getDeviceName());
 		
 		removeCardGraphics(view);
 	}
 	
 	protected void addToPublicFromStack(CardView view) {
 		cardPublic.add(view);
-		game.getClient().publishPutCardInPublicZone(view.getCard(), getPosX(view), getPosY(view));
+		game.getClient().publishPutCardInPublicZone(view.getCard(), getPosX(view), getPosY(view), game.getDeviceName());
 		stackCards();
 		this.printMessage("You played", "", view.getCard(), !view.getCard().getTurned());
 	}
 	
 	protected void addToPublicFromDeck(CardView view) {
 		cardPublic.add(view);
-		game.getClient().publishPutCardInPublicZone(view.getCard(), getPosX(view), getPosY(view));
+		game.getClient().publishPutCardInPublicZone(view.getCard(), getPosX(view), getPosY(view), game.getDeviceName());
 		this.printMessage("You drew", "from the deck", view.getCard(), false);
 	}
 	
 	protected void addToStackFromPublic(CardView view) {
 		cardStack.add(getPositionInStack(view.getX()), view);
 		stackCards();
-		game.getClient().publishTakeCardFromPublicZone(view.getCard());
+		game.getClient().publishTakeCardFromPublicZone(view.getCard(), game.getDeviceName());
 		this.printMessage("You took", "from the table", view.getCard(), !view.getCard().getTurned());
 	}
 	
 	protected void addToStackFromDeck(CardView view) {
 		cardStack.add(view);
 		stackCards();
-		game.getClient().publishDrawFromDeckToStack(view.getCard());
+		game.getClient().publishDrawFromDeckToStack(view.getCard(), game.getDeviceName());
 		this.printMessage("You drew", "from the deck to your hand", view.getCard(), false);
 	}
 	
 	protected void broadcastPositionUpdate(CardView view) {
-		game.getClient().publishCardPositionUpdate(view.getCard(), getPosX(view), getPosY(view));
+		game.getClient().publishCardPositionUpdate(view.getCard(), getPosX(view), getPosY(view), game.getDeviceName());
 	}
 	
 	
@@ -103,38 +103,38 @@ public class CardPlayerHand {
 		return pos;
 	}
 	
-	public void blindAddToDeck(char suit, int face, boolean turned) {
+	public void blindAddToDeck(char suit, int face, boolean turned, String originatorName) {
 		CardView view = getCardViewFromPublic(suit, face);
 		
 		if (view == null) { //from opponents stack, no alterations in graphics
 			Card card = new Card(suit, face, true);
 			game.getDeck().addCard(card);
-			this.printMessage("Opponent added", "from his stack to the deck", card, false);
+			this.printMessage(originatorName+" added", "from his stack to the deck", card, false);
 		} else { //from public area
 			cardPublic.remove(view);
 			game.getDeck().addCard(view.getCard());
-			this.printMessage("Opponent added", "from the table to the deck", view.getCard(), !view.getCard().getTurned());
+			this.printMessage(originatorName+" added", "from the table to the deck", view.getCard(), !view.getCard().getTurned());
 			removeCardGraphics(view);
 		}
 	}
 	
-	public void blindDrawFromDeckToStack() {
+	public void blindDrawFromDeckToStack(String originatorName) {
 		game.getDeck().drawFromDeck();
-		this.printMessage("Opponent drew", "from the deck to his hand", null, false);
+		this.printMessage(originatorName+" drew", "from the deck to his hand", null, false);
 	}
 
 	
-	public void blindAddToPublic(char suit, int face, boolean turned, float x, float y) {
+	public void blindAddToPublic(char suit, int face, boolean turned, float x, float y, String originatorName) {
 		Card top = game.getDeck().peek();
 		CardView view;
 		
 		if (top != null && suit == top.getSuit() && face == top.getFace()) { //from deck
 			view = addCardGraphics(game.getDeck().drawFromDeck());
-			this.printMessage("Opponent drew", "from the deck to the table", view.getCard(), false);
+			this.printMessage(originatorName+" drew", "from the deck to the table", view.getCard(), false);
 		} else { //from opponents stack
 			Card card = new Card(suit, face, turned);
 			view = addCardGraphics(card);
-			this.printMessage("Opponent played", "", view.getCard(), !view.getCard().getTurned());
+			this.printMessage(originatorName+" played", "", view.getCard(), !view.getCard().getTurned());
 		}
 		
 		view.setX(displaySize.x * x);
@@ -143,22 +143,22 @@ public class CardPlayerHand {
 		
 	}
 	
-	public void blindRemoveFromPublic(char suit, int face){
+	public void blindRemoveFromPublic(char suit, int face, String originatorName){
 		CardView view = getCardViewFromPublic(suit, face);
 		if (cardPublic.remove(view)) {
-			this.printMessage("Opponent took", "from the table", view.getCard(), !view.getCard().getTurned());
+			this.printMessage(originatorName+" took", "from the table", view.getCard(), !view.getCard().getTurned());
 			removeCardGraphics(view);
 		}
 	}
 	
-	public void blindTurnInPublic(char suit, int face) {
+	public void blindTurnInPublic(char suit, int face, String originatorName) {
 		CardView view = getCardViewFromPublic(suit, face);
 		if (view != null) {
 			view.getCard().turn();
 			String turned = view.getCard().getTurned() ? "face down" : "face up";
 			view.updateGraphics();
 			
-			this.printMessage("Opponent turned", turned, view.getCard(), true);
+			this.printMessage(originatorName+" turned", turned, view.getCard(), true);
 		}
 	}
 	
@@ -313,7 +313,7 @@ public class CardPlayerHand {
 		if(!inStackZone(view.getX(), view.getY())) {
 			String turned = view.getCard().getTurned() ? "face down" : "face up";
 			this.printMessage("You turned", turned, view.getCard(), true);
-			game.getClient().publishTurnCardInPublicZone(view.getCard());
+			game.getClient().publishTurnCardInPublicZone(view.getCard(), game.getDeviceName());
 		} 
 	}
 	

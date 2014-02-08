@@ -77,28 +77,28 @@ public class Client implements Handler.Callback {
 		sendMessage(Action.GAME_STARTED, "");
 	}
 	
-	public void publishDrawFromDeckToStack(Card card) {
-		sendMessage(Action.DREW_FROM_DECK_TO_STACK, card.toString());
+	public void publishDrawFromDeckToStack(Card card, String deviceName) {
+		sendMessage(Action.DREW_FROM_DECK_TO_STACK, card.toString(), deviceName);
 	}
 	
-	public void publishTakeCardFromPublicZone(Card card) {
-		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString());
+	public void publishTakeCardFromPublicZone(Card card, String deviceName) {
+		sendMessage(Action.REMOVED_CARD_FROM_PUBLIC_ZONE, card.toString(), deviceName);
 	}
 
-	public void publishPutCardInPublicZone(Card card, float x, float y) {
-		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toStringWithPosition(x, y));
+	public void publishPutCardInPublicZone(Card card, float x, float y, String deviceName) {
+		sendMessage(Action.ADDED_CARD_TO_PUBLIC_ZONE, card.toStringWithPosition(x, y), deviceName);
 	}
 	
-	public void publishCardPositionUpdate(Card card, float x, float y) {
-		sendMessage(Action.MOVED_CARD_IN_PUBLIC_ZONE, card.toStringWithPosition(x, y));
+	public void publishCardPositionUpdate(Card card, float x, float y, String deviceName) {
+		sendMessage(Action.MOVED_CARD_IN_PUBLIC_ZONE, card.toStringWithPosition(x, y), deviceName);
 	}
 	
-	public void publishTurnCardInPublicZone(Card card) {
-		sendMessage(Action.TURNED_CARD_IN_PUBLIC_ZONE, card.toString());
+	public void publishTurnCardInPublicZone(Card card, String deviceName) {
+		sendMessage(Action.TURNED_CARD_IN_PUBLIC_ZONE, card.toString(), deviceName);
 	}
 	
-	public void publishAddCardToDeck(Card card) {
-		sendMessage(Action.ADDED_CARD_TO_DECK, card.toString());
+	public void publishAddCardToDeck(Card card, String deviceName) {
+		sendMessage(Action.ADDED_CARD_TO_DECK, card.toString(), deviceName);
 	}
 	
 	public void publishDisconnect() {
@@ -138,6 +138,13 @@ public class Client implements Handler.Callback {
 	
 	private void pushDeviceName(String name, InetAddress target) {
 		sendSingleMessage(Action.DEVICE_NAME, name, target);
+	}
+	
+	private void sendMessage(Action what, String about, String deviceName) {
+		GameMessage message = new GameMessage(what, about, deviceName);
+		for (InetAddress receiver : receivers){
+			this.sender.send(message, receiver);
+		}
 	}
 	
 	private void sendMessage(Action what, String about) {
@@ -287,7 +294,7 @@ public class Client implements Handler.Callback {
 
 	private void handleDrewFromDeckToStack(GameMessage message) {
 		Log.e("Client:handleDrewFromDeckToStack", "RUN: " + message.about);
-		((Game) activity).getPlayerHand().blindDrawFromDeckToStack();
+		((Game) activity).getPlayerHand().blindDrawFromDeckToStack(message.getOriginatorName());
 		if (isHost) {
 			broadcastChange(message);
 		}
@@ -309,7 +316,7 @@ public class Client implements Handler.Callback {
 		float x = Float.parseFloat(location[0]);
 		float y = Float.parseFloat(location[1]);
 		
-		((Game) activity).getPlayerHand().blindAddToPublic(suit, face, turned, x, y);
+		((Game) activity).getPlayerHand().blindAddToPublic(suit, face, turned, x, y, message.getOriginatorName());
 		if (isHost) { 
 			broadcastChange(message);
 		}
@@ -319,7 +326,7 @@ public class Client implements Handler.Callback {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
-		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face);
+		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face, message.getOriginatorName());
 		if (isHost) {
 			broadcastChange(message);
 		}
@@ -329,7 +336,7 @@ public class Client implements Handler.Callback {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
-		((Game) activity).getPlayerHand().blindTurnInPublic(suit, face);
+		((Game) activity).getPlayerHand().blindTurnInPublic(suit, face, message.getOriginatorName());
 		if (isHost) {
 			broadcastChange(message);
 		}
@@ -374,7 +381,7 @@ public class Client implements Handler.Callback {
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
 		boolean turned = message.about.charAt(0) == '1' ? true : false;
-		((Game) activity).getPlayerHand().blindAddToDeck(suit, face, turned);
+		((Game) activity).getPlayerHand().blindAddToDeck(suit, face, turned, message.getOriginatorName());
 		if (isHost) { 
 			broadcastChange(message);
 		}

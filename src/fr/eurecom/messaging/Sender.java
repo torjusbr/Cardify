@@ -58,6 +58,10 @@ public class Sender {
 		try {
 			json.put("what", message.what.ordinal());
 			json.put("about", message.about);
+			String name;
+			if (message.getOriginatorName() == null || message.getOriginatorName().length() == 0) name = "0";
+			else name = message.getOriginatorName();
+			json.put("name", name);
 		} catch (JSONException e) {
 			Log.e("Sender", "JSONError");
 			e.printStackTrace();

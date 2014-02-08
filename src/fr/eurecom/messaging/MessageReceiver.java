@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
 
 import org.json.JSONException;
@@ -47,7 +46,8 @@ public class MessageReceiver implements Runnable {
 		try {
 			Action action = Action.values()[json.getInt("what")];
 			String subject = json.getString("about");
-			GameMessage gameMessage = new GameMessage(action, subject);
+			String name = json.getString("name");
+			GameMessage gameMessage = new GameMessage(action, subject, name);
 			gameMessage.setOriginatorAddr(sender);
 			
 			handleThreadMessage(gameMessage, Config.GAME_MESSAGE_INT);

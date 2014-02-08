@@ -279,6 +279,11 @@ public class Game extends Activity {
 		this.deck = deck;
 	}
 	
+	public String getDeviceName() {
+		return deviceName;
+	}
+	
+	//TODO: Possibly remove
 	private class PeerListener implements PeerListListener {
 		@Override
 		public void onPeersAvailable(WifiP2pDeviceList peers) {
