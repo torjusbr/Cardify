@@ -258,7 +258,6 @@ public class Client implements Handler.Callback {
 		}
 	}
 	
-	//TODO: Dette må fikses!
 	private void handlePreGameDisconnect(GameMessage message) {
 		if (isHost) {
 			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
@@ -343,13 +342,12 @@ public class Client implements Handler.Callback {
 
 	@Override
 	public boolean handleMessage(Message msg) {
-		//TODO: Her gjøres handleGameMessage. What må gjøres om
 		if (msg.what == Config.GAME_MESSAGE_INT) {
 			Log.d("Client", "Got message ");
 			GameMessage gameMessage = (GameMessage) msg.obj;
 			Log.d("Client", "Message is " + gameMessage.about);
 			handleGameMessage(gameMessage);
-		} 
+		}
 		return true;
 	}
 

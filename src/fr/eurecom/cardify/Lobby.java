@@ -136,7 +136,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
 
-		config.groupOwnerIntent = 15; //15 Gjør denne personen til groupOwner (host). 
+		config.groupOwnerIntent = 15;  
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
 		timerDelayRemoveDialog(30000, progressDialog);
@@ -168,8 +168,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void disconnectFromDevices() {
 		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
-//		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-//		this.client.publishDisconnect();
 	}
 	
 
@@ -184,9 +182,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			
 			@Override
 			public void onFailure(int reason) {
-				// TODO Auto-generated method stub
 				Log.d("Lobby", "Failed searching for peers" + " Reason is " + reason);
-				//((Button) findViewById(R.id.lobby_refreshPeersBtn)).setClickable(true);
 			}
 		});
 	}
@@ -222,11 +218,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	// Start a new game as host
 	public void startGame(View view) {
 		showCardHandSizeSelector();
-		/*
-		 * This must be done after selecting number of cards
-		client.broadcastStartGame();
-		*/
-//		startGameActivity(this.client.getReceivers(), true);
 	}
 	
 	private void showCardHandSizeSelector() {
@@ -294,7 +285,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		finish();
 	}
@@ -382,13 +372,11 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		@Override
 		public void onFailure(int reason) {
-			// TODO Auto-generated method stub
 			Log.d("Lobby", failureMessage + " Reason is " + reason);
 		}
 
 		@Override
 		public void onSuccess() {
-			// TODO Auto-generated method stub
 			Log.d("Lobby", successMessage);
 		}
 	}

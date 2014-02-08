@@ -41,8 +41,6 @@ public class Game extends Activity {
 	private boolean isSolitaire;
 	
 	public static Point screenSize;
-	
-	//TODO: Maybe implementing superclass with this:
 
 	private WifiP2pManager mManager;
 	private Channel mChannel;
@@ -111,25 +109,21 @@ public class Game extends Activity {
 		}
 	}
 	
-	//TODO: This must also be in the superclass if implemented
 	public void disconnectFromDevices() {
 		mManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
 			
 			@Override
 			public void onSuccess() {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void onFailure(int reason) {
-				// TODO Auto-generated method stub
 				
 			}
 		});
 	}
 	
-	//TODO: This must also be in the superclass if implemented
 	private void showProgressDialog(String title, String message) {
 		this.progressDialog.setTitle(title);
 		this.progressDialog.setMessage(message);
@@ -195,7 +189,6 @@ public class Game extends Activity {
 	@Override
 	public void onBackPressed() {
 		
-		//TODO: Special dialog for host
 		new AlertDialog.Builder(this)
 			.setTitle("Are you sure you want to exit?")
 			.setMessage("This game will be abandoned")

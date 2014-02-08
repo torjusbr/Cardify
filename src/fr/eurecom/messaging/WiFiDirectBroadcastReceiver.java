@@ -59,7 +59,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             	Toast.makeText(context, "Disconnected", Toast.LENGTH_SHORT).show();
             	lobby.removeStartButton();
             	lobby.dismissProgressDialog();
-//            	lobby.removeClient();
             }
 		} else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
 			Toast.makeText(context, "WiFi direct this device changed", Toast.LENGTH_SHORT).show();
