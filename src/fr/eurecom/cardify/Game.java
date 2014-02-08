@@ -198,7 +198,6 @@ public class Game extends Activity {
 	
 	public void removeView(View v){
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.rootGameLayout);
-		// Must recycle image resource!
 		layout.removeView(v);
 	}
 	
@@ -267,8 +266,8 @@ public class Game extends Activity {
 		return this.playerHand;
 	}
 	
-	public void printMessage(String message) {
-		messageStream.setText(message+messageStream.getText());
+	public TextView getMessageStream() {
+		return messageStream;
 	}
 	
 	public CardDeck getDeck() {

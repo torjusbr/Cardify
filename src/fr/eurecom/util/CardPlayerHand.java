@@ -4,7 +4,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
@@ -332,9 +336,53 @@ public class CardPlayerHand {
 	}
 	
 	private void printMessage(String start, String end, Card c, boolean showValue) {
-		String value = showValue ? ""+c.getSuit()+c.getFace() : "a card";
+		String value;
+		if (showValue) {
+			String suitString;
+			String faceString;
+			switch (c.getSuit()) {
+			case 'h':
+				suitString = " of hearts";
+				break;
+			case 's':
+				suitString = " of spades";
+				break;
+			case 'c':
+				suitString = " of clubs";
+				break;
+			case 'd':
+				suitString = " of diamonds";
+				break;
+			default:
+				suitString = "";
+				break;
+			}
+			switch (c.getFace()) {
+			case 13:
+				faceString = "King";
+				break;
+			case 12:
+				faceString = "Queen";
+				break;
+			case 11:
+				faceString = "Jacks";
+				break;
+			default:
+				faceString = ""+c.getFace();
+				break;
+			}
+			value = faceString+suitString;
+		} else {
+			value = "a card";
+		}
 		String formatted = String.format("%s %s %s\n", start, value, end);
-		game.printMessage(formatted);
+		final SpannableStringBuilder sb = new SpannableStringBuilder(formatted);
+		if (showValue) {
+			final ForegroundColorSpan fcs = new ForegroundColorSpan((c.getSuit() == 's' || c.getSuit() == 'c') ? Color.rgb(0, 0, 0) : Color.rgb(184, 59, 50)); 
+			sb.setSpan(fcs, start.length()+1, start.length()+1+value.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+		}
+		sb.append((Spannable) game.getMessageStream().getText());
+		game.getMessageStream().setText(sb);
 	}
 	
 	protected CardView addCardGraphics(Card card) {
@@ -350,6 +398,7 @@ public class CardPlayerHand {
 		System.gc();
 	}
 	
+	//TODO: Remove?
 	private void animateCardIntoView(CardView view) {
 		view.setX(displaySize.x/2 - view.getWidth()/2);
 		view.setY(0 - view.getHeight());
