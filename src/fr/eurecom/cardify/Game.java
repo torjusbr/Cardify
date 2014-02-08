@@ -9,7 +9,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.res.Configuration;
 import android.content.Intent;
 import android.graphics.Point;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -29,8 +28,6 @@ import fr.eurecom.util.CardDeck;
 import fr.eurecom.util.CardPlayerHand;
 import fr.eurecom.util.CardSolitaireHand;
 import fr.eurecom.util.CardSortingRule;
-
-//TODO: Get WiFi direct names
 
 public class Game extends Activity {
 

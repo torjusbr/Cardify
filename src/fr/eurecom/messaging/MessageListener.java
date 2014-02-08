@@ -18,8 +18,7 @@ public class MessageListener extends Thread {
 	
 	private volatile boolean running;
 	
-	public MessageListener(Handler handler)
-			throws IOException {
+	public MessageListener(Handler handler) throws IOException {
 		Log.d("NewReceiver", "Constructor");
 		this.handler = handler;
 		this.socket = new ServerSocket(Config.PORT);
