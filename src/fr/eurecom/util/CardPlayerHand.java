@@ -97,7 +97,6 @@ public class CardPlayerHand {
 		game.getClient().publishCardPositionUpdate(view.getCard(), getPosX(view), getPosY(view), game.getDeviceName());
 	}
 	
-	
 	protected int getPositionInStack(float x) {
 		int pos = 0;
 		for (CardView v : cardStack) {
@@ -358,6 +357,9 @@ public class CardPlayerHand {
 				break;
 			}
 			switch (c.getFace()) {
+			case 1:
+				faceString = "Ace";
+				break;
 			case 13:
 				faceString = "King";
 				break;
