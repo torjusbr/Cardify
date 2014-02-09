@@ -57,8 +57,6 @@ public class MessageReceiver implements Runnable {
 	}
 	
 	public void handleThreadMessage(GameMessage gameMessage, int what) {
-		Log.d("HandleThreadMessage", "Mottatt melding fra en annen tråd:");
-		
 		Message completeMessage = handler.obtainMessage(what, gameMessage);
 		completeMessage.sendToTarget();
 	}

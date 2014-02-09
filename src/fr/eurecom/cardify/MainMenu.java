@@ -35,6 +35,7 @@ public class MainMenu extends Activity {
 	@Override
 	public void onBackPressed() {
 //		Should always exit app when back is pressed in main menu
+		finish();
 		Intent intent = new Intent(Intent.ACTION_MAIN);
 		intent.addCategory(Intent.CATEGORY_HOME);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

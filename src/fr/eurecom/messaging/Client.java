@@ -115,7 +115,8 @@ public class Client implements Handler.Callback {
 			GameMessage message = new GameMessage(Action.INITIAL_CARDS, cards);
 			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
 			
-			this.sender.send(message, receiver);
+			sendMessage(message, receiver);
+//			this.sender.send(message, receiver);
 		} 
 	}
 	
@@ -132,7 +133,8 @@ public class Client implements Handler.Callback {
 		}
 		for (InetAddress receiver : receivers) {
 			GameMessage message = new GameMessage(Action.REMAINING_DECK,cardStringBuilder.toString());
-			this.sender.send(message, receiver);
+			sendMessage(message, receiver);
+//			this.sender.send(message, receiver);
 		}
 	}
 	
@@ -147,12 +149,7 @@ public class Client implements Handler.Callback {
 		}
 	}
 	
-	private void sendMessage(Action what, String about) {
-		GameMessage message = new GameMessage(what, about);
-		for (InetAddress receiver : receivers){
-			this.sender.send(message, receiver);
-		}
-	}
+	
 	
 	private void sendSingleMessage(Action what, String about, InetAddress receiver) {
 		GameMessage message = new GameMessage(what, about);
@@ -162,7 +159,8 @@ public class Client implements Handler.Callback {
 	private void broadcastChange(GameMessage message){
 		for (InetAddress receiver : receivers){
 			if (!receiver.equals(message.getOriginatorAddr())){
-				this.sender.send(message, receiver);
+//				this.sender.send(message, receiver);
+				sendMessage(message, receiver);
 			}
 		}
 	}
@@ -396,6 +394,17 @@ public class Client implements Handler.Callback {
 			handleGameMessage(gameMessage);
 		}
 		return true;
+	}
+	
+	private void sendMessage(GameMessage message, InetAddress receiver) {
+		new Sender().execute(message, receiver);
+	}
+	
+	private void sendMessage(Action what, String about) {
+		GameMessage message = new GameMessage(what, about);
+		for (InetAddress receiver : receivers){
+			new Sender().execute(message, receiver);
+		}
 	}
 
 }
