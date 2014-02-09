@@ -403,7 +403,7 @@ public class Client implements Handler.Callback {
 	private void sendMessage(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
-			new Sender().execute(message, receiver);
+			sendMessage(message, receiver);
 		}
 	}
 

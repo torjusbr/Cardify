@@ -69,6 +69,7 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 	@Override
 	protected Void doInBackground(Object... objects) {
 		// Objects[0] is gameMessage, objects[1] is destination address
+		
 		GameMessage message = null;
 		InetAddress receiver = null;
 		message = (GameMessage) objects[0];
