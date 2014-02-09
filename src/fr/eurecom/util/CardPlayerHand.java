@@ -341,16 +341,16 @@ public class CardPlayerHand {
 			String faceString;
 			switch (c.getSuit()) {
 			case 'h':
-				suitString = " of hearts";
+				suitString = "♥";
 				break;
 			case 's':
-				suitString = " of spades";
+				suitString = "♠";
 				break;
 			case 'c':
-				suitString = " of clubs";
+				suitString = "♣";
 				break;
 			case 'd':
-				suitString = " of diamonds";
+				suitString = "♦";
 				break;
 			default:
 				suitString = "";
@@ -358,16 +358,16 @@ public class CardPlayerHand {
 			}
 			switch (c.getFace()) {
 			case 1:
-				faceString = "Ace";
+				faceString = "A";
 				break;
 			case 13:
-				faceString = "King";
+				faceString = "K";
 				break;
 			case 12:
-				faceString = "Queen";
+				faceString = "Q";
 				break;
 			case 11:
-				faceString = "Jacks";
+				faceString = "J";
 				break;
 			default:
 				faceString = ""+c.getFace();
