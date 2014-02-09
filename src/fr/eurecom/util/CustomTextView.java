@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.TextView;
 
 public class CustomTextView extends TextView{
@@ -36,14 +35,16 @@ public class CustomTextView extends TextView{
         
         values.recycle();
 
-        switch(typeface) {
-            case HOBBY_OF_NIGHT: default:
-            	Typeface hobby_of_night = Typeface.createFromAsset(context.getAssets(), "fonts/Hobby-of-night.ttf");
-                super.setTypeface(hobby_of_night); 
-                break;
-            case LAVOIR:
-            	Typeface lavoir = Typeface.createFromAsset(context.getAssets(), "fonts/lavoir.ttf");
-                setTypeface(lavoir);
+        if(!isInEditMode()){	
+	        switch(typeface) {
+	            case HOBBY_OF_NIGHT: default:
+	            	Typeface hobby_of_night = Typeface.createFromAsset(context.getAssets(), "fonts/Hobby-of-night.ttf");
+	                super.setTypeface(hobby_of_night); 
+	                break;
+	            case LAVOIR:
+	            	Typeface lavoir = Typeface.createFromAsset(context.getAssets(), "fonts/lavoir.ttf");
+	                setTypeface(lavoir);
+	        }
         }
 
 	}	

@@ -17,6 +17,8 @@
     <string name="lobby_solitaire">Solitaire</string>
     <string name="lobby_chat">Game</string>
     <string name="join_game">Join Game</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_shop">Shop</string>
     <string name="title_activity_about">About</string>
     <string name="hello_world">Hello world!</string>
     <string name="about_headline">About</string>

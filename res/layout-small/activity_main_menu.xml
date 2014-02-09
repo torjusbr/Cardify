@@ -9,8 +9,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainMenu" >
-    
-    <TextView
+
+    <fr.eurecom.util.CustomTextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,20 +19,22 @@
         android:layout_marginTop="20dp"
         android:text="@string/app_name"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="40sp" />
+        android:textSize="30sp" />
     
-	<fr.eurecom.util.CustomButton
-		android:id="@+id/lobbyButton"
-		android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignLeft="@+id/textView1"
-	    android:layout_alignRight="@+id/textView1"
-	    android:layout_below="@+id/textView1"
-	    android:layout_marginTop="15dp"
-	    android:onClick="lobby"
-	    android:text="@string/title_activity_lobby"/>	         
-	
-	<fr.eurecom.util.CustomButton
+    <fr.eurecom.util.CustomButton
+        android:id="@+id/lobbyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_alignRight="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+        android:onClick="lobby"
+        android:text="@string/title_activity_lobby" />
+
+
+    <fr.eurecom.util.CustomButton
         android:id="@+id/solitaireButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,27 +42,27 @@
         android:layout_alignRight="@+id/lobbyButton"
         android:layout_below="@+id/lobbyButton"
         android:onClick="startSolitaire"
-        android:text="@string/lobby_solitaire"/>
-	
-	<fr.eurecom.util.CustomButton
+        android:text="@string/lobby_solitaire" />
+
+    <fr.eurecom.util.CustomButton
         android:id="@+id/helpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/solitaireButton"
         android:layout_alignRight="@+id/solitaireButton"
         android:layout_below="@+id/solitaireButton"
-        android:text="@string/menu_help"/>
-	
-	<fr.eurecom.util.CustomButton
+        android:text="@string/menu_help" />
+
+    <fr.eurecom.util.CustomButton
         android:id="@+id/shopButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/helpButton"
         android:layout_alignRight="@+id/helpButton"
         android:layout_below="@+id/helpButton"
-        android:text="@string/menu_shop"/>
+        android:text="@string/menu_shop" />
 
-    <Button
+    <fr.eurecom.util.CustomButton
         android:id="@+id/aboutButton"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
@@ -69,6 +71,5 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/ic_action_about"
         android:onClick="showAbout" />
-
 
 </RelativeLayout>
