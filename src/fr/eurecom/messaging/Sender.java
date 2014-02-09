@@ -2,7 +2,6 @@ package fr.eurecom.messaging;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -73,9 +72,7 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 		GameMessage message = null;
 		InetAddress receiver = null;
 		message = (GameMessage) objects[0];
-		Log.e("Sender", "Message");
 		receiver = (InetAddress) objects[1];
-		Log.e("Sender", "Receiver");
 		if (message != null && receiver != null) {
 			send(message, receiver);
 		}

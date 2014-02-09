@@ -255,7 +255,6 @@ public class Game extends Activity {
 	
 	private void exitSolitaire() {
 		finish();
-		onBackPressed();
 	}
 		
 	public Client getClient() {
@@ -280,6 +279,12 @@ public class Game extends Activity {
 	
 	public String getDeviceName() {
 		return deviceName;
+	}
+	
+	@Override
+	protected void onDestroy() {
+		exitGame();
+		super.onDestroy();
 	}
 	
 	//TODO: Possibly remove

@@ -52,9 +52,14 @@ public class MessageListener extends Thread {
 	
 	public void stopThread() {
 		this.running = false;
+		interrupt();
 		try {
 			this.socket.close();
+			socket.close();
+			
 		} catch (IOException e) {
+			Log.e("MessageListener:stopListening", e.getMessage());
+		} catch (NullPointerException e) {
 			Log.e("MessageListener:stopListening", e.getMessage());
 		}
 	}
@@ -62,7 +67,7 @@ public class MessageListener extends Thread {
 
 	private void shutdownAndAwaitTermination(ExecutorService pool) {
 		pool.shutdown(); // Disable new tasks from being submitted
-		
+		Log.e("Listener", "shutDownAndAwaitTermination");
 		try {
 			// Wait a while for existing tasks to terminate
 			if (!pool.awaitTermination(50, TimeUnit.MILLISECONDS)) {

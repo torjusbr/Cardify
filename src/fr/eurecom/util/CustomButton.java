@@ -1,13 +1,12 @@
 package fr.eurecom.util;
 
-import fr.eurecom.cardify.R;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.Button;
+import fr.eurecom.cardify.R;
 
 public class CustomButton extends Button {
     private final static int HOBBY_OF_NIGHT= 0;

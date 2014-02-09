@@ -57,18 +57,19 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		//Keeps screen on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		
-		setUpWiFiDirect();
-		disconnectFromDevices();
 		peers = new WifiP2pDeviceList();
 		initCards = 0;
 		progressDialog = new ProgressDialog(this);
-		resetLobby();
+		
+		setUpWiFiDirect();
+		disconnectFromDevices();
+		findPeers();
 	}
 
 	protected void setUpWiFiDirect() {
 		mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 		mChannel = mManager.initialize(this, getMainLooper(), null);
+		
 		mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
 		
 		mIntentFilter = new IntentFilter();
@@ -119,6 +120,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void addToListOfConnectedPeers(final WifiP2pDevice device) {
+		
+		
 		Button view = new Button(this);
 		view.setText(String.format("Disconnect from %s", device.deviceName));
 		view.setOnClickListener(new View.OnClickListener() {
@@ -258,7 +261,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 						client.broadcastStartGame();
 					}
 				});
-
 		alert.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
@@ -302,12 +304,13 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	@Override
 	public void onConnectionInfoAvailable(WifiP2pInfo info) {
 		groupOwnerIp = info.groupOwnerAddress.getHostAddress();
+		Log.e("Lobby:onConnectionInfoAvailable", "groupOwnerIp:" + groupOwnerIp);
 		if (info.groupFormed) {
 			if (info.isGroupOwner) {
 				setUpHost(info);
 			} else {
 				setUpClient(info);
-			}
+			}	
 		}
 	}
 	
@@ -347,8 +350,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 		disconnectClient();
 
-		removeStartButton();
 		removeClient();
+		removeStartButton();
 		resetPeerList();
 		groupOwnerIp = "";
 		peers = new WifiP2pDeviceList();
@@ -388,5 +391,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		public void onSuccess() {
 			Log.d("Lobby", successMessage);
 		}
+	}
+	
+	public void deviceDisconnected() {
+		resetLobby();
 	}
 }
