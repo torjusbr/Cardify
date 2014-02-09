@@ -20,6 +20,10 @@
     <string name="title_activity_about">About</string>
     <string name="hello_world">Hello world!</string>
     <string name="about_headline">About</string>
-    <string name="about_body">This app was made as part of the MobServ course at EURECOM, and the source code is freely available at github.\nWe borrowed the card graphics from the \&apos;Vector Playing Cards\&apos; project on Sorceforge, uploaded by user \&apos;spyresca\&apos;.</string>
+    <string name="about_body">
+This app was made as part of the MobServ course at EURECOM, and the source code is freely available at github.
+\n\nVectorized Playing Cards 1.3-\nhttp://code.google.com/p/vectorized-playing-cards/
+\nCopyright 2011 - Chris Aguilar
+\nLicensed under LGPL 3 - www.gnu.org/copyleft/lesser.html</string>
     
 </resources>
