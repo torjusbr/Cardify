@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/lobby_connected_peers"
-            android:textSize="50sp" />
+            android:textSize="50sp"
+            android:textColor="#ffffff" />
 
         <LinearLayout
             android:id="@+id/lobby_connectedPeersList"
@@ -55,7 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/lobby_available_peers"
-                android:textSize="50sp" />
+                android:textSize="50sp"
+                android:textColor="#ffffff" />
 
         <LinearLayout
             android:id="@+id/lobby_availablePeersList"
