@@ -56,4 +56,18 @@ public class CardSolitaireHand extends CardPlayerHand {
 		return;
 	}
 	
+	@Override
+	public void redeal(int numberOfCards) {
+		reDealCards(game.getDeck().draw(numberOfCards));
+	}
+	
+	@Override
+	public void shuffle() {
+		for (CardView v : cardPublic) {
+			game.getDeck().addCard(v.getCard());
+			removeCardGraphics(v);
+		}
+		game.getDeck().shuffle();
+	}
+	
 }

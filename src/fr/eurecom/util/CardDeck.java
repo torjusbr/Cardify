@@ -48,6 +48,22 @@ public class CardDeck extends ImageView {
 		this.toggleEmpty();
 	}
 	
+	public void clear() {
+		this.cards.clear();
+	}
+	
+	public void reloadDeck() {
+		this.cards = new LinkedList<Card>();
+		
+		for (char suit : suits){
+			for (int face : faces){
+				cards.add(new Card(suit, face, false));
+			}
+		}
+		
+		this.toggleEmpty();
+	}
+	
 	private void setImage(Context context) {
 		this.setImageResource(context.getResources().getIdentifier("drawable/deck", null, context.getPackageName()));
 	}

@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
-public class CardView extends ImageView implements OnTouchListener{
+public class CardView extends ImageView implements OnTouchListener {
 	
 	private long lastDown;
 	private Context context;
@@ -115,6 +115,7 @@ public class CardView extends ImageView implements OnTouchListener{
 	}
 	
 	public void updateGraphics() {
+		System.out.println("UPDATE GRAPHICS: "+getResourceString()+" -- Card is "+card.getTurned());
 		this.setImageResource(getImageResource(context, getResourceString()));
 	}
 	

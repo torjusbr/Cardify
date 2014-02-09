@@ -116,8 +116,22 @@ public class Client implements Handler.Callback {
 			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
 			
 			sendMessage(message, receiver);
-//			this.sender.send(message, receiver);
 		} 
+	}
+	
+	public void pushNewCards(CardDeck deck, int n) {
+		for (InetAddress receiver : receivers){
+			String cards = "";
+			for (int i = 0; i < n; i++){
+				if (deck.peek() == null) break;
+				cards += deck.pop().toString() + ";";
+			}
+			GameMessage message = new GameMessage(Action.NEW_CARDS, cards);
+			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
+			
+			sendMessage(message, receiver);
+		}
+		this.pushRemainingDeck(deck);
 	}
 	
 	public void publishGameInitialized() {
@@ -134,7 +148,19 @@ public class Client implements Handler.Callback {
 		for (InetAddress receiver : receivers) {
 			GameMessage message = new GameMessage(Action.REMAINING_DECK,cardStringBuilder.toString());
 			sendMessage(message, receiver);
-//			this.sender.send(message, receiver);
+		}
+	}
+	
+	public void pushShuffledDeck(CardDeck deck) {
+		StringBuilder cardStringBuilder = new StringBuilder();
+		List<Card> cards = deck.getCards();
+		for (int i = 0; i < cards.size(); i++) {
+			cardStringBuilder.append(cards.get(i).toString());
+			cardStringBuilder.append(";");
+		}
+		for (InetAddress receiver : receivers) {
+			GameMessage message = new GameMessage(Action.SHUFFLE_DECK,cardStringBuilder.toString());
+			sendMessage(message, receiver);
 		}
 	}
 	
@@ -159,7 +185,6 @@ public class Client implements Handler.Callback {
 	private void broadcastChange(GameMessage message){
 		for (InetAddress receiver : receivers){
 			if (!receiver.equals(message.getOriginatorAddr())){
-//				this.sender.send(message, receiver);
 				sendMessage(message, receiver);
 			}
 		}
@@ -250,6 +275,12 @@ public class Client implements Handler.Callback {
 		case INITIAL_CARDS:
 			handleInitialCards(message);
 			return;
+		case NEW_CARDS:
+			handleNewCards(message);
+			return;
+		case SHUFFLE_DECK:
+			handleShuffleDeck(message);
+			return;
 		case REMAINING_DECK:
 			handleRemainingDeck(message);
 			return;
@@ -329,6 +360,11 @@ public class Client implements Handler.Callback {
 		}
 	}
 	
+	private void handleShuffleDeck(GameMessage message) {
+		String[] cards = message.about.length() == 0 ? null : message.about.split(";");
+		((Game) activity).getPlayerHand().blindShuffleDeck(cards);
+	}
+	
 	private void handleTurnedCardInPublicZone(GameMessage message) {
 		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		char suit = message.about.charAt(1);
@@ -363,6 +399,14 @@ public class Client implements Handler.Callback {
 		if (message.about.length() > 0) {
 			String[] cards = message.about.split(";");
 			((Game) activity).getPlayerHand().blindDealCards(cards);
+		}
+	}
+	
+	private void handleNewCards(GameMessage message) {
+		Log.e("Client:handleNewCards", "Cards: " + message.about + " length: " + message.about.length());
+		if (message.about.length() > 0) {
+			String[] cards = message.about.split(";");
+			((Game) activity).getPlayerHand().blindNewCards(cards);
 		}
 	}
 	
