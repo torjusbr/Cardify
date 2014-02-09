@@ -301,8 +301,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	@Override
 	protected void onDestroy() {
+		disconnectClient();
+		resetLobby();
 		super.onDestroy();
-		finish();
 	}
 	
 	// Every time new connection is available

@@ -102,7 +102,7 @@ public class Client implements Handler.Callback {
 	}
 	
 	public void publishDisconnect() {
-		sendMessage(Action.DISCONNECT, "");
+		sendMessageFromUIThread(Action.DISCONNECT, "");
 	}
 	
 	public void pushInitialCards(CardDeck deck, int n) {
@@ -399,6 +399,7 @@ public class Client implements Handler.Callback {
 		new Sender().execute(message, receiver);
 	}
 	
+	
 	private void sendMessage(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
@@ -406,4 +407,10 @@ public class Client implements Handler.Callback {
 		}
 	}
 
+	private void sendMessageFromUIThread(Action what, String about) {
+		GameMessage message = new GameMessage(what, about);
+		for (InetAddress receiver : receivers){
+			new Sender().send(message, receiver);
+		}
+	}
 }

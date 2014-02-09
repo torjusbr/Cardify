@@ -220,6 +220,7 @@ public class Game extends Activity {
 	}
 	
 	public void exitGame() {
+		Log.e("Game", "isSolitare ? " + isSolitaire);
 		if (isSolitaire) {
 			exitSolitaire();
 		} else {
@@ -265,7 +266,6 @@ public class Game extends Activity {
 	
 	@Override
 	protected void onDestroy() {
-		exitGame();
 		super.onDestroy();
 	}
 }
