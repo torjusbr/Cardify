@@ -65,8 +65,8 @@ public class Client implements Handler.Callback {
 		receivers.add(receiver);
 	}
 	
-	public void registerAtHost() {
-		sendMessage(Action.REGISTER, "");
+	public void registerAtHost(String deviceList) {
+		sendMessage(Action.REGISTER, deviceList);
 	}
 	
 	public Set<InetAddress> getReceivers(){
@@ -197,6 +197,7 @@ public class Client implements Handler.Callback {
 	
 	private void handleRegister(GameMessage message) {
 		pushDeviceName(((Lobby) activity).getCurrentTargetDeviceName(), message.getOriginatorAddr());
+		((Lobby) activity).setHostDeviceName(message.about.split(";"));
 		
 		addReceiver(message.getOriginatorAddr());
 		((Lobby) activity).dismissProgressDialog();
@@ -214,7 +215,6 @@ public class Client implements Handler.Callback {
 	private void handleGameInitialized(GameMessage message) {
 		if (isHost) {
 			peersInitialized++;
-			Log.e("HORE", "Number of peers initialized: " + peersInitialized);
 			if (peersInitialized == receivers.size()) {
 				((Lobby) activity).startGameActivity(receivers, true);				
 			}
@@ -263,7 +263,6 @@ public class Client implements Handler.Callback {
 	
 	private void handleInGameDisconnect(GameMessage message) {
 		if (isHost) {
-			//TODO: What should the host do when someone disconnects from the game?
 			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
 			Log.e("Client", "Stack contains ? " + receivers.contains(message.getOriginatorAddr()));
 			receivers.remove(message.getOriginatorAddr());

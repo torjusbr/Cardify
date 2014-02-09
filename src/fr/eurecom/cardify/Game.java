@@ -11,11 +11,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Point;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
-import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -72,20 +69,12 @@ public class Game extends Activity {
 			mChannel = mManager.initialize(this, getMainLooper(), null);
 			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
 			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
-			try {
-				deviceName = getIntent().getExtras().get("deviceName").toString();
-			} catch (Exception e) {
-				deviceName = "host";
-				//TODO: Set host device name
-			}
-			
-			System.out.println("DEVICE NAME: "+deviceName);
+			deviceName = getIntent().getExtras().get("deviceName").toString();
 			
 			if (!isHost) {
 				showProgressDialog("Loading...", "Waiting for all players");
 			} else {
 				cardsPerPlayer = getIntent().getExtras().getInt("cardsPerPlayer");
-				Log.e("Game", "cardsPerPlayer is: " + cardsPerPlayer);
 			}
 			
 			messageStream = (TextView) findViewById(R.id.messageStream);
@@ -162,20 +151,13 @@ public class Game extends Activity {
 	}
 	
 	// Set up game if the this.client is host
-	private void initGame(){
-		//int numPlayers = client.getReceivers().size() + 1;
+	private void initGame() {
 		this.deck = new CardDeck(this);
 		deck.shuffle();
 		
 		playerHand.dealCards(deck.draw(cardsPerPlayer));
 		playerHand.setGhost();
 		addView(deck);
-		
-		//TODO: push names to devices
-		//Will push peer names to devices
-		mManager.requestPeers(mChannel, new PeerListener());
-		//TODO: request name from device
-		
 		
 		client.pushInitialCards(deck, cardsPerPlayer);
 		client.pushRemainingDeck(deck);
@@ -285,16 +267,5 @@ public class Game extends Activity {
 	protected void onDestroy() {
 		exitGame();
 		super.onDestroy();
-	}
-	
-	//TODO: Possibly remove
-	private class PeerListener implements PeerListListener {
-		@Override
-		public void onPeersAvailable(WifiP2pDeviceList peers) {
-			System.out.println("PEERS "+peers.toString());
-			for(WifiP2pDevice device : peers.getDeviceList()) {
-				System.out.println(device);
-			}
-		}
 	}
 }

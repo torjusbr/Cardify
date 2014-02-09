@@ -1,8 +1,8 @@
 package fr.eurecom.cardify;
 
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.Set;
-
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,9 +31,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.Toast;
 import fr.eurecom.cardify.R.drawable;
 import fr.eurecom.messaging.Client;
+import fr.eurecom.messaging.PeerListener;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
 
 public class Lobby extends Activity implements ConnectionInfoListener {
@@ -42,13 +42,14 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private Channel mChannel;
 	private WiFiDirectBroadcastReceiver mReceiver;
 	private IntentFilter mIntentFilter;
-	private String groupOwnerIp;
 	private WifiP2pDeviceList peers;
 	private Client client;
 	private ProgressDialog progressDialog;
 	private int initCards;
 	private String currentTargetDeviceName;
 	private String thisDeviceName;
+	private Set<String> deviceNames;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,9 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		//Keeps screen on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
+		deviceNames = new HashSet<String>();
+
 		peers = new WifiP2pDeviceList();
 		initCards = 0;
 		progressDialog = new ProgressDialog(this);
@@ -112,6 +116,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		view.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				connectToDevice(device);
+				deviceNames.add(device.deviceName);
 			}
 		});
 		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -303,8 +308,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	// Every time new connection is available
 	@Override
 	public void onConnectionInfoAvailable(WifiP2pInfo info) {
-		groupOwnerIp = info.groupOwnerAddress.getHostAddress();
-		Log.e("Lobby:onConnectionInfoAvailable", "groupOwnerIp:" + groupOwnerIp);
 		if (info.groupFormed) {
 			if (info.isGroupOwner) {
 				setUpHost(info);
@@ -316,8 +319,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	// Create host if not already done
 	private void setUpHost(WifiP2pInfo info) {
-		Toast.makeText(getApplicationContext(), "You are the group owner", Toast.LENGTH_LONG).show();
-		Log.e("Lobby", "is this.client==null?" + (this.client == null));
 		if (this.client == null){
 			Log.e("Lobby", "you are the new host");
 			Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
@@ -353,7 +354,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		removeClient();
 		removeStartButton();
 		resetPeerList();
-		groupOwnerIp = "";
 		peers = new WifiP2pDeviceList();
 		dismissProgressDialog();
 		initCards = 0;
@@ -361,10 +361,11 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	// Create client and register at host
 	private void setUpClient(WifiP2pInfo info) {
-		Toast.makeText(getApplicationContext(), "Group Owner IP - " + groupOwnerIp, Toast.LENGTH_LONG).show();
 		this.client = new Client(this);
 		this.client.addReceiver(info.groupOwnerAddress);
-		this.client.registerAtHost();
+		
+		//this.client.registerAtHost();
+		mManager.requestPeers(mChannel, new PeerListener(this.client));
 		showProgressDialog("Waiting for host", "The host must start the game");
 	}
 	
@@ -395,5 +396,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void deviceDisconnected() {
 		resetLobby();
+	}
+	public void setHostDeviceName(String[] allDeviceNames) {
+		for (String deviceName : allDeviceNames) {
+			if (!deviceNames.contains(deviceName)) {
+				thisDeviceName = deviceName;
+			}
+		}
 	}
 }
