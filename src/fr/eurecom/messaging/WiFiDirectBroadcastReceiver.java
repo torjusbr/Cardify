@@ -51,7 +51,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 				.setPositiveButton(android.R.string.ok, new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						lobby.startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+						lobby.startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
 					}
 				}).create().show();
 	        }
