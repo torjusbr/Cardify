@@ -5,13 +5,10 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.os.AsyncTask;
 import android.os.StrictMode;
-import android.util.Log;
 
 public class Sender extends AsyncTask<Object, Void, Void> {
 	
@@ -34,7 +31,6 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 			outputStream.close();
 			
 		} catch (IOException e) {
-			Log.e("Sender:send", e.getMessage());
 		} 
 		
 		finally {
@@ -43,7 +39,6 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 		            try {
 		                socket.close();
 		            } catch (IOException e) {
-		               Log.e("Sender", e.getMessage());
 		            }
 		        }
 		    }
@@ -60,7 +55,6 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 			else name = message.getOriginatorName();
 			json.put("name", name);
 		} catch (JSONException e) {
-			Log.e("Sender", "JSONError");
 			e.printStackTrace();
 		}
 		return json.toString();
@@ -69,7 +63,6 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 	@Override
 	protected Void doInBackground(Object... objects) {
 		// Objects[0] is gameMessage, objects[1] is destination address
-		
 		GameMessage message = (GameMessage) objects[0];
 		InetAddress receiver = (InetAddress) objects[1];
 		if (message != null && receiver != null) {

@@ -23,7 +23,6 @@ import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,11 +98,8 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void printPeers() {
-		Log.d(getLocalClassName(), "Lobby:printPeers(): " + peers.getDeviceList().size());
 		((Button) findViewById(R.id.lobby_refreshPeersBtn)).clearAnimation();
 		for (WifiP2pDevice device : peers.getDeviceList()) {
-			Log.d(getLocalClassName(), "Peer from printPeers(): " + device.deviceName);
-			
 			if (device.status == WifiP2pDevice.CONNECTED) {
 				addToListOfConnectedPeers(device);
 			} else {
@@ -191,13 +187,10 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		mManager.discoverPeers(mChannel, new ActionListener() {
 			@Override
 			public void onSuccess() {
-				Log.d("Lobby", "Done searching for peers");
-					
 			}
 			
 			@Override
 			public void onFailure(int reason) {
-				Log.d("Lobby", "Failed searching for peers" + " Reason is " + reason);
 			}
 		});
 	}
@@ -258,7 +251,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		alert.setPositiveButton("Start game",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						Log.e("Lobby", "Numberpickers value is: " + np.getValue());
 						initCards = np.getValue();
 						client.broadcastStartGame();
 					}
@@ -318,7 +310,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	// Create host if not already done
 	private void setUpHost(WifiP2pInfo info) {
 		if (this.client == null){
-			Log.e("Lobby", "you are the new host");
 			Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
 			startButton.setVisibility(Button.VISIBLE);
 			this.client = new Client(this);
@@ -341,16 +332,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void disconnectClient() {
 		if (this.client != null) {
-			Log.e("Lobby", "Client is not null");
 			client.disconnect();
 		} else {
-			Log.e("Lobby", "Client is null");
 		}
 	}
 	
-	public void resetLobby() {
-		Log.e("Lobby", "Resetting lobby");
-	
+	public void resetLobby() {	
 		disconnectClient();
 
 		removeClient();
@@ -399,21 +386,15 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 	private class LobbyActionListener implements ActionListener {
 		
-		private String failureMessage, successMessage;
-		
 		private LobbyActionListener(String failureMessage, String successMessage) {
-			this.failureMessage = failureMessage;
-			this.successMessage = successMessage;
 		}
 		
 		@Override
 		public void onFailure(int reason) {
-			Log.d("Lobby", failureMessage + " Reason is " + reason);
 		}
 
 		@Override
 		public void onSuccess() {
-			Log.d("Lobby", successMessage);
 		}
 	}
 	

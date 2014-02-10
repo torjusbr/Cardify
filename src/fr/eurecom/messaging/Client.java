@@ -9,7 +9,6 @@ import java.util.Set;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.cardify.Lobby;
 import fr.eurecom.util.Card;
@@ -32,7 +31,6 @@ public class Client implements Handler.Callback {
 			receivingThread = new MessageListener(handler);
 			receivingThread.start();
 		} catch (IOException e) {
-			Log.e("Client", "Constructor error: __" + e.getMessage());
 		}
 		sender = new Sender();
 		
@@ -42,8 +40,6 @@ public class Client implements Handler.Callback {
 	}
 	
 	public void handleThreadMessage(GameMessage gameMessage, int what) {
-		Log.d("HandleThreadMessage", "Mottatt melding fra en annen tråd:");
-		
 		Message completeMessage = handler.obtainMessage(what, gameMessage);
 		completeMessage.sendToTarget();
 	}
@@ -113,7 +109,6 @@ public class Client implements Handler.Callback {
 				cards += deck.pop().toString() + ";";
 			}
 			GameMessage message = new GameMessage(Action.INITIAL_CARDS, cards);
-			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
 			
 			sendMessage(message, receiver);
 		} 
@@ -127,7 +122,6 @@ public class Client implements Handler.Callback {
 				cards += deck.pop().toString() + ";";
 			}
 			GameMessage message = new GameMessage(Action.NEW_CARDS, cards);
-			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
 			
 			sendMessage(message, receiver);
 		}
@@ -180,7 +174,6 @@ public class Client implements Handler.Callback {
 	
 	public void handleGameMessage(GameMessage message) {
 		if(message.what == Action.GAME_INITIALIZED) {
-			Log.e("handleGameMessage", "Game initialized" + message.getOriginatorAddr());
 			handleGameInitialized(message);
 		} else if (this.activity instanceof Lobby) {
 			handlePreGameMessage(message);
@@ -282,8 +275,6 @@ public class Client implements Handler.Callback {
 	
 	private void handleInGameDisconnect(GameMessage message) {
 		if (isHost) {
-			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
-			Log.e("Client", "Stack contains ? " + receivers.contains(message.getOriginatorAddr()));
 			receivers.remove(message.getOriginatorAddr());
 			if (receivers.size() == 0) {
 				((Game) activity).exitGame();
@@ -295,21 +286,15 @@ public class Client implements Handler.Callback {
 	
 	private void handlePreGameDisconnect(GameMessage message) {
 		if (isHost) {
-			Log.e("Client", "Should remove " + message.getOriginatorAddr().toString() + " from stack");
-			Log.e("Client", "Stack contains ? " + receivers.contains(message.getOriginatorAddr()));
 			receivers.remove(message.getOriginatorAddr());
 			if (receivers.size() > 0) {
-				Log.e("Client", "Disconnect. Receivers > 0");
 				return;
 			} 
 		}
-		Log.e("Client", "Other device disconnected");
 		((Lobby) activity).resetLobby();
 	}
-	
 
 	private void handleDrewFromDeckToStack(GameMessage message) {
-		Log.e("Client:handleDrewFromDeckToStack", "RUN: " + message.about);
 		((Game) activity).getPlayerHand().blindDrawFromDeckToStack(message.getOriginatorName());
 		if (isHost) {
 			broadcastChange(message);
@@ -318,9 +303,6 @@ public class Client implements Handler.Callback {
 	
 
 	private void handleAddedCardToPublicZone(GameMessage message) {
-
-		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
-		
 		// 0s10@0.231,0.423 --> 0s10 and 0.231,0.423
 		String[] token = message.about.split("@");
 		
@@ -339,7 +321,6 @@ public class Client implements Handler.Callback {
 	}
 	
 	private void handleRemovedCardFromPublicZone(GameMessage message) {
-		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
 		((Game) activity).getPlayerHand().blindRemoveFromPublic(suit, face, message.getOriginatorName());
@@ -354,7 +335,6 @@ public class Client implements Handler.Callback {
 	}
 	
 	private void handleTurnedCardInPublicZone(GameMessage message) {
-		Log.e("Client:handleAddedCardToPublicZone", "RUN: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
 		((Game) activity).getPlayerHand().blindTurnInPublic(suit, face, message.getOriginatorName());
@@ -364,8 +344,6 @@ public class Client implements Handler.Callback {
 	}
 	
 	private void handleMovedCardInPublicZone(GameMessage message) {
-		Log.e("Client:handleMovedCardInPublicZone", "RUN: " + message.about);
-		
 		// 0s10@0.231,0.423 --> 0s10 and 0.231,0.423
 		String[] token = message.about.split("@");
 
@@ -383,7 +361,6 @@ public class Client implements Handler.Callback {
 	}
 	
 	private void handleInitialCards(GameMessage message) {
-		Log.e("Client:handleInitialCards", "Cards: " + message.about + " length: " + message.about.length());
 		if (message.about.length() > 0) {
 			String[] cards = message.about.split(";");
 			((Game) activity).getPlayerHand().blindDealCards(cards);
@@ -391,7 +368,6 @@ public class Client implements Handler.Callback {
 	}
 	
 	private void handleNewCards(GameMessage message) {
-		Log.e("Client:handleNewCards", "Cards: " + message.about + " length: " + message.about.length());
 		if (message.about.length() > 0) {
 			String[] cards = message.about.split(";");
 			((Game) activity).getPlayerHand().blindNewCards(cards);
@@ -399,14 +375,12 @@ public class Client implements Handler.Callback {
 	}
 	
 	private void handleRemainingDeck(GameMessage message) {
-		Log.e("Client:handleRemainingDeck", "Cards: " +message.about);
 		String[] cards = message.about.length() == 0 ? null : message.about.split(";");
 		((Game) activity).getPlayerHand().blindAddDeck(cards);
 		((Game) activity).dismissProgressDialog();
 	}
 	
 	private void handleAddCardToDeck(GameMessage message) {
-		Log.e("Client:handleAddCardToDeck", "Cards: " + message.about);
 		char suit = message.about.charAt(1);
 		int face = Integer.parseInt(message.about.substring(2));
 		boolean turned = message.about.charAt(0) == '1' ? true : false;
@@ -428,14 +402,12 @@ public class Client implements Handler.Callback {
 	
 	
 	private void sendMessage(GameMessage message, InetAddress receiver) {
-//		sender.execute(message, receiver);
 		sender.send(message, receiver);
 	}
 	
 	private void sendMessageFromUIThread(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
-//			new Sender().send(message, receiver);
 			sender.send(message, receiver);
 		}
 	}
@@ -443,20 +415,17 @@ public class Client implements Handler.Callback {
 	private void sendMessage(Action what, String about, String deviceName) {
 		GameMessage message = new GameMessage(what, about, deviceName);
 		for (InetAddress receiver : receivers){
-//			sendMessage(message, receiver);
 			sender.send(message, receiver);
 		}
 	}
 	private void sendSingleMessage(Action what, String about, InetAddress receiver) {
 		GameMessage message = new GameMessage(what, about);
-//		sendMessage(message, receiver);
 		sender.send(message, receiver);
 	}
 
 	private void sendMessage(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
-//			sendMessage(message, receiver);
 			sender.send(message, receiver);
 		}
 	}

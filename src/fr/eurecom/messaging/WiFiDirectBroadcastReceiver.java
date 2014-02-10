@@ -1,7 +1,5 @@
 package fr.eurecom.messaging;
 
-
-
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,13 +7,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.NetworkInfo;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
-import android.util.Log;
-import android.widget.Toast;
 import fr.eurecom.cardify.Lobby;
 
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
@@ -36,15 +31,10 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 		CardPeerListListener cardPeerListListener = new CardPeerListListener();
 		String action = intent.getAction();
 		
-		Log.d("WifiDirectBroadcastReciever.onRecieve()", "In method. Action: " + action);
 		if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-			Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi enabled?");
 			int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
 	        if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
-	        	Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi p2p is enabled");
-	        	Toast.makeText(context, "WiFi Direct is enabled :)", Toast.LENGTH_LONG).show();
 	        } else {
-	        	Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi p2p is not enabled");
 	        	new AlertDialog.Builder(context)
 				.setTitle("WiFi direct is not enabled")
 				.setMessage("Enable WiFi Direct to play multiplayer game")
@@ -56,35 +46,24 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 				}).create().show();
 	        }
 		} else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-			Log.d("WifiDirectBroadcastReciever.onRecieve()", "peers changed");
 		    if (mManager != null) {
 		        mManager.requestPeers(mChannel, cardPeerListListener);
 		    }
 		} else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-			Log.d("WifiDirectBroadcastReciever.onRecieve()", "Connection changed");
 			NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 			if (networkInfo.isConnected()) {
                 mManager.requestConnectionInfo(mChannel, lobby);
-                Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
             } else {
-            	Toast.makeText(context, "Disconnected", Toast.LENGTH_SHORT).show();
             	lobby.deviceDisconnected();
             }
 		} else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-			Toast.makeText(context, "WiFi direct this device changed", Toast.LENGTH_SHORT).show();
 		} else {
-			Log.e("WifiDirectBroadcastReciever.onRecieve()", "Something else happened in onreceive. Action: " + action);
 		}
 	}
 	
 	private class CardPeerListListener implements PeerListListener {
 		@Override
 		public void onPeersAvailable(WifiP2pDeviceList peers) {
-			Log.d("WifiDirectBroadcastReciever.onRecieve()", "Found Peers!");
-
-			for (WifiP2pDevice peer : peers.getDeviceList()) {
-				Log.d("WifiDirectBroadcastReciever.onRecieve()", "Peer Name: " + peer.deviceName);
-			}
 			lobby.setPeers(peers);
 		}		
 	}

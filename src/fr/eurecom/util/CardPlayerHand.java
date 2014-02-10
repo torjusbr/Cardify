@@ -225,6 +225,7 @@ public class CardPlayerHand {
 	}
 	
 	public void blindAddDeck(String[] cardStrings) {
+		game.removeView(game.getDeck());
 		if (cardStrings == null) {
 			game.setDeck(new CardDeck(game.getApplicationContext(), new LinkedList<Card>()));
 		} else {

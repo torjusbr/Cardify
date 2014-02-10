@@ -14,7 +14,6 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -102,16 +101,13 @@ public class Game extends Activity {
 				try {
 					client.addReceiver(InetAddress.getByName(inetAddr.substring(1)));
 				} catch (UnknownHostException e) {
-					Log.e("Game:onCreate", e.getMessage());
 				} catch (StringIndexOutOfBoundsException e) {
-					Log.e("Game:onCreate", e.getMessage());
 				}
 			}
 
 			if (client.isHost()){
 				initGame();
 			} else {
-				Log.e("Game", "Notifying game is initialized");
 				client.publishGameInitialized();
 			}
 		}
@@ -256,7 +252,6 @@ public class Game extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		System.out.println("MENUITEM: "+item.getItemId()+"-"+item.getTitle());
 		switch (item.getItemId()) {
 			case R.id.NO_SUIT_ACE_HIGH:
 				playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_HIGH);
@@ -277,7 +272,6 @@ public class Game extends Activity {
 				if (isHost || isSolitaire) playerHand.shuffle();
 				return true; */
 			default:
-				System.out.println("OTHER");
 				return false;
 		}
 	}
@@ -292,7 +286,6 @@ public class Game extends Activity {
 		for (int i = 0; i <= maxHandSize; i++) {
 			numbers[i] = Integer.toString(i+1);
 		}
-		System.out.println("NUMBERS: "+numbers.toString());
 		np.setMinValue(1);
 		np.setMaxValue(maxHandSize);
 		np.setWrapSelectorWheel(false);
@@ -314,7 +307,6 @@ public class Game extends Activity {
 	}
 	
 	public void exitGame() {
-		Log.e("Game", "isSolitare ? " + isSolitaire);
 		if (isSolitaire) {
 			exitSolitaire();
 		} else {

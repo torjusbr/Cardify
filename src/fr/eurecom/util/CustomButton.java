@@ -11,7 +11,6 @@ public class CustomButton extends Button {
     private final static int HOBBY_OF_NIGHT= 0;
     private final static int LAVOIR = 1;
     
-    
     public CustomButton(Context context) {
         super(context);
         parseAttributes(context);

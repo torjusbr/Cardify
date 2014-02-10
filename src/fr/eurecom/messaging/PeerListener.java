@@ -13,8 +13,6 @@ public class PeerListener implements PeerListListener{
 	
 	@Override
 	public void onPeersAvailable(WifiP2pDeviceList peers) {
-		System.out.println("PEERS "+peers.toString());
-		
 		StringBuilder sb = new StringBuilder();
 		String prefix = "";
 		for(WifiP2pDevice device : peers.getDeviceList()) {

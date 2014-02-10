@@ -123,7 +123,6 @@ public class CardView extends ImageView implements OnTouchListener {
 	}
 	
 	public void updateGraphics() {
-		System.out.println("UPDATE GRAPHICS: "+getResourceString()+" -- Card is "+card.getTurned());
 		this.setImageResource(getImageResource(context, getResourceString()));
 	}
 	
