@@ -220,7 +220,7 @@ public class Game extends Activity {
 		deck.shuffle();
 		
 		this.playerHand = new CardSolitaireHand(this);
-		playerHand.dealCards(deck.draw(5));
+		playerHand.dealCards(deck.draw(0));
 		playerHand.setGhost();
 		addView(deck);		
 	}

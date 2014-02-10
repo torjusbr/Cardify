@@ -9,8 +9,6 @@ import java.net.Socket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.StrictMode;
-
 public class Sender implements Runnable {
 	
 	private GameMessage message;
@@ -22,10 +20,7 @@ public class Sender implements Runnable {
 	}
 	
 	private void send(GameMessage message, InetAddress receiver) {
-	    if (android.os.Build.VERSION.SDK_INT > 9) {
-	        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-	        StrictMode.setThreadPolicy(policy);
-	    }
+
 
 	    String messageToSend = serialize(message);
 	    
