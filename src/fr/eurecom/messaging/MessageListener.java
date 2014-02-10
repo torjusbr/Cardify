@@ -23,7 +23,7 @@ public class MessageListener extends Thread {
 		this.handler = handler;
 		this.socket = new ServerSocket(Config.PORT);
 		
-		pool = Executors.newFixedThreadPool(2);
+		pool = Executors.newCachedThreadPool();
 		Log.d("NewReceiver", "Listening Thread started");
 		this.running = true;
 	}
@@ -34,7 +34,6 @@ public class MessageListener extends Thread {
 			Log.e("MessageListener", "Thread running");
 			while (this.running && !isInterrupted()) {
 				Socket tempSocket = socket.accept();
-				Log.d("NewReceiver", "running ? " + this.running);
 				pool.execute(new MessageReceiver(tempSocket, handler));
 			}
 			Log.e("MessageListener", "Thread stopping listening");

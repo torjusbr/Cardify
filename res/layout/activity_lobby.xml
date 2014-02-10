@@ -13,36 +13,62 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Lobby" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
+        
         android:orientation="vertical" >
 
         <fr.eurecom.util.CustomTextView
+            android:id="@+id/connected_peers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/lobby_connected_peers"
-            android:textSize="20sp" />
+            android:textColor="#ffffff"
+            android:textSize="25sp" />
 
         <LinearLayout
-            android:id="@+id/lobby_connectedPeersList"
+            android:id="@+id/topButtons"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
+            android:layout_below="@id/connected_peers"
+            >
+            
+	        <fr.eurecom.util.CustomButton
+	            android:id="@+id/disconnect"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="disconnectFromDevices"
+	            android:text="@string/disconnect"
+	            android:textSize="15sp"
+	            android:visibility="invisible" />
+	
+	        <fr.eurecom.util.CustomButton
+	            android:id="@+id/lobby_startGameBtn"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:drawableRight="@drawable/ic_action_play"
+	            android:onClick="startGame"
+	            android:text="@string/startGame"
+	            android:visibility="invisible" />
+	        
+	        </LinearLayout>
 
-        <Button
-            android:id="@+id/lobby_startGameBtn"
+     	<fr.eurecom.util.CustomTextView
+            android:id="@+id/lobby_connectedPeersList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:layout_gravity="center_horizontal"
-            android:drawableLeft="@drawable/ic_action_play"
-            android:onClick="startGame"
-            android:visibility="invisible" />
-
-    </LinearLayout>
+            android:layout_below="@id/topButtons"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            />
+        
+	</RelativeLayout>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -51,11 +77,12 @@
         android:orientation="vertical" >
 
         <fr.eurecom.util.CustomTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/lobby_available_peers"
-                android:textSize="20sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/lobby_available_peers"
+            android:textColor="#ffffff"
+            android:textSize="25sp" />
 
         <LinearLayout
             android:id="@+id/lobby_availablePeersList"
@@ -67,11 +94,10 @@
         <Button
             android:id="@+id/lobby_refreshPeersBtn"
             android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/ic_action_refresh"
             android:onClick="refreshPeers" />
-
     </LinearLayout>
 
 </LinearLayout>

@@ -3,6 +3,7 @@ package fr.eurecom.cardify;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,6 +36,8 @@ import fr.eurecom.cardify.R.drawable;
 import fr.eurecom.messaging.Client;
 import fr.eurecom.messaging.PeerListener;
 import fr.eurecom.messaging.WiFiDirectBroadcastReceiver;
+import fr.eurecom.util.CustomButton;
+import fr.eurecom.util.CustomTextView;
 
 public class Lobby extends Activity implements ConnectionInfoListener {
 
@@ -85,7 +88,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 
 	public void resetPeerList() {
-		((LinearLayout) findViewById(R.id.lobby_connectedPeersList)).removeAllViews();
+		((CustomTextView) findViewById(R.id.lobby_connectedPeersList)).setText("");
 		((LinearLayout) findViewById(R.id.lobby_availablePeersList)).removeAllViews();
 	}
 	
@@ -111,7 +114,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void addToListOfAvailablePeers(final WifiP2pDevice device) {
-		Button view = new Button(this);
+		CustomButton view = new CustomButton(this);
 		view.setText(device.deviceName);
 		view.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -125,20 +128,22 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void addToListOfConnectedPeers(final WifiP2pDevice device) {
-		
-		
-		Button view = new Button(this);
-		view.setText(String.format("Disconnect from %s", device.deviceName));
-		view.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				client.publishDisconnect();
-				disconnectFromDevices();
-				resetLobby();
-			}
-		});
-		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-		view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_remove,0);
-		((ViewGroup) findViewById(R.id.lobby_connectedPeersList)).addView(view);
+		CustomTextView view = (CustomTextView) findViewById(R.id.lobby_connectedPeersList);
+		view.append("- " + device.deviceName + "\n");
+		CustomButton btn = (CustomButton) findViewById(R.id.disconnect);
+		btn.setVisibility(Button.VISIBLE);
+//		CustomButton view = new CustomButton(this);
+//		view.setText(String.format("Disconnect from %s", device.deviceName));
+//		view.setOnClickListener(new View.OnClickListener() {
+//			public void onClick(View view) {
+//				client.publishDisconnect();
+//				disconnectFromDevices();
+//				resetLobby();
+//			}
+//		});
+//		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+//		view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_remove,0);
+//		((ViewGroup) findViewById(R.id.lobby_connectedPeersList)).addView(view);
 	}
 		
 	private void connectToDevice(WifiP2pDevice device) {
@@ -186,6 +191,10 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	private void disconnectFromDevices() {
 		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
+	}
+	
+	public void disconnectFromDevices(View v) {
+		disconnectFromDevices();
 	}
 	
 
@@ -333,6 +342,10 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
 		startButton.setVisibility(Button.INVISIBLE);
 	}
+	public void removeDisconnectButton() {
+		Button disconnect = (Button) findViewById(R.id.disconnect);
+		disconnect.setVisibility(Button.INVISIBLE);
+	}
 	
 	private void removeClient() {
 		this.client = null;
@@ -354,6 +367,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 
 		removeClient();
 		removeStartButton();
+		removeDisconnectButton();
 		resetPeerList();
 		peers = new WifiP2pDeviceList();
 		dismissProgressDialog();
@@ -373,6 +387,26 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private void cancelConnect() {
 		mManager.cancelConnect(mChannel, new LobbyActionListener("Failed cancel connect", "Cancelled connect"));
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+	}
+	
+	public void deviceDisconnected() {
+		resetLobby();
+	}
+	public void setHostDeviceName(String[] allDeviceNames) {
+		for (String deviceName : allDeviceNames) {
+			if (!deviceNames.contains(deviceName)) {
+				thisDeviceName = deviceName;
+			}
+		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if (client != null) {
+			disconnectFromDevices();
+			resetLobby();
+		}
+		super.onBackPressed();
 	}
 		
 	private class LobbyActionListener implements ActionListener {
@@ -395,14 +429,4 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		}
 	}
 	
-	public void deviceDisconnected() {
-		resetLobby();
-	}
-	public void setHostDeviceName(String[] allDeviceNames) {
-		for (String deviceName : allDeviceNames) {
-			if (!deviceNames.contains(deviceName)) {
-				thisDeviceName = deviceName;
-			}
-		}
-	}
 }

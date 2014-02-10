@@ -16,9 +16,11 @@ public class CardView extends ImageView implements OnTouchListener{
 	private Point anchorPoint = new Point();
 	private CardPlayerHand playerHand;
 	private Card card;
+	private long lastPositionUpdate;
 	
 	public CardView(Context context) {
 		super(context);
+		this.lastPositionUpdate = System.currentTimeMillis();
 	}
 	
 	public CardView(Context context, CardPlayerHand playerHand) {
@@ -26,6 +28,7 @@ public class CardView extends ImageView implements OnTouchListener{
 		this.context = context;
 		this.playerHand = playerHand;
 		this.setOnTouchListener(new GhostTouchListener());
+		this.lastPositionUpdate = System.currentTimeMillis();
 	}
 	
 	public CardView(Context context, Card card, CardPlayerHand playerHand) {
@@ -36,6 +39,7 @@ public class CardView extends ImageView implements OnTouchListener{
 		
 		this.setOnTouchListener(this);
 		this.updateGraphics();
+		this.lastPositionUpdate = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -81,7 +85,11 @@ public class CardView extends ImageView implements OnTouchListener{
                 }
                 
                 playerHand.moveCard(this);
-                playerHand.broadcastPositionUpdate(this);
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastPositionUpdate > 40) { 
+                	playerHand.broadcastPositionUpdate(this);
+                	lastPositionUpdate = currentTime;
+                }
                 return true;
 				
 			case MotionEvent.ACTION_UP:

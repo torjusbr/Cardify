@@ -3,6 +3,7 @@ package fr.eurecom.util;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -170,7 +171,9 @@ public class CardPlayerHand {
 		if (view != null) {
 			view.setX(displaySize.x * x);
 			view.setY(displaySize.y * y);
+			view.bringToFront();
 		}
+		
 	}
 	
 	public void blindDealCards(String[] cardStrings){

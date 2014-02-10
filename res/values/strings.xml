@@ -27,5 +27,7 @@ This app was made as part of the MobServ course at EURECOM, and the source code 
 \n\nVectorized Playing Cards 1.3-\nhttp://code.google.com/p/vectorized-playing-cards/
 \nCopyright 2011 - Chris Aguilar
 \nLicensed under LGPL 3 - www.gnu.org/copyleft/lesser.html</string>
+	<string name="disconnect">Disconnect</string>
+	<string name="startGame">Start Game</string>
     
 </resources>

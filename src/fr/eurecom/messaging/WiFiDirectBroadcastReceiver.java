@@ -2,8 +2,11 @@ package fr.eurecom.messaging;
 
 
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -42,7 +45,15 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 	        	Toast.makeText(context, "WiFi Direct is enabled :)", Toast.LENGTH_LONG).show();
 	        } else {
 	        	Log.d("WifiDirectBroadcastReciever.onRecieve()", "wifi p2p is not enabled");
-	        	Toast.makeText(context, "WiFi direct is not enabled. Turn on WiFi Direct!", Toast.LENGTH_LONG).show();
+	        	new AlertDialog.Builder(context)
+				.setTitle("WiFi direct is not enabled")
+				.setMessage("Enable WiFi Direct to play multiplayer game")
+				.setPositiveButton(android.R.string.ok, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						lobby.startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+					}
+				}).create().show();
 	        }
 		} else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
 			Log.d("WifiDirectBroadcastReciever.onRecieve()", "peers changed");

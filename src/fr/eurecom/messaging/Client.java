@@ -19,11 +19,11 @@ public class Client implements Handler.Callback {
 
 	private Activity activity;
 	private Set<InetAddress> receivers;
-	private Sender sender;
 	private boolean isHost;
 	private int peersInitialized;
 	private MessageListener receivingThread;
 	private Handler handler;
+	private Sender sender;
 	
 	public Client(Activity activity) {
 		this.activity = activity;
@@ -34,9 +34,9 @@ public class Client implements Handler.Callback {
 		} catch (IOException e) {
 			Log.e("Client", "Constructor error: __" + e.getMessage());
 		}
-
+		sender = new Sender();
+		
 		receivers = new HashSet<InetAddress>();
-		this.sender = new Sender();
 		this.isHost = false;
 		this.peersInitialized = 0;
 	}
@@ -116,7 +116,6 @@ public class Client implements Handler.Callback {
 			Log.e("Client", "Sending cards [" + cards + "] to " + receiver);
 			
 			sendMessage(message, receiver);
-//			this.sender.send(message, receiver);
 		} 
 	}
 	
@@ -132,9 +131,8 @@ public class Client implements Handler.Callback {
 			cardStringBuilder.append(";");
 		}
 		for (InetAddress receiver : receivers) {
-			GameMessage message = new GameMessage(Action.REMAINING_DECK,cardStringBuilder.toString());
+			GameMessage message = new GameMessage(Action.REMAINING_DECK, cardStringBuilder.toString());
 			sendMessage(message, receiver);
-//			this.sender.send(message, receiver);
 		}
 	}
 	
@@ -142,24 +140,11 @@ public class Client implements Handler.Callback {
 		sendSingleMessage(Action.DEVICE_NAME, name, target);
 	}
 	
-	private void sendMessage(Action what, String about, String deviceName) {
-		GameMessage message = new GameMessage(what, about, deviceName);
-		for (InetAddress receiver : receivers){
-			this.sender.send(message, receiver);
-		}
-	}
 	
-	
-	
-	private void sendSingleMessage(Action what, String about, InetAddress receiver) {
-		GameMessage message = new GameMessage(what, about);
-		this.sender.send(message, receiver);
-	}
 	
 	private void broadcastChange(GameMessage message){
 		for (InetAddress receiver : receivers){
 			if (!receiver.equals(message.getOriginatorAddr())){
-//				this.sender.send(message, receiver);
 				sendMessage(message, receiver);
 			}
 		}
@@ -387,30 +372,45 @@ public class Client implements Handler.Callback {
 	@Override
 	public boolean handleMessage(Message msg) {
 		if (msg.what == Config.GAME_MESSAGE_INT) {
-			Log.d("Client", "Got message ");
 			GameMessage gameMessage = (GameMessage) msg.obj;
-			Log.d("Client", "Message is " + gameMessage.about);
 			handleGameMessage(gameMessage);
+			return true;
 		}
-		return true;
+		return false;
 	}
+	
 	
 	private void sendMessage(GameMessage message, InetAddress receiver) {
-		new Sender().execute(message, receiver);
+//		sender.execute(message, receiver);
+		sender.send(message, receiver);
 	}
 	
-	
-	private void sendMessage(Action what, String about) {
-		GameMessage message = new GameMessage(what, about);
-		for (InetAddress receiver : receivers){
-			sendMessage(message, receiver);
-		}
-	}
-
 	private void sendMessageFromUIThread(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
-			new Sender().send(message, receiver);
+//			new Sender().send(message, receiver);
+			sender.send(message, receiver);
+		}
+	}
+	
+	private void sendMessage(Action what, String about, String deviceName) {
+		GameMessage message = new GameMessage(what, about, deviceName);
+		for (InetAddress receiver : receivers){
+//			sendMessage(message, receiver);
+			sender.send(message, receiver);
+		}
+	}
+	private void sendSingleMessage(Action what, String about, InetAddress receiver) {
+		GameMessage message = new GameMessage(what, about);
+//		sendMessage(message, receiver);
+		sender.send(message, receiver);
+	}
+
+	private void sendMessage(Action what, String about) {
+		GameMessage message = new GameMessage(what, about);
+		for (InetAddress receiver : receivers){
+//			sendMessage(message, receiver);
+			sender.send(message, receiver);
 		}
 	}
 }

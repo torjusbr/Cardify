@@ -108,7 +108,7 @@ public class Game extends Activity {
 		}
 	}
 	
-	public void disconnectFromDevices() {
+	public void disconnectFromDevices() {	
 		mManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
 			
 			@Override

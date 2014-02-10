@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.Button;
 import fr.eurecom.cardify.R;
 
@@ -15,20 +14,21 @@ public class CustomButton extends Button {
     
     public CustomButton(Context context) {
         super(context);
+        parseAttributes(context);
     }
 
     public CustomButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        parseAttributes(context, attrs); 
+        parseAttributes(context); 
     }
 
     public CustomButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        parseAttributes(context, attrs);
+        parseAttributes(context);
     }
     
-	private void parseAttributes(Context ctx, AttributeSet attrs){
-    	TypedArray values = ctx.obtainStyledAttributes(attrs, R.styleable.CustomButton);
+	private void parseAttributes(Context ctx){
+    	TypedArray values = ctx.obtainStyledAttributes(R.styleable.CustomButton);
 
         //The value 0 is a default, but shouldn't ever be used since the attr is an enum
         int typeface = values.getInt(R.styleable.CustomButton_typeface, 0);
