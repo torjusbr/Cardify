@@ -221,6 +221,9 @@ public class CardPlayerHand {
 	}
 	
 	public void blindNewCards(String[] cardStrings) {
+		final SpannableStringBuilder sb = new SpannableStringBuilder(String.format("The deck was re-dealt with %s cards each", cardStrings.length));
+		sb.append((Spannable) game.getMessageStream().getText());
+		game.getMessageStream().setText(sb);
 		this.reDealCards(getCardListFromStrings(cardStrings));
 	}
 	
