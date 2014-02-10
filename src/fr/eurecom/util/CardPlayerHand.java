@@ -11,7 +11,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
 import fr.eurecom.cardify.Game;
 import fr.eurecom.cardify.R;
@@ -44,6 +43,47 @@ public class CardPlayerHand {
 		}
 		Collections.sort(cardStack, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
 		stackCards();
+	}
+	
+	public void reDealCards(List<Card> cards){
+		for (CardView v : cardStack) {
+			removeCardGraphics(v);
+		}
+		cardStack.clear();
+		for (CardView v : cardPublic) {
+			removeCardGraphics(v);
+		}
+		cardPublic.clear();
+		
+		for (Card card : cards){
+			CardView view = addCardGraphics(card);
+			cardStack.add(view);
+		}
+		Collections.sort(cardStack, new CardComparator(CardSortingRule.S_H_D_C_ACE_HIGH));
+		stackCards();
+	}
+	
+	public void redeal(int numberOfCards) {
+		reDealCards(game.getDeck().draw(numberOfCards));
+		game.getClient().pushNewCards(game.getDeck(), numberOfCards);
+	}
+	
+	public void shuffle() {
+		for (CardView v : cardPublic) {
+			game.getDeck().addCard(v.getCard());
+			removeCardGraphics(v);
+		}
+		game.getDeck().shuffle();
+		game.getClient().pushShuffledDeck(game.getDeck());
+	}
+	
+	public void blindShuffleDeck(String[] cards) {
+		game.getDeck().clear();
+		for (CardView v : cardPublic) {
+			game.getDeck().addCard(v.getCard());
+			removeCardGraphics(v);
+		}
+		game.getDeck().shuffle();
 	}
 	
 	protected void addToDeckFromStack(CardView view) {
@@ -176,8 +216,12 @@ public class CardPlayerHand {
 		
 	}
 	
-	public void blindDealCards(String[] cardStrings){
+	public void blindDealCards(String[] cardStrings) {
 		this.dealCards(getCardListFromStrings(cardStrings));
+	}
+	
+	public void blindNewCards(String[] cardStrings) {
+		this.reDealCards(getCardListFromStrings(cardStrings));
 	}
 	
 	public void blindAddDeck(String[] cardStrings) {
@@ -306,7 +350,6 @@ public class CardPlayerHand {
 	}
 	
 	public void moveCard(CardView view) {
-		//TODO: Possibly add color filter to stack zone
 		if (inCardDeck(view.getX(), view.getY())) {
 			game.getDeck().toggleHighlight(true);
 		} else {
@@ -401,16 +444,6 @@ public class CardPlayerHand {
 		game.removeView(view);
 		view = null;
 		System.gc();
-	}
-	
-	//TODO: Remove?
-	private void animateCardIntoView(CardView view) {
-		view.setX(displaySize.x/2 - view.getWidth()/2);
-		view.setY(0 - view.getHeight());
-		
-		int yTranslation = (displaySize.y/2 - view.getHeight());
-		
-		view.animate().translationY(yTranslation).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
 	}
 	
 	public void setGhost() {

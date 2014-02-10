@@ -2,7 +2,6 @@ package fr.eurecom.cardify;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -20,7 +19,11 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fr.eurecom.messaging.Client;
@@ -33,7 +36,6 @@ public class Game extends Activity {
 
 	private CardDeck deck;
 	private CardPlayerHand playerHand;
-	private CardSolitaireHand solitaireHand;
 	private Client client;
 	private TextView messageStream;
 	private ProgressDialog progressDialog;
@@ -43,6 +45,7 @@ public class Game extends Activity {
 	private WifiP2pManager mManager;
 	private Channel mChannel;
 	private String deviceName;
+	private boolean isHost;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +57,19 @@ public class Game extends Activity {
 		screenSize = new Point();
 		display.getSize(screenSize);
 		
+		isSolitaire = getIntent().getExtras().getBoolean("isSolitaire");
+		isHost = getIntent().getExtras().getBoolean("isHost");
+		
+		if(getResources().getBoolean(R.bool.isTablet)) {
+			this.addButtonsOnTablet();
+		}
+		
 		//Keeps screen on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
 		progressDialog = new ProgressDialog(this);
 		
-		if((Boolean) getIntent().getExtras().get("isSolitaire")) {
+		if(isSolitaire) {
 			isSolitaire = true;
 			initSolitaire();
 		} else {
@@ -68,7 +78,6 @@ public class Game extends Activity {
 			mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 			mChannel = mManager.initialize(this, getMainLooper(), null);
 			String[] receiverAddresses = getIntent().getExtras().get("receivers").toString().split(",");
-			Boolean isHost = getIntent().getExtras().getBoolean("isHost");
 			deviceName = getIntent().getExtras().get("deviceName").toString();
 			
 			if (!isHost) {
@@ -123,6 +132,54 @@ public class Game extends Activity {
 		});
 	}
 	
+	private int sort = 0;
+	private void addButtonsOnTablet() {
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.rootGameLayout);
+		LinearLayout btnLayout = new LinearLayout(this);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		btnLayout.setLayoutParams(params);
+		layout.addView(btnLayout);
+		
+		Button sortBtn = new Button(this);
+		sortBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		sortBtn.setText("Sort");
+		sortBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				playerHand.sortCards(CardSortingRule.getEnumWithInt(sort));
+				playerHand.stackCards();
+				sort = (sort + 1) % 4;
+			}
+		});
+		btnLayout.addView(sortBtn);
+		
+		if (isHost || isSolitaire) {
+			Button redealBtn = new Button(this);
+			redealBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			redealBtn.setText("Re-Deal");
+			redealBtn.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					redeal();
+				}
+			});
+			btnLayout.addView(redealBtn);
+			/*
+			Button shuffleBtn = new Button(this);
+			shuffleBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			shuffleBtn.setText("Shuffle Deck");
+			shuffleBtn.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					playerHand.shuffle();
+				}
+			});
+			btnLayout.addView(shuffleBtn);
+			*/
+		}
+	}
+	
 	private void showProgressDialog(String title, String message) {
 		this.progressDialog.setTitle(title);
 		this.progressDialog.setMessage(message);
@@ -145,12 +202,10 @@ public class Game extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.game, menu);
 		return true;
 	}
 	
-	// Set up game if the this.client is host
 	private void initGame() {
 		this.deck = new CardDeck(this);
 		deck.shuffle();
@@ -167,9 +222,9 @@ public class Game extends Activity {
 		this.deck = new CardDeck(this);
 		deck.shuffle();
 		
-		this.solitaireHand = new CardSolitaireHand(this);
-		solitaireHand.dealCards(deck.draw(5));
-		solitaireHand.setGhost();
+		this.playerHand = new CardSolitaireHand(this);
+		playerHand.dealCards(deck.draw(5));
+		playerHand.setGhost();
 		addView(deck);		
 	}
 	
@@ -201,6 +256,7 @@ public class Game extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		System.out.println("MENUITEM: "+item.getItemId()+"-"+item.getTitle());
 		switch (item.getItemId()) {
 			case R.id.NO_SUIT_ACE_HIGH:
 				playerHand.sortCards(CardSortingRule.NO_SUIT_ACE_HIGH);
@@ -214,9 +270,46 @@ public class Game extends Activity {
 			case R.id.S_D_H_C_ACE_LOW:
 				playerHand.sortCards(CardSortingRule.S_H_D_C_ACE_LOW);
 				return true;
+			case R.id.settings_redeal:
+				if (isHost || isSolitaire) redeal();
+				return true;
+			/*case R.id.settings_shuffledeck:
+				if (isHost || isSolitaire) playerHand.shuffle();
+				return true; */
 			default:
-				return super.onOptionsItemSelected(item);
+				System.out.println("OTHER");
+				return false;
 		}
+	}
+	
+	private void redeal() {
+		int maxHandSize = isSolitaire ? 52 : (int) Math.floor(52/(client.getReceivers().size()+1));
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("Number of cards: ");
+		
+		final NumberPicker np = new NumberPicker(this);
+		String[] numbers = new String[maxHandSize+1];
+		for (int i = 1; i <= maxHandSize; i++) {
+			numbers[i] = Integer.toString(i);
+		}
+		np.setMinValue(1);
+		np.setMaxValue(maxHandSize);
+		np.setWrapSelectorWheel(false);
+		np.setDisplayedValues(numbers);
+		np.setValue(0);
+
+		alert.setPositiveButton("Deal",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						deck.reloadDeck();
+						deck.shuffle();
+						playerHand.redeal(np.getValue());
+					}
+				});
+		alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener() { 
+			public void onClick(DialogInterface dialog, int whichButton) {} });
+		alert.setView(np);
+		alert.show();
 	}
 	
 	public void exitGame() {

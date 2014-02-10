@@ -17,5 +17,7 @@
             
         </menu>
     </item>
+    <item android:id="@+id/settings_redeal" android:title="@string/settings_redeal"></item>
+    <group android:id="@+id/group1"></group>
 
 </menu>

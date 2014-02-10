@@ -132,18 +132,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		view.append("- " + device.deviceName + "\n");
 		CustomButton btn = (CustomButton) findViewById(R.id.disconnect);
 		btn.setVisibility(Button.VISIBLE);
-//		CustomButton view = new CustomButton(this);
-//		view.setText(String.format("Disconnect from %s", device.deviceName));
-//		view.setOnClickListener(new View.OnClickListener() {
-//			public void onClick(View view) {
-//				client.publishDisconnect();
-//				disconnectFromDevices();
-//				resetLobby();
-//			}
-//		});
-//		view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-//		view.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_remove,0);
-//		((ViewGroup) findViewById(R.id.lobby_connectedPeersList)).addView(view);
 	}
 		
 	private void connectToDevice(WifiP2pDevice device) {
