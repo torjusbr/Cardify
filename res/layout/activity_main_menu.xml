@@ -49,26 +49,8 @@
         android:layout_alignLeft="@+id/solitaireButton"
         android:layout_alignRight="@+id/solitaireButton"
         android:layout_below="@+id/solitaireButton"
-        android:text="@string/menu_help"/>
-	
-	<fr.eurecom.util.CustomButton
-        android:id="@+id/shopButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/helpButton"
-        android:layout_alignRight="@+id/helpButton"
-        android:layout_below="@+id/helpButton"
-        android:text="@string/menu_shop"/>
-
-    <Button
-        android:id="@+id/aboutButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/ic_action_about"
-        android:onClick="showAbout" />
+        android:text="@string/menu_help"
+        android:onClick="showAbout"/>
 
 
 </RelativeLayout>
