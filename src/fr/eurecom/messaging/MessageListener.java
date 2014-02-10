@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import android.os.Handler;
 
@@ -28,16 +27,18 @@ public class MessageListener extends Thread {
 	@Override
 	public void run() {
 		try {
-			while (this.running && !isInterrupted()) {
+			while (this.running && !Thread.currentThread().isInterrupted()) {
 				Socket tempSocket = socket.accept();
-				pool.execute(new MessageReceiver(tempSocket, handler));
+				if (!Thread.currentThread().isInterrupted()) {
+					pool.execute(new MessageReceiver(tempSocket, handler));
+				}
 			}
 			socket.close();
 			getThreadGroup().interrupt();
-			shutdownAndAwaitTermination(pool);
+			shutdownThreads(pool);
 		} catch (IOException ex) {
 			getThreadGroup().interrupt();
-			shutdownAndAwaitTermination(pool);
+			shutdownThreads(pool);
 		}
 	}
 	
@@ -49,28 +50,14 @@ public class MessageListener extends Thread {
 		try {
 			this.socket.close();
 			socket.close();
-			
 		} catch (IOException e) {
 		} catch (NullPointerException e) {
 		}
 	}
 	
 
-	private void shutdownAndAwaitTermination(ExecutorService pool) {
+	private void shutdownThreads(ExecutorService pool) {
 		pool.shutdown(); // Disable new tasks from being submitted
-		try {
-			// Wait a while for existing tasks to terminate
-			if (!pool.awaitTermination(50, TimeUnit.MILLISECONDS)) {
-				pool.shutdownNow(); // Cancel currently executing tasks
-				// Wait a while for tasks to respond to being cancelled
-				if (!pool.awaitTermination(50, TimeUnit.MILLISECONDS))
-					System.err.println("Pool did not terminate");
-			}
-		} catch (InterruptedException ie) {
-			// (Re-)Cancel if current thread also interrupted
-			pool.shutdownNow();
-			// Preserve interrupt status
-			Thread.currentThread().interrupt();
-		}
+		pool.shutdownNow(); // Cancel currently executing tasks
 	}
 }

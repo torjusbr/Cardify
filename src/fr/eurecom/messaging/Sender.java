@@ -5,14 +5,23 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.os.AsyncTask;
+
 import android.os.StrictMode;
 
-public class Sender extends AsyncTask<Object, Void, Void> {
+public class Sender implements Runnable {
 	
-	public void send(GameMessage message, InetAddress receiver) {
+	private GameMessage message;
+	private InetAddress receiver;
+
+	public Sender(GameMessage message, InetAddress receiver) {
+		this.message = message;
+		this.receiver = receiver;
+	}
+	
+	private void send(GameMessage message, InetAddress receiver) {
 	    if (android.os.Build.VERSION.SDK_INT > 9) {
 	        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 	        StrictMode.setThreadPolicy(policy);
@@ -21,6 +30,7 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 	    String messageToSend = serialize(message);
 	    
 	    if (messageToSend.length() == 0) return;
+	    if (Thread.currentThread().isInterrupted()) return;
 		Socket socket = new Socket();
 		try {
 			socket.bind(null);
@@ -61,14 +71,8 @@ public class Sender extends AsyncTask<Object, Void, Void> {
 	}
 
 	@Override
-	protected Void doInBackground(Object... objects) {
-		// Objects[0] is gameMessage, objects[1] is destination address
-		GameMessage message = (GameMessage) objects[0];
-		InetAddress receiver = (InetAddress) objects[1];
-		if (message != null && receiver != null) {
-			send(message, receiver);
-		}
-		return null;
+	public void run() {
+		if (!Thread.currentThread().isInterrupted()) send(message, receiver);
 	}
 	
 }

@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.os.Handler;
@@ -22,7 +24,8 @@ public class Client implements Handler.Callback {
 	private int peersInitialized;
 	private MessageListener receivingThread;
 	private Handler handler;
-	private Sender sender;
+//	private Sender sender;
+	private final ExecutorService pool;
 	
 	public Client(Activity activity) {
 		this.activity = activity;
@@ -32,7 +35,9 @@ public class Client implements Handler.Callback {
 			receivingThread.start();
 		} catch (IOException e) {
 		}
-		sender = new Sender();
+//		sender = new Sender();
+		//Trololol
+		pool = Executors.newCachedThreadPool();
 		
 		receivers = new HashSet<InetAddress>();
 		this.isHost = false;
@@ -46,6 +51,8 @@ public class Client implements Handler.Callback {
 	
 	public void disconnect(){
 		receivingThread.stopThread();
+		pool.shutdown();
+		pool.shutdownNow();
 	}
 	
 	
@@ -402,31 +409,32 @@ public class Client implements Handler.Callback {
 	
 	
 	private void sendMessage(GameMessage message, InetAddress receiver) {
-		sender.send(message, receiver);
+//		sender.send(message, receiver);
+		pool.execute(new Sender(message, receiver));
 	}
 	
 	private void sendMessageFromUIThread(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
-			sender.send(message, receiver);
+			sendMessage(message, receiver);
 		}
 	}
 	
 	private void sendMessage(Action what, String about, String deviceName) {
 		GameMessage message = new GameMessage(what, about, deviceName);
 		for (InetAddress receiver : receivers){
-			sender.send(message, receiver);
+			sendMessage(message, receiver);
 		}
 	}
 	private void sendSingleMessage(Action what, String about, InetAddress receiver) {
 		GameMessage message = new GameMessage(what, about);
-		sender.send(message, receiver);
+		sendMessage(message, receiver);
 	}
 
 	private void sendMessage(Action what, String about) {
 		GameMessage message = new GameMessage(what, about);
 		for (InetAddress receiver : receivers){
-			sender.send(message, receiver);
+			sendMessage(message, receiver);
 		}
 	}
 }

@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -22,15 +24,23 @@ public class MessageReceiver implements Runnable {
 
 	public void run() {
 		try {
+			if (Thread.currentThread().isInterrupted()) {
+				sender.close();
+				return;
+			}
 			BufferedReader in = new BufferedReader(new InputStreamReader(sender.getInputStream()));
 
 			json = new JSONObject(in.readLine());
-
+			
+			if (Thread.currentThread().isInterrupted()) {
+				sender.close();
+				return;
+			}
 			receiveMessage(json, sender.getInetAddress());
-			
+
 			sender.close();
-		} catch (Exception e) {
 			
+		} catch (Exception e) {
 		}
 	}
 	
@@ -42,6 +52,8 @@ public class MessageReceiver implements Runnable {
 			GameMessage gameMessage = new GameMessage(action, subject, name);
 			gameMessage.setOriginatorAddr(sender);
 			
+			if (Thread.currentThread().isInterrupted()) return;
+			
 			handleThreadMessage(gameMessage, Config.GAME_MESSAGE_INT);
 		} catch (JSONException e){
 		}
@@ -51,4 +63,5 @@ public class MessageReceiver implements Runnable {
 		Message completeMessage = handler.obtainMessage(what, gameMessage);
 		completeMessage.sendToTarget();
 	}
+	
 }
