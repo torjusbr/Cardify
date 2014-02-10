@@ -30,12 +30,13 @@
         
         <TextView
          android:id="@+id/messageStream"
+         android:scrollbars="vertical"
          android:layout_width="0dp"
          android:layout_height="match_parent"
          android:layout_marginTop="10dp"
          android:layout_marginLeft="10dp"
          android:layout_weight="0.6"
-         android:scrollbars="vertical" />
+          />
         
         <View 
 	        android:layout_width="0dp"

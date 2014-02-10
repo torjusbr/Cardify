@@ -86,7 +86,8 @@ public class Game extends Activity {
 			}
 			
 			messageStream = (TextView) findViewById(R.id.messageStream);
-			messageStream.setMovementMethod(new ScrollingMovementMethod());
+//			messageStream.setMovementMethod(new ScrollingMovementMethod());
+			messageStream.setMovementMethod(ScrollingMovementMethod.getInstance());
 			// If client, we receive cards from host at a later stage
 			deck = null;
 			playerHand = new CardPlayerHand(this);

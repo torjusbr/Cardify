@@ -433,7 +433,10 @@ public class CardPlayerHand {
 			final ForegroundColorSpan fcs = new ForegroundColorSpan((c.getSuit() == 's' || c.getSuit() == 'c') ? Color.rgb(0, 0, 0) : Color.rgb(184, 59, 50)); 
 			sb.setSpan(fcs, start.length()+1, start.length()+1+value.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 		}
-		sb.append((Spannable) game.getMessageStream().getText().subSequence(0, Math.min(game.getMessageStream().getText().length(), 500)));
+		
+		//If there are more than 25 lines, clip the last line
+		Spannable oldMessages = game.getMessageStream().getLineCount() > 25 ? (Spannable) game.getMessageStream().getText().subSequence(0, game.getMessageStream().getText().toString().lastIndexOf("\n")) : (Spannable) game.getMessageStream().getText();
+		sb.append(oldMessages);
 		game.getMessageStream().setText(sb);
 	}
 	
