@@ -24,7 +24,6 @@ public class Client implements Handler.Callback {
 	private int peersInitialized;
 	private MessageListener receivingThread;
 	private Handler handler;
-//	private Sender sender;
 	private final ExecutorService pool;
 	
 	public Client(Activity activity) {
@@ -35,8 +34,7 @@ public class Client implements Handler.Callback {
 			receivingThread.start();
 		} catch (IOException e) {
 		}
-//		sender = new Sender();
-		//Trololol
+
 		pool = Executors.newCachedThreadPool();
 		
 		receivers = new HashSet<InetAddress>();
@@ -409,7 +407,6 @@ public class Client implements Handler.Callback {
 	
 	
 	private void sendMessage(GameMessage message, InetAddress receiver) {
-//		sender.send(message, receiver);
 		pool.execute(new Sender(message, receiver));
 	}
 	
