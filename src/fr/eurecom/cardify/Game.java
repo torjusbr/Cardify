@@ -289,14 +289,15 @@ public class Game extends Activity {
 		
 		final NumberPicker np = new NumberPicker(this);
 		String[] numbers = new String[maxHandSize+1];
-		for (int i = 1; i <= maxHandSize; i++) {
-			numbers[i] = Integer.toString(i);
+		for (int i = 0; i <= maxHandSize; i++) {
+			numbers[i] = Integer.toString(i+1);
 		}
+		System.out.println("NUMBERS: "+numbers.toString());
 		np.setMinValue(1);
 		np.setMaxValue(maxHandSize);
 		np.setWrapSelectorWheel(false);
 		np.setDisplayedValues(numbers);
-		np.setValue(0);
+		np.setValue(1);
 
 		alert.setPositiveButton("Deal",
 				new DialogInterface.OnClickListener() {
