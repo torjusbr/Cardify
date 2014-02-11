@@ -92,8 +92,8 @@
 
         <Button
             android:id="@+id/lobby_refreshPeersBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/ic_action_refresh"
             android:onClick="refreshPeers" />

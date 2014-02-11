@@ -20,8 +20,6 @@ public class Sender implements Runnable {
 	}
 	
 	private void send(GameMessage message, InetAddress receiver) {
-
-
 	    String messageToSend = serialize(message);
 	    
 	    if (messageToSend.length() == 0) return;
@@ -34,7 +32,6 @@ public class Sender implements Runnable {
 			OutputStream outputStream = socket.getOutputStream();
 			outputStream.write(messageToSend.getBytes());
 			outputStream.close();
-			
 		} catch (IOException e) {
 		} 
 		
@@ -56,8 +53,12 @@ public class Sender implements Runnable {
 			json.put("what", message.what.ordinal());
 			json.put("about", message.about);
 			String name;
-			if (message.getOriginatorName() == null || message.getOriginatorName().length() == 0) name = "0";
-			else name = message.getOriginatorName();
+			if (message.getOriginatorName() == null || message.getOriginatorName().length() == 0) {
+				name = "0";
+			}
+			else {
+				name = message.getOriginatorName();
+			}
 			json.put("name", name);
 		} catch (JSONException e) {
 			e.printStackTrace();

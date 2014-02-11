@@ -279,14 +279,7 @@ public class Client implements Handler.Callback {
 	}
 	
 	private void handleInGameDisconnect(GameMessage message) {
-		if (isHost) {
-			receivers.remove(message.getOriginatorAddr());
-			if (receivers.size() == 0) {
-				((Game) activity).exitGame();
-			}
-		} else {
-			((Game) activity).exitGame();
-		}
+		((Game) activity).exitGame();
 	}
 	
 	private void handlePreGameDisconnect(GameMessage message) {

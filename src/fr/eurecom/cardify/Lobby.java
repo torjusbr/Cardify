@@ -23,6 +23,7 @@ import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +99,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	private void printPeers() {
+		resetPeerList();
 		((Button) findViewById(R.id.lobby_refreshPeersBtn)).clearAnimation();
 		for (WifiP2pDevice device : peers.getDeviceList()) {
 			if (device.status == WifiP2pDevice.CONNECTED) {
@@ -161,7 +163,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	        public void run() {                
 	            if (d.isShowing()) { 
 		        	d.dismiss();  
-		            cancelConnect();
 	            }
 	        }
 	    }, time); 
@@ -217,7 +218,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	}
 	
 	public void refreshPeers(View view) {
-		resetPeerList();
+//		resetPeerList();
 		findPeers();
 		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely));
 	}
@@ -333,7 +334,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	private void disconnectClient() {
 		if (this.client != null) {
 			client.disconnect();
-		} else {
 		}
 	}
 	
@@ -359,11 +359,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		showProgressDialog("Waiting for host", "The host must start the game");
 	}
 	
-	private void cancelConnect() {
-		mManager.cancelConnect(mChannel, new LobbyActionListener("Failed cancel connect", "Cancelled connect"));
-		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-	}
-	
 	public void deviceDisconnected() {
 		resetLobby();
 	}
@@ -386,15 +381,21 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 	private class LobbyActionListener implements ActionListener {
 		
+		String failureMessage, successMessage;
+		
 		private LobbyActionListener(String failureMessage, String successMessage) {
+			this.failureMessage = failureMessage;
+			this.successMessage = successMessage;
 		}
 		
 		@Override
 		public void onFailure(int reason) {
+			Log.e("Lobby", failureMessage);
 		}
 
 		@Override
 		public void onSuccess() {
+			Log.e("Lobby", successMessage);
 		}
 	}
 	

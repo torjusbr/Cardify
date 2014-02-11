@@ -319,7 +319,6 @@ public class Game extends Activity {
 		client.publishDisconnect();
 		client.disconnect();
 		disconnectFromDevices();
-		finish();
 		startActivity(new Intent(Game.this, MainMenu.class));
 	}
 	
@@ -353,6 +352,7 @@ public class Game extends Activity {
 	
 	@Override
 	protected void onDestroy() {
+		client.disconnect();
 		super.onDestroy();
 	}
 }
