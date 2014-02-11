@@ -70,6 +70,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 		setUpWiFiDirect();
 		disconnectFromDevices();
+		resetLobby();
 		findPeers();
 	}
 

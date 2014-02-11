@@ -352,7 +352,7 @@ public class Game extends Activity {
 	
 	@Override
 	protected void onDestroy() {
-		client.disconnect();
+//		client.disconnect();
 		super.onDestroy();
 	}
 }
