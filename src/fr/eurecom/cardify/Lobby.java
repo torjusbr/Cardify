@@ -69,8 +69,11 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		progressDialog = new ProgressDialog(this);
 		
 		setUpWiFiDirect();
+		
+		// In case of already connected over WiFi Direct
 		disconnectFromDevices();
 		resetLobby();
+		
 		findPeers();
 	}
 
@@ -88,14 +91,28 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		
 	}
 
-	public void resetPeerList() {
-		((CustomTextView) findViewById(R.id.lobby_connectedPeersList)).setText("");
-		((LinearLayout) findViewById(R.id.lobby_availablePeersList)).removeAllViews();
+	public void refreshPeers(View view) {
+		findPeers();
+		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely));
 	}
 	
+	// Search for available players
+	private void findPeers() {
+		mChannel = mManager.initialize(this, getMainLooper(), null);
+		mManager.discoverPeers(mChannel, new ActionListener() {
+			@Override
+			public void onSuccess() {
+			}
+			
+			@Override
+			public void onFailure(int reason) {
+			}
+		});
+	}
+	
+	// On peer discovery
 	public void setPeers(WifiP2pDeviceList peers) {
 		this.peers = peers;
-		resetPeerList();
 		printPeers();
 	}
 	
@@ -132,96 +149,62 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		CustomButton btn = (CustomButton) findViewById(R.id.disconnect);
 		btn.setVisibility(Button.VISIBLE);
 	}
+	
+	public void resetPeerList() {
+		((CustomTextView) findViewById(R.id.lobby_connectedPeersList)).setText("");
+		((LinearLayout) findViewById(R.id.lobby_availablePeersList)).removeAllViews();
+	}
 		
 	private void connectToDevice(WifiP2pDevice device) {
 		WifiP2pConfig config = new WifiP2pConfig();
 		config.deviceAddress = device.deviceAddress;
 		currentTargetDeviceName = device.deviceName;
 
-		config.groupOwnerIntent = 15;
+		config.groupOwnerIntent = 15; // Makes this device the group owner
+		
 		mManager.connect(mChannel, config, new LobbyActionListener("Not connected to peer", "Connected to peer"));
 		showProgressDialog("Connecting to device", "The player you're trying to connect to has to accept");
 		timerDelayRemoveDialog(30000, progressDialog);
 	}
 	
-	public String getCurrentTargetDeviceName() {
-		return currentTargetDeviceName;
-	}
-	
-	public void setThisDeviceName(String name) {
-		thisDeviceName = name;
-	}
-	
-	private void showProgressDialog(String title, String message) {
-		this.progressDialog.setTitle(title);
-		this.progressDialog.setMessage(message);
-		this.progressDialog.setCancelable(false);
-		this.progressDialog.show();
-	}
-	
-	public void timerDelayRemoveDialog(long time, final Dialog d){
-	    new Handler().postDelayed(new Runnable() {
-	        public void run() {                
-	            if (d.isShowing()) { 
-		        	d.dismiss();  
-	            }
-	        }
-	    }, time); 
-	}
-	
-	public void dismissProgressDialog() {
-		if (progressDialog.isShowing()) {
-			progressDialog.dismiss();
+	// Every time new connection is available
+	@Override
+	public void onConnectionInfoAvailable(WifiP2pInfo info) {
+		if (info.groupFormed) {
+			if (info.isGroupOwner) {
+				setUpHost(info);
+			} else {
+				setUpClient(info);
+			}	
 		}
 	}
 	
-	private void disconnectFromDevices() {
-		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
+	// Create host if not already done
+	private void setUpHost(WifiP2pInfo info) {
+		if (this.client == null){
+			Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
+			startButton.setVisibility(Button.VISIBLE);
+			this.client = new Client(this);
+			this.client.changeToHost();
+		}
+	}
+	
+	// Create client and register at host
+	private void setUpClient(WifiP2pInfo info) {
+		this.client = new Client(this);
+		this.client.addReceiver(info.groupOwnerAddress);
+		
+		//this.client.registerAtHost();
+		mManager.requestPeers(mChannel, new PeerListener(this.client));
+		showProgressDialog("Waiting for host", "The host must start the game");
 	}
 	
 	public void disconnectFromDevices(View v) {
 		disconnectFromDevices();
 	}
 	
-
-	private void findPeers() {
-		mChannel = mManager.initialize(this, getMainLooper(), null);
-		mManager.discoverPeers(mChannel, new ActionListener() {
-			@Override
-			public void onSuccess() {
-			}
-			
-			@Override
-			public void onFailure(int reason) {
-			}
-		});
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.lobby, menu);
-		return true;
-	}
-
-	/* register the broadcast receiver with the intent values to be matched */
-	@Override
-	protected void onResume() {
-		super.onResume();
-		registerReceiver(mReceiver, mIntentFilter);
-	}
-
-	/* unregister the broadcast receiver */
-	@Override
-	protected void onPause() {
-		super.onPause();
-		unregisterReceiver(mReceiver);
-	}
-	
-	public void refreshPeers(View view) {
-//		resetPeerList();
-		findPeers();
-		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely));
+	private void disconnectFromDevices() {
+		mManager.removeGroup(mChannel, new LobbyActionListener("Failed disconnecting", "Disconnected"));
 	}
 	
 	// Start a new game as host
@@ -229,6 +212,7 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		showCardHandSizeSelector();
 	}
 	
+	// Host decides initial card hand size for all players
 	private void showCardHandSizeSelector() {
 		int maxHandSize = (int) Math.floor(52/(client.getReceivers().size()+1));
 		
@@ -267,20 +251,25 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		alert.show();
 	}
 	
+	// Called from Client. Starts the game
 	public void startGameActivity(Set<InetAddress> receivers, boolean isHost){
 		client.disconnect();
 		Intent intent = new Intent(this, Game.class);
 		String addresses = "";
+		
 		for (InetAddress addr : receivers){
 			addresses += addr.toString() + ",";
 		}
+		
 		intent.putExtra("isSolitaire", false);
 		intent.putExtra("receivers", addresses);
 		intent.putExtra("isHost", isHost);
 		intent.putExtra("deviceName", thisDeviceName);
+		
 		if (isHost) {
 			intent.putExtra("cardsPerPlayer", initCards);
 		}
+		
 		resetLobby();
 		
 		this.startActivity(intent);
@@ -290,33 +279,12 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		startGameActivity(receivers, false);
 	}
 	
-	@Override
-	protected void onDestroy() {
-		disconnectClient();
-		resetLobby();
-		super.onDestroy();
+	public String getCurrentTargetDeviceName() {
+		return currentTargetDeviceName;
 	}
 	
-	// Every time new connection is available
-	@Override
-	public void onConnectionInfoAvailable(WifiP2pInfo info) {
-		if (info.groupFormed) {
-			if (info.isGroupOwner) {
-				setUpHost(info);
-			} else {
-				setUpClient(info);
-			}	
-		}
-	}
-	
-	// Create host if not already done
-	private void setUpHost(WifiP2pInfo info) {
-		if (this.client == null){
-			Button startButton = (Button) findViewById(R.id.lobby_startGameBtn);
-			startButton.setVisibility(Button.VISIBLE);
-			this.client = new Client(this);
-			this.client.changeToHost();
-		}
+	public void setThisDeviceName(String name) {
+		thisDeviceName = name;
 	}
 	
 	public void removeStartButton() {
@@ -340,7 +308,6 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 	
 	public void resetLobby() {	
 		disconnectClient();
-
 		removeClient();
 		removeStartButton();
 		removeDisconnectButton();
@@ -350,25 +317,59 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 		initCards = 0;
 	}
 	
-	// Create client and register at host
-	private void setUpClient(WifiP2pInfo info) {
-		this.client = new Client(this);
-		this.client.addReceiver(info.groupOwnerAddress);
-		
-		//this.client.registerAtHost();
-		mManager.requestPeers(mChannel, new PeerListener(this.client));
-		showProgressDialog("Waiting for host", "The host must start the game");
+	private void showProgressDialog(String title, String message) {
+		this.progressDialog.setTitle(title);
+		this.progressDialog.setMessage(message);
+		this.progressDialog.setCancelable(false);
+		this.progressDialog.show();
 	}
 	
+	public void timerDelayRemoveDialog(long time, final Dialog d){
+	    new Handler().postDelayed(new Runnable() {
+	        public void run() {                
+	            if (d.isShowing()) { 
+		        	d.dismiss();  
+	            }
+	        }
+	    }, time); 
+	}
+	
+	public void dismissProgressDialog() {
+		if (progressDialog.isShowing()) {
+			progressDialog.dismiss();
+		}
+	}
+	
+	// Called when a device has disconnected with this device
 	public void deviceDisconnected() {
 		resetLobby();
 	}
+	
 	public void setHostDeviceName(String[] allDeviceNames) {
 		for (String deviceName : allDeviceNames) {
 			if (!deviceNames.contains(deviceName)) {
 				thisDeviceName = deviceName;
 			}
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.lobby, menu);
+		return true;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		registerReceiver(mReceiver, mIntentFilter);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		unregisterReceiver(mReceiver);
 	}
 	
 	@Override
@@ -378,6 +379,13 @@ public class Lobby extends Activity implements ConnectionInfoListener {
 			resetLobby();
 		}
 		super.onBackPressed();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		disconnectClient();
+		resetLobby();
+		super.onDestroy();
 	}
 		
 	private class LobbyActionListener implements ActionListener {

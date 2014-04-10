@@ -51,7 +51,6 @@ public class Client implements Handler.Callback {
 		receivingThread.stopThread();
 	}
 	
-	
 	public void changeToHost(){
 		this.isHost = true;
 	}

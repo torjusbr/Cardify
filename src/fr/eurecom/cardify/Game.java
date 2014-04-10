@@ -320,6 +320,7 @@ public class Game extends Activity {
 		client.disconnect();
 		disconnectFromDevices();
 		startActivity(new Intent(Game.this, MainMenu.class));
+		finish();
 	}
 	
 	private void exitSolitaire() {
