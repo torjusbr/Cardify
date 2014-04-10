@@ -33,5 +33,4 @@ This app was made as part of the MobServ course at EURECOM, and the source code 
 \nLicensed under LGPL 3 - www.gnu.org/copyleft/lesser.html</string>
 	<string name="disconnect">Disconnect</string>
 	<string name="startGame">Start Game</string>
-    
 </resources>
